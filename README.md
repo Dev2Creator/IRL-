@@ -47,6 +47,10 @@ Installs seamlessly using NPM, PIP, or direct Git clone under the hood.
 # Trans Power™ App
 irl install transpower
 
+# Direct internet downloads (auto-extracts ZIP/TAR files)
+irl install https://example.com/package.zip
+irl install https://example.com/script.py
+
 # PyPI
 irl install requests
 

@@ -17,16 +17,28 @@
 import os
 import requests
 import zipfile
+import tarfile
+import urllib.parse
 from rich.progress import Progress, DownloadColumn, TransferSpeedColumn, TextColumn
 
 def download_and_extract(url):
     print(f"\nDownloading from {url}...")
     try:
-        response = requests.get(url, stream=True)
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+        response = requests.get(url, headers=headers, stream=True)
         response.raise_for_status()
         
         total_size = int(response.headers.get('content-length', 0))
-        zip_path = "temp_download.zip"
+        
+        filename = "downloaded_package"
+        cd = response.headers.get('content-disposition')
+        if cd and 'filename=' in cd:
+            filename = cd.split('filename=')[1].strip('"\'')
+        else:
+            parsed_url = urllib.parse.urlparse(url)
+            base_name = os.path.basename(parsed_url.path)
+            if base_name:
+                filename = base_name
         
         with Progress(
             TextColumn("[bold blue]🌱 Touching grass..."),
@@ -36,16 +48,27 @@ def download_and_extract(url):
         ) as progress:
             task = progress.add_task("Downloading", total=total_size)
             
-            with open(zip_path, "wb") as file:
+            with open(filename, "wb") as file:
                 for chunk in response.iter_content(chunk_size=8192):
-                    file.write(chunk)
-                    progress.update(task, advance=len(chunk))
+                    if chunk:
+                        file.write(chunk)
+                        progress.update(task, advance=len(chunk))
                     
-        print("Extracting files...")
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(".")
+        extracted = False
+        if zipfile.is_zipfile(filename):
+            print("Extracting ZIP archive...")
+            with zipfile.ZipFile(filename, 'r') as zip_ref:
+                zip_ref.extractall(".")
+            extracted = True
+        elif tarfile.is_tarfile(filename):
+            print("Extracting TAR archive...")
+            with tarfile.open(filename, 'r:*') as tar_ref:
+                tar_ref.extractall(".")
+            extracted = True
             
-        os.remove(zip_path)
+        if extracted:
+            os.remove(filename)
+            
         print("✨ Successfully touched grass and installed the package!")
         
     except Exception as e:
