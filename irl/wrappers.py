@@ -19,14 +19,12 @@ import sys
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 
 def run_with_progress(command_str, package, manager_name):
-    print(f"\nPreparing to install {package} using {manager_name}...")
-    
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         transient=True,
     ) as progress:
-        task = progress.add_task(f"[green]🌱 Touching grass... Installing {package}...", start=False)
+        task = progress.add_task(f"[green]🌱 Touching grass... Installing {package} via {manager_name}...", start=False)
         
         process = subprocess.Popen(
             command_str,

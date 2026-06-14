@@ -38,15 +38,15 @@ def install_package(target):
         download_and_extract(url)
         return
 
-    # Check NPM
-    print(f"🔍 Searching for '{target}'...")
-    if check_registry(f"https://registry.npmjs.org/{target}"):
-        install_npm(target)
-        return
-
     # Check PyPI
+    print(f"🔍 Searching for '{target}'...")
     if check_registry(f"https://pypi.org/pypi/{target}/json"):
         install_pip(target)
+        return
+
+    # Check NPM
+    if check_registry(f"https://registry.npmjs.org/{target}"):
+        install_npm(target)
         return
 
     print(f"✖ Error: Package '{target}' not found on NPM, PyPI, or GitHub.")
