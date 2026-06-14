@@ -47,8 +47,17 @@ def cli():
     doctor_parser.add_argument("package", help="Name of the package to diagnose")
     
     grass_parser = subparsers.add_parser("grass", help="Go Outside")
+    posture_parser = subparsers.add_parser("posture", help="Fix your posture")
+    window_parser = subparsers.add_parser("window", help="Look outside")
+    mirror_parser = subparsers.add_parser("mirror", help="Get a compliment")
+    hydrate_parser = subparsers.add_parser("hydrate", help="Drink water")
     
     args = parser.parse_args()
+    
+    from datetime import datetime
+    current_hour = datetime.now().hour
+    if 1 <= current_hour <= 4:
+        Console().print("\n[bold yellow]⚠️ It's late. The bugs will still be there tomorrow. Go to sleep.[/bold yellow]\n")
     
     if args.command == "install":
         if not args.package:
@@ -68,12 +77,28 @@ def cli():
     elif args.command == "grass":
         from irl.grass import touch_grass
         touch_grass()
+    elif args.command == "posture":
+        from irl.creative import posture
+        posture()
+    elif args.command == "window":
+        from irl.creative import window
+        window()
+    elif args.command == "mirror":
+        from irl.creative import mirror
+        mirror()
+    elif args.command == "hydrate":
+        from irl.creative import hydrate
+        hydrate()
     else:
         menu = """
- [bold cyan]👓 Glasses[/bold cyan] - See Clearly
- [bold red]🩺 Doctor[/bold red]  - Stay Healthy
- [bold yellow]📦 Install[/bold yellow] - Get Started
- [bold green]🌱 Grass[/bold green]   - Go Outside
+ [bold cyan]👓 Glasses[/bold cyan]  - See Clearly
+ [bold red]🩺 Doctor[/bold red]   - Stay Healthy
+ [bold yellow]📦 Install[/bold yellow]  - Get Started
+ [bold green]🌱 Grass[/bold green]    - Go Outside
+ [bold magenta]🦐 Posture[/bold magenta]  - Fix your back
+ [bold blue]💧 Hydrate[/bold blue]  - Drink water
+ [bold cyan]🪟 Window[/bold cyan]   - Look outside
+ [bold magenta]🪞 Mirror[/bold magenta]   - Get a compliment
  
  Usage: irl <command> <package>
  
