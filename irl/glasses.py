@@ -33,7 +33,8 @@ def format_size(size_in_bytes):
 def get_npm_info(package):
     url = f"https://registry.npmjs.org/{package}"
     try:
-        response = requests.get(url, timeout=5)
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
             latest_version = data.get("dist-tags", {}).get("latest")
@@ -54,7 +55,8 @@ def get_npm_info(package):
 def get_pypi_info(package):
     url = f"https://pypi.org/pypi/{package}/json"
     try:
-        response = requests.get(url, timeout=5)
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
             version = data.get("info", {}).get("version", "Unknown")
@@ -85,7 +87,8 @@ def get_github_info(package):
         
     url = f"https://api.github.com/repos/{package}"
     try:
-        response = requests.get(url, timeout=5)
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
             size_kb = data.get("size", 0)

@@ -47,7 +47,8 @@ def run_doctor(package):
     # Check Network
     network = False
     try:
-        requests.get("https://github.com", timeout=3)
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        requests.get("https://github.com", headers=headers, timeout=10)
         network = True
     except:
         pass

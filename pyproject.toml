@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "irl-pkg"
-version = "1.0.2"
+version = "1.0.3"
 description = "In Real Life - The package installer that touches grass."
 authors = [
     { name = "UNKNOWN™" }
