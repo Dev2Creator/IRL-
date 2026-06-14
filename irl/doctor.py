@@ -41,6 +41,14 @@ def check_package_type(package):
     return None
 
 def run_doctor(package):
+    if package.istitle() or package.lower() == "system" or package.lower() == "me":
+        console.print("\n[bold]Diagnosis:[/bold]\n")
+        console.print("CPU:\nHealthy ✅\n")
+        console.print("RAM:\nHealthy ✅\n")
+        console.print("User:\nNeeds sunlight ☀️\n")
+        console.print("Prescription:\nTouch grass.\n")
+        return
+
     console.print("\n[bold cyan]🩺 Checking package...[/bold cyan]\n")
     time.sleep(1)
     
