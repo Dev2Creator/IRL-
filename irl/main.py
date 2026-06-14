@@ -51,6 +51,7 @@ def cli():
     window_parser = subparsers.add_parser("window", help="Look outside")
     mirror_parser = subparsers.add_parser("mirror", help="Get a compliment")
     hydrate_parser = subparsers.add_parser("hydrate", help="Drink water")
+    chaos_parser = subparsers.add_parser("chaos", help="Take the chaos quiz")
     
     args = parser.parse_args()
     
@@ -89,22 +90,86 @@ def cli():
     elif args.command == "hydrate":
         from irl.creative import hydrate
         hydrate()
+    elif args.command == "chaos":
+        from irl.creative import chaos
+        chaos()
     else:
-        menu = """
- [bold cyan]👓 Glasses[/bold cyan]  - See Clearly
- [bold red]🩺 Doctor[/bold red]   - Stay Healthy
- [bold yellow]📦 Install[/bold yellow]  - Get Started
- [bold green]🌱 Grass[/bold green]    - Go Outside
- [bold magenta]🦐 Posture[/bold magenta]  - Fix your back
- [bold blue]💧 Hydrate[/bold blue]  - Drink water
- [bold cyan]🪟 Window[/bold cyan]   - Look outside
- [bold magenta]🪞 Mirror[/bold magenta]   - Get a compliment
- 
- Usage: irl <command> <package>
- 
- [dim]© 2026 UNKNOWN™[/dim]
- """
-        Console().print(menu)
+        interactive_menu()
+
+def creative_menu():
+    from rich.console import Console
+    from rich.prompt import IntPrompt
+    console = Console()
+    
+    while True:
+        console.print("\n[bold magenta]🎨 Creative Wellness Menu[/bold magenta]")
+        console.print("  [bold magenta]1.[/bold magenta] 🦐 Fix your posture")
+        console.print("  [bold blue]2.[/bold blue] 💧 Hydrate")
+        console.print("  [bold cyan]3.[/bold cyan] 🪟 Look outside")
+        console.print("  [bold magenta]4.[/bold magenta] 🪞 Get a compliment")
+        console.print("  [bold yellow]5.[/bold yellow] 🌪️  Chaos Quiz")
+        console.print("  [bold green]6.[/bold green] 🎭 Chaos Counter (Daily Joke)")
+        console.print("  [bold white]0.[/bold white] Back to Main Menu\n")
+        
+        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"])
+        
+        if choice == 0:
+            break
+        elif choice == 1:
+            from irl.creative import posture
+            posture()
+        elif choice == 2:
+            from irl.creative import hydrate
+            hydrate()
+        elif choice == 3:
+            from irl.creative import window
+            window()
+        elif choice == 4:
+            from irl.creative import mirror
+            mirror()
+        elif choice == 5:
+            from irl.creative import chaos
+            chaos()
+        elif choice == 6:
+            from irl.creative import chaos_counter
+            chaos_counter()
+
+def interactive_menu():
+    from rich.console import Console
+    from rich.prompt import Prompt, IntPrompt
+    console = Console()
+    
+    while True:
+        console.print("\n[bold cyan]What would you like to do?[/bold cyan]")
+        console.print("  [bold yellow]1.[/bold yellow] 📦 Install a Package")
+        console.print("  [bold cyan]2.[/bold cyan] 👓 Inspect a Package (Glasses)")
+        console.print("  [bold red]3.[/bold red] 🩺 Diagnose System (Doctor)")
+        console.print("  [bold green]4.[/bold green] 🌱 Touch Grass")
+        console.print("  [bold magenta]5.[/bold magenta] 🎨 Creative Wellness Menu")
+        console.print("  [bold white]0.[/bold white] Exit\n")
+        
+        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5"])
+        
+        if choice == 0:
+            console.print("[dim]Goodbye, human.[/dim]")
+            sys.exit(0)
+        elif choice == 1:
+            pkg = Prompt.ask("Enter package name or URL")
+            if pkg:
+                install_package(pkg)
+        elif choice == 2:
+            pkg = Prompt.ask("Enter package name to inspect")
+            if pkg:
+                inspect_package(pkg)
+        elif choice == 3:
+            pkg = Prompt.ask("Enter package name to diagnose")
+            if pkg:
+                run_doctor(pkg)
+        elif choice == 4:
+            from irl.grass import touch_grass
+            touch_grass()
+        elif choice == 5:
+            creative_menu()
 
 if __name__ == "__main__":
     cli()
