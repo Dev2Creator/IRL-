@@ -44,6 +44,9 @@ pip install irl-pkg
 Installs seamlessly using NPM, PIP, or direct Git clone under the hood.
 
 ```bash
+# Trans Power™ App
+irl install transpower
+
 # PyPI
 irl install requests
 
