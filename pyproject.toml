@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "irl-pkg"
+version = "1.0.2"
+description = "In Real Life - The package installer that touches grass."
+authors = [
+    { name = "UNKNOWN™" }
+]
+dependencies = [
+    "requests",
+    "rich"
+]
+readme = "README.md"
+requires-python = ">=3.7"
+
+[project.scripts]
+irl = "irl.main:cli"
