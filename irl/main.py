@@ -46,6 +46,8 @@ def cli():
     doctor_parser = subparsers.add_parser("doctor", help="Stay Healthy")
     doctor_parser.add_argument("package", help="Name of the package to diagnose")
     
+    grass_parser = subparsers.add_parser("grass", help="Go Outside")
+    
     args = parser.parse_args()
     
     if args.command == "install":
@@ -63,11 +65,15 @@ def cli():
             print("Error: Please provide a package name to diagnose.")
             sys.exit(1)
         run_doctor(args.package)
+    elif args.command == "grass":
+        from irl.grass import touch_grass
+        touch_grass()
     else:
         menu = """
  [bold cyan]👓 Glasses[/bold cyan] - See Clearly
  [bold red]🩺 Doctor[/bold red]  - Stay Healthy
  [bold yellow]📦 Install[/bold yellow] - Get Started
+ [bold green]🌱 Grass[/bold green]   - Go Outside
  
  Usage: irl <command> <package>
  
