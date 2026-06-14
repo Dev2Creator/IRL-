@@ -49,4 +49,25 @@ def install_package(target):
         install_npm(target)
         return
 
-    print(f"✖ Error: Package '{target}' not found on NPM, PyPI, or GitHub.")
+    # Fallback to GitHub Keyword Search
+    print(f"🔍 Checking GitHub for top matches for '{target}'...")
+    try:
+        search_url = f"https://api.github.com/search/repositories?q={target}&sort=stars&order=desc"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+        response = requests.get(search_url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            items = data.get("items", [])
+            if items:
+                best_match = items[0]
+                repo_full_name = best_match["full_name"]
+                default_branch = best_match.get("default_branch", "main")
+                print(f"🌟 Found top match on GitHub: {repo_full_name} ({best_match['stargazers_count']} stars)")
+                
+                zip_url = f"https://github.com/{repo_full_name}/archive/refs/heads/{default_branch}.zip"
+                download_and_extract(zip_url)
+                return
+    except requests.RequestException:
+        pass
+
+    print(f"✖ Error: Package or keyword '{target}' not found on NPM, PyPI, or GitHub.")
