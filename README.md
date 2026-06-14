@@ -33,12 +33,26 @@ pip install irl-pkg
 ## Usage
 
 ```text
- 👓 Glasses - See Clearly
- 🩺 Doctor  - Stay Healthy
- 📦 Install - Get Started
+ [bold cyan]👓 Glasses[/bold cyan]  - See Clearly
+ [bold red]🩺 Doctor[/bold red]   - Stay Healthy
+ [bold yellow]📦 Install[/bold yellow]  - Get Started
+ [bold green]🌱 Grass[/bold green]    - Go Outside
+ [bold magenta]🦐 Posture[/bold magenta]  - Fix your back
+ [bold blue]💧 Hydrate[/bold blue]  - Drink water
+ [bold cyan]🪟 Window[/bold cyan]   - Look outside
+ [bold magenta]🪞 Mirror[/bold magenta]   - Get a compliment
  
  Usage: irl <command> <package>
 ```
+
+## Wellness Commands
+IRL cares about your health as a developer. Run these commands anytime:
+- `irl grass`: Daily streak tracker for going outside and touching green things.
+- `irl posture`: Gives a friendly reminder to fix your "shrimp posture".
+- `irl hydrate`: A daily tracker to ensure you hit your 8 glasses of water.
+- `irl window`: Gives you a real-time weather report without having to actually open your blinds.
+- `irl mirror`: Provides a random, lovely developer compliment.
+- **Bedtime Enforcer**: If you try to run any command past 1:00 AM, `irl` will gently remind you to go to sleep.
 
 ### Install Packages
 Installs seamlessly using NPM, PIP, or direct Git clone under the hood.
