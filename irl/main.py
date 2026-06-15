@@ -1,19 +1,3 @@
-# IRL™ 🌱 - Software for Humans
-# Copyright (C) 2026 UNKNOWN™
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import argparse
 import sys
 from irl.install import install_package
@@ -21,14 +5,9 @@ from irl.glasses import inspect_package
 from irl.doctor import run_doctor
 
 def cli():
-    banner = """
- [bold green]╔══════════════════════╗[/bold green]
- [bold green]║[/bold green]      [bold white]IRL™ 🌱[/bold white]         [bold green]║[/bold green]
- [bold green]║[/bold green] [bold cyan]Software for Humans[/bold cyan]  [bold green]║[/bold green]
- [bold green]╚══════════════════════╝[/bold green]"""
-    
-    from rich.console import Console
-    Console().print(banner)
+    from irl.themes import get_engine
+    engine = get_engine()
+    engine.render_banner()
     
     parser = argparse.ArgumentParser(
         prog="irl",
@@ -52,13 +31,14 @@ def cli():
     mirror_parser = subparsers.add_parser("mirror", help="Get a compliment")
     hydrate_parser = subparsers.add_parser("hydrate", help="Drink water")
     chaos_parser = subparsers.add_parser("chaos", help="Take the chaos quiz")
+    store_parser = subparsers.add_parser("store", help="Open the IRL store")
     
     args = parser.parse_args()
     
     from datetime import datetime
     current_hour = datetime.now().hour
     if 1 <= current_hour <= 4:
-        Console().print("\n[bold yellow]⚠️ It's late. The bugs will still be there tomorrow. Go to sleep.[/bold yellow]\n")
+        engine.ui.render_generic("⚠️ It's late. The bugs will still be there tomorrow. Go to sleep.")
     
     if args.command == "install":
         if not args.package:
@@ -93,12 +73,15 @@ def cli():
     elif args.command == "chaos":
         from irl.creative import chaos
         chaos()
+    elif args.command == "store":
+        from irl.store import open_store
+        open_store()
     else:
         interactive_menu()
 
 def creative_menu():
-    from rich.console import Console
     from rich.prompt import IntPrompt
+    from rich.console import Console
     console = Console()
     
     while True:
@@ -111,7 +94,7 @@ def creative_menu():
         console.print("  [bold green]6.[/bold green] 🎭 Chaos Counter (Daily Joke)")
         console.print("  [bold white]0.[/bold white] Back to Main Menu\n")
         
-        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"])
+        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"], console=console)
         
         if choice == 0:
             break
@@ -135,8 +118,8 @@ def creative_menu():
             chaos_counter()
 
 def interactive_menu():
-    from rich.console import Console
     from rich.prompt import Prompt, IntPrompt
+    from rich.console import Console
     console = Console()
     
     while True:
@@ -146,9 +129,10 @@ def interactive_menu():
         console.print("  [bold red]3.[/bold red] 🩺 Diagnose System (Doctor)")
         console.print("  [bold green]4.[/bold green] 🌱 Touch Grass")
         console.print("  [bold magenta]5.[/bold magenta] 🎨 Creative Wellness Menu")
+        console.print("  [bold yellow]6.[/bold yellow] 🏪 Open IRL Store")
         console.print("  [bold white]0.[/bold white] Exit\n")
         
-        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5"])
+        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"], console=console)
         
         if choice == 0:
             console.print("[dim]Goodbye, human.[/dim]")
@@ -170,6 +154,9 @@ def interactive_menu():
             touch_grass()
         elif choice == 5:
             creative_menu()
+        elif choice == 6:
+            from irl.store import open_store
+            open_store()
 
 if __name__ == "__main__":
     cli()

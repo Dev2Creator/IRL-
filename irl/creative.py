@@ -3,55 +3,41 @@ import json
 import random
 import requests
 from datetime import datetime
-from rich.console import Console
-
-console = Console()
+from irl.state import add_coins
 
 WATER_STATE_FILE = os.path.expanduser("~/.irl_water.json")
 
 def posture():
-    shrimp = r"""
-       🦐
-     / | \
-    """
-    console.print(f"[bold red]{shrimp}[/bold red]")
-    console.print("[bold yellow]Shrimp Posture Detected![/bold yellow]\n")
-    console.print("1. Sit up straight.")
-    console.print("2. Roll your shoulders back.")
-    console.print("3. Unclench your jaw.")
-    console.print("4. Blink.\n")
-    console.print("[green]Good human.[/green]\n")
+    from irl.themes import get_engine
+    engine = get_engine()
+    engine.render_posture()
+    add_coins(5, "Fixed posture")
 
 def window():
-    console.print("\n[bold cyan]🪟 Opening the blinds...[/bold cyan]\n")
+    from irl.themes import get_engine
+    engine = get_engine()
+    engine.render_window()
     try:
-        # wttr.in with ?0 (current weather only), q (quiet)
-        headers = {"User-Agent": "curl/7.68.0"} # curl user-agent forces terminal output format
+        headers = {"User-Agent": "curl/7.68.0"} 
         response = requests.get("https://wttr.in/?0q", headers=headers, timeout=5)
         if response.status_code == 200:
-            # wttr.in outputs ANSI, rich prints it exactly as-is if we print without markup if needed, 
-            # but rich handles most basic ANSI fine, or we can just print directly.
             print(response.text)
+            add_coins(5, "Looked outside")
         else:
-            console.print("It's cloudy. Or the API is down. Just look out a real window!")
+            engine.ui.render_generic("It's cloudy. Or the API is down. Just look out a real window!")
     except:
-        console.print("[red]Could not reach the outside world. Please look through a physical window.[/red]\n")
+        engine.ui.render_generic("Could not reach the outside world. Please look through a physical window.")
 
 def mirror():
-    compliments = [
-        "Your Git commit messages are surprisingly descriptive.",
-        "You're doing great. Even senior devs have to Google how to center a div.",
-        "Your code is beautiful and so are you.",
-        "You are capable of resolving those merge conflicts.",
-        "I'm just a terminal, but I think you're awesome.",
-        "Your logic is sound and your variables are well-named.",
-        "That bug wasn't your fault. Probably.",
-        "You make the digital world a better place."
-    ]
-    console.print("\n[bold cyan]🪞 *Looking in the mirror*[/bold cyan]\n")
-    console.print(f"[bold magenta]{random.choice(compliments)}[/bold magenta]\n")
+    from irl.themes import get_engine
+    engine = get_engine()
+    engine.render_mirror()
+    add_coins(5, "Received a compliment")
 
 def hydrate():
+    from irl.themes import get_engine
+    engine = get_engine()
+    
     today_str = datetime.now().strftime("%Y-%m-%d")
     
     state = {"date": None, "glasses": 0}
@@ -71,40 +57,17 @@ def hydrate():
     with open(WATER_STATE_FILE, 'w') as f:
         json.dump(state, f)
         
-    glasses = state["glasses"]
-    
-    console.print("\n[bold blue]💧 Hydration Tracker[/bold blue]\n")
-    
-    level = min(glasses, 8)
-    empty_space = 8 - level
-    
-    bottle = "   ___\n"
-    bottle += "  |   |\n"
-    bottle += "  |___|\n"
-    for i in range(empty_space):
-        bottle += "  |   |\n"
-    for i in range(level):
-        bottle += "  |~~~|\n"
-    bottle += "  '---'\n"
-    
-    console.print(f"[cyan]{bottle}[/cyan]")
-    
-    console.print(f"Glasses today: [bold]{glasses}[/bold] / 8")
-    if glasses >= 8:
-        console.print("[bold green]Hydration goal reached! Excellent work.[/bold green]\n")
-    else:
-        console.print("[yellow]Keep drinking! Stay hydrated, human.[/yellow]\n")
+    engine.render_hydrate(state["glasses"])
+    add_coins(5, "Hydrated")
 
 def chaos():
-    import random
+    from irl.themes import get_engine
+    engine = get_engine()
     import html as html_mod
-    console.print("\n[bold magenta]🌪️  Summoning the Chaos Quiz...[/bold magenta]\n")
     
     quiz = None
-    
-    # --- Attempt 1: Open Trivia DB (free, reliable, no key needed) ---
     try:
-        categories = [18, 9, 19, 15]  # Computers, General, Math, Video Games
+        categories = [18, 9, 19, 15]
         cat = random.choice(categories)
         url = f"https://opentdb.com/api.php?amount=1&category={cat}&type=multiple"
         res = requests.get(url, timeout=10)
@@ -130,62 +93,39 @@ def chaos():
                 }
     except Exception:
         pass
-    
-    # --- Attempt 2: Pollinations AI (free, but rate-limited) ---
+        
     if quiz is None:
-        try:
-            url = "https://text.pollinations.ai/openai"
-            payload = {
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "You are a chaotic Quiz Master. Generate a funny multiple-choice question for a software developer. Output ONLY valid JSON: {\"question\":\"...\",\"a\":\"...\",\"b\":\"...\",\"c\":\"...\",\"d\":\"...\",\"correct_key\":\"a or b or c or d\"}"
-                    },
-                    {"role": "user", "content": "Generate the chaotic dev quiz."}
-                ],
-                "jsonMode": True
-            }
-            response = requests.post(url, json=payload, timeout=15)
-            if response.status_code == 200:
-                data = response.json()
-                content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
-                content = content.replace("```json", "").replace("```", "").strip()
-                quiz = json.loads(content)
-        except Exception:
-            pass
-    
-    # --- Attempt 3: Offline fallbacks (always works) ---
-    if quiz is None:
-        console.print("[dim](Drawing from the ancient chaotic archives...)[/dim]\n")
         try:
             from irl.quiz_bank import QUIZ_BANK
+            quiz = random.choice(QUIZ_BANK)
         except ImportError:
-            from quiz_bank import QUIZ_BANK
-        quiz = random.choice(QUIZ_BANK)
-    
-    # --- Display the quiz ---
+            try:
+                from quiz_bank import QUIZ_BANK
+                quiz = random.choice(QUIZ_BANK)
+            except ImportError:
+                quiz = {"question": "What is 2+2?", "a":"3", "b":"4", "c":"5", "d":"6", "correct_key":"b"}
+                
     try:
-        console.print(f"[bold yellow]❓ {quiz.get('question', 'What is happening?')}[/bold yellow]\n")
-        console.print(f"  [cyan]A)[/cyan] {quiz.get('a', 'Error')}")
-        console.print(f"  [cyan]B)[/cyan] {quiz.get('b', 'Error')}")
-        console.print(f"  [cyan]C)[/cyan] {quiz.get('c', 'Error')}")
-        console.print(f"  [cyan]D)[/cyan] {quiz.get('d', 'Error')}\n")
+        engine.ui.render_generic(f"\n❓ {quiz.get('question', 'What is happening?')}\n")
+        engine.ui.render_generic(f"  A) {quiz.get('a', 'Error')}")
+        engine.ui.render_generic(f"  B) {quiz.get('b', 'Error')}")
+        engine.ui.render_generic(f"  C) {quiz.get('c', 'Error')}")
+        engine.ui.render_generic(f"  D) {quiz.get('d', 'Error')}\n")
         
         user_ans = input("Choose your fate (A/B/C/D): ").strip().lower()
         correct = str(quiz.get('correct_key', '')).lower()
         
         if user_ans and user_ans == correct:
-            console.print("\n[bold green]✅ You survived the chaos... for now.[/bold green]\n")
+            engine.render_chaos_win()
+            add_coins(20, "Survived the chaos")
         else:
-            console.print(f"\n[bold red]❌ INCORRECT! The chaos consumes you. The correct answer was {correct.upper()}.[/bold red]")
-            console.print("[bold yellow]PUNISHMENT: Do 10 pushups immediately or drop all your production databases![/bold yellow]\n")
+            engine.render_chaos_lose(correct.upper())
     except Exception as e:
-        console.print(f"[red]The chaos escaped containment: {e}[/red]\n")
+        engine.ui.render_generic(f"The chaos escaped containment: {e}")
 
 def chaos_counter():
-    import colorsys
-    from rich.text import Text
-    console.print("\n[bold magenta]🎭 Entering the Chaos Counter...[/bold magenta]\n")
+    from irl.themes import get_engine
+    engine = get_engine()
     
     try:
         url = "https://v2.jokeapi.dev/joke/Programming,Miscellaneous?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=single"
@@ -220,13 +160,4 @@ def chaos_counter():
     cow.append(r"                ||----w |")
     cow.append(r"                ||     ||")
     
-    rainbow_text = Text()
-    for i, line in enumerate(cow):
-        hue = (i / len(cow)) % 1.0
-        rgb = colorsys.hls_to_rgb(hue, 0.6, 1.0)
-        r, g, b = [int(x * 255) for x in rgb]
-        color = f"#{r:02x}{g:02x}{b:02x}"
-        rainbow_text.append(line + "\n", style=color)
-        
-    console.print(rainbow_text)
-    console.print()
+    engine.ui.render_generic("\n".join(cow))

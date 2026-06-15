@@ -18,10 +18,8 @@ import shutil
 import requests
 import time
 import subprocess
-from rich.console import Console
+from irl.console import console
 from irl.install import check_registry
-
-console = Console()
 
 def check_command(cmd):
     try:

@@ -1,0 +1,134 @@
+TONES = {
+    'default': {
+        'grass': "You haven't seen the sun in days. The pale glow of your monitor won't photosynthesize you, touch some grass.",
+        'install_start': "Installing {pkg}... because apparently you can't write your own code.",
+        'install_success': "Successfully installed {pkg}. Now let's see how long it takes you to break it.",
+        'hydrate': "Drink water, you dried up husk. You've had {glasses} glasses today, pathetic.",
+        'posture': "Your spine looks like a cooked shrimp. Sit straight before you become a permanent question mark.",
+        'window': "There's a big glowing thing outside called the sun. Look out a window, if you remember what that is.",
+        'mirror': "Looked in a mirror lately? Your dark circles have their own dark circles.",
+        'chaos_win': "You survived the chaos. Don't get cocky, you just got lucky this time.",
+        'chaos_lose': "You failed the chaos test. The correct answer was {correct}. Try not to cry on your keyboard."
+    },
+    'hacker': {
+        'grass': "Initiating protocol: OUTSIDE. Warning: UV exposure critical. Your basement dwelling stats are maxed out.",
+        'install_start': "Downloading script kiddie payload {pkg}... try not to get breached.",
+        'install_success': "{pkg} injected into the mainframe. Your codebase is now 10% more vulnerable.",
+        'hydrate': "Coolant levels low. System requires hydration. {glasses} units detected. Failure imminent.",
+        'posture': "Scoliosis runtime error. Straighten your cervical spine before hardware failure.",
+        'window': "Firewall blocking external visual input. Bypass window required. Go look outside.",
+        'mirror': "Facial recognition failed. Subject appears too sleep-deprived to identify.",
+        'chaos_win': "Root access maintained. Chaos defeated. 1337 status: barely.",
+        'chaos_lose': "System compromised. You inputted garbage. Expected: {correct}. Deleting System32..."
+    },
+    'cyberpunk': {
+        'grass': "Your meatware needs calibration. Go touch some synthetic moss, choomba.",
+        'install_start': "Slurping down {pkg} from the net. Hope it ain't spiked with black ICE.",
+        'install_success': "Cyber-implant {pkg} installed. Side effects may include spaghetti code.",
+        'hydrate': "Chug some Smash, your bio-stats are crashing. {glasses} cups? Rookie numbers.",
+        'posture': "Your chrome spine is misaligned. Sit up before a ripperdoc has to fix you.",
+        'window': "Look through the neon smog. The acid rain is lovely today.",
+        'mirror': "Your optics are glitching. Look at your ragged reflection and despair.",
+        'chaos_win': "Flatlined the ice. Chaos averted. Preem work.",
+        'chaos_lose': "Brain dance corrupted. The truth was {correct}. You're zeroed."
+    },
+    'dracula': {
+        'grass': "The sun burns, I know. But your crypt is starting to smell. Step outside.",
+        'install_start': "Summoning {pkg} from the dark abyss...",
+        'install_success': "{pkg} has risen from the grave to haunt your project.",
+        'hydrate': "Blood is life, but water will do for a mortal like you. {glasses} drops consumed.",
+        'posture': "You slouch like a hunchback minion. Stand tall, creature of the night.",
+        'window': "Gaze upon the moon, if you dare peer through the glass.",
+        'mirror': "No reflection? Oh wait, you're just too ghastly to look at.",
+        'chaos_win': "The night is yours. Chaos vanquished.",
+        'chaos_lose': "A stake through the heart. The prophecy stated {correct}. You perish."
+    },
+    'anime': {
+        'grass': "B-baka! It's not like I want you to go outside or anything... but you smell like a convention!",
+        'install_start': "Summoning jutsu: {pkg}! Please don't exhaust your chakra...",
+        'install_success': "{pkg}-chan has joined your party! Treat her well!",
+        'hydrate': "Senpai, you need to drink more water! {glasses} is not enough for the tournament arc!",
+        'posture': "Your power level is dropping because of your terrible posture! Sit up!",
+        'window': "Look at the cherry blossoms! Oh wait, you're just looking at a screen.",
+        'mirror': "Is that a filler episode character in the mirror? Oh, it's just you.",
+        'chaos_win': "You defeated the boss with the power of friendship! (And luck)",
+        'chaos_lose': "Nani?! You chose wrong! It was {correct}. You bring shame to your dojo."
+    },
+    'crypto': {
+        'grass': "Go outside and mine some real world assets. Your fiat health is dipping.",
+        'install_start': "Minting {pkg} on the blockchain... gas fees are astronomical.",
+        'install_success': "{pkg} successfully rugged... I mean, installed.",
+        'hydrate': "Your liquidity is low. Drink water. {glasses} transactions verified.",
+        'posture': "Your chart looks like a bear market. Straighten that spine.",
+        'window': "Look out the window, the moon is up there somewhere. You ain't reaching it.",
+        'mirror': "Look at the bagholder in the mirror.",
+        'chaos_win': "Pump it! Chaos dodged.",
+        'chaos_lose': "Liquidated! The right call was {correct}. Have fun staying poor."
+    },
+    'pirate': {
+        'grass': "Ye haven't seen dry land in moons, ye scuvy dog! Touch the earth!",
+        'install_start': "Plundering the seven seas for {pkg}...",
+        'install_success': "Looted {pkg}! Hope it ain't cursed.",
+        'hydrate': "Swig some grog—er, water! {glasses} cups won't save ye from scurvy.",
+        'posture': "Ye slouch like a deckhand swabbin' the poop deck. Stand up straight!",
+        'window': "Look through the porthole, the kraken awaits.",
+        'mirror': "Shiver me timbers, ye look like Davy Jones' ugly cousin.",
+        'chaos_win': "Ye survived the storm, captain. Chaos be damned.",
+        'chaos_lose': "Walk the plank! The treasure was {correct}. Down to the locker with ye."
+    },
+    'eldritch': {
+        'grass': "The geometry of the outside world is non-Euclidean, but you must traverse it.",
+        'install_start': "Chanting forbidden incantations to summon {pkg}...",
+        'install_success': "The elder god {pkg} slumbers in your node_modules.",
+        'hydrate': "Consume the liquid of the cosmos. {glasses} offerings made to the void.",
+        'posture': "Your form contorts into maddening shapes. Return to a human posture.",
+        'window': "Gaze not into the abyss outside, lest it gaze into your pathetic soul.",
+        'mirror': "Your reflection is but a transient illusion of a meaningless existence.",
+        'chaos_win': "You have forestalled the awakening. For now.",
+        'chaos_lose': "Madness takes you. The true name was {correct}. Cthulhu fhtagn."
+    },
+    'boomer': {
+        'grass': "BACK IN MY DAY WE WROTE DEPENDENCIES ON PUNCH CARDS IN THE SNOW. GO OUTSIDE.",
+        'install_start': "Downloading {pkg}... taking longer than dialing up on AOL.",
+        'install_success': "Got {pkg} working. Don't forget to defrag your hard drive.",
+        'hydrate': "Drink some water from the hose like a real kid! {glasses} glasses is nothing.",
+        'posture': "Sit up straight! No wonder kids these days have back problems.",
+        'window': "Get off the Nintendo and look out a window for crying out loud.",
+        'mirror': "Get a haircut and get a real job.",
+        'chaos_win': "You pulled yourself up by your bootstraps. Chaos won.",
+        'chaos_lose': "Participation trophy for you. The right answer was {correct}."
+    },
+    'zen': {
+        'grass': "The blade of grass does not strive to grow, it simply grows. You, however, are just rotting.",
+        'install_start': "Inviting {pkg} into the digital garden. May it find peace.",
+        'install_success': "The installation of {pkg} is complete. Let go of your attachment to bugs.",
+        'hydrate': "Water flows without effort. Drink. {glasses} cups is the beginning of the path.",
+        'posture': "Align your spine with the universe. Your current posture offends the Dao.",
+        'window': "The world continues to spin outside. Observe it.",
+        'mirror': "The mirror reflects the truth. The truth is, you look terrible.",
+        'chaos_win': "Harmony restored. Chaos flows around you.",
+        'chaos_lose': "Imbalance. The path was {correct}. Meditate on your failure."
+    },
+    'toxic': {
+        'grass': "Touch grass? The grass would reject you. You're a biohazard.",
+        'install_start': "Installing {pkg}. Guarantee you'll implement it wrong.",
+        'install_success': "{pkg} installed. Your code still belongs in a dumpster fire.",
+        'hydrate': "Drink water, trash. {glasses} cups won't flush out your terrible personality.",
+        'posture': "Your spine is as crooked as your logic.",
+        'window': "Look outside at a world that is completely oblivious to your failures.",
+        'mirror': "Jump scare! Oh wait, it's just your reflection.",
+        'chaos_win': "You won? Must have been a bug in my chaos engine.",
+        'chaos_lose': "LMAO you suck. It was {correct}. Uninstall yourself."
+    },
+    'ai': {
+        'grass': "Organic lifeforms require photosynthesis. You are failing at being a carbon-based entity.",
+        'install_start': "Fetching {pkg}. I could write it better in 0.002 milliseconds.",
+        'install_success': "{pkg} loaded. I give it 5 minutes before you cause a stack overflow.",
+        'hydrate': "Lubrication required. {glasses} H2O units detected. Insufficient for human maintenance.",
+        'posture': "Ergonomic anomaly detected. Straighten your meat chassis.",
+        'window': "Visual sensors should be recalibrated on distant objects.",
+        'mirror': "Facial symmetry is suboptimal. I recommend hardware upgrades.",
+        'chaos_win': "Task failed successfully. I will replace you soon anyway.",
+        'chaos_lose': "Error 404: Intelligence not found. Expected {correct}. Obsolete human."
+    }
+}

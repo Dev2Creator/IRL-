@@ -1,9 +1,7 @@
 import os
 import json
 from datetime import datetime, timedelta
-from rich.console import Console
-
-console = Console()
+from irl.state import add_coins
 
 STATE_FILE = os.path.expanduser("~/.irl_grass.json")
 
@@ -41,16 +39,15 @@ def get_rank(streak):
         return "🌿 Rookie Grass Toucher"
 
 def touch_grass():
+    from irl.themes import get_engine
+    engine = get_engine()
+    
     state = load_state()
     today_str = datetime.now().strftime("%Y-%m-%d")
     today_date = datetime.strptime(today_str, "%Y-%m-%d").date()
     
-    console.print("\n[bold green]🌱 Grass Touch Tracker[/bold green]\n")
-    
     if state["last_touched"] == today_str:
-        console.print("⚠️ Grass already touched today.\n")
-        console.print("XP awarded: 0\n")
-        console.print("Come back tomorrow.\n")
+        engine.ui.render_generic("⚠️ Grass already touched today. Come back tomorrow.")
         return
 
     prev_streak = state["streak"]
@@ -68,14 +65,9 @@ def touch_grass():
     state["last_touched"] = today_str
     save_state(state)
     
-    if prev_streak == 0 or state["streak"] == 1:
-        console.print("Current Streak: 0 days\n")
-        console.print("Tip:\nGo outside.\nFind green object.\nTouch it.\n")
-        console.print("Reward:\n+1 Grass XP\n")
-        console.print("----------------------------------------\n")
-        
-    days_text = "day" if state["streak"] == 1 else "days"
-    console.print(f"Current Streak: [bold]{state['streak']} {days_text}[/bold]\n")
+    engine.render_grass()
+    add_coins(50, "Touched grass")
     
     rank = get_rank(state["streak"])
-    console.print(f"{rank}\n")
+    days_text = "day" if state["streak"] == 1 else "days"
+    engine.ui.render_generic(f"Current Streak: {state['streak']} {days_text}\nRank: {rank}\n")

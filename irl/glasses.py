@@ -16,10 +16,8 @@
 
 import requests
 import json
-from rich.console import Console
+from irl.console import console
 import time
-
-console = Console()
 
 def format_size(size_in_bytes):
     if not size_in_bytes:
