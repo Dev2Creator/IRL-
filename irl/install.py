@@ -50,16 +50,22 @@ def install_package(target):
 
     # Check PyPI
     if check_registry(f"https://pypi.org/pypi/{target}/json"):
-        install_pip(target)
-        add_coins(10, "Installed a package")
-        engine.render_install_success(target)
+        success = install_pip(target)
+        if success:
+            add_coins(10, "Installed a package")
+            engine.render_install_success(target)
+        else:
+            engine.ui.render_generic(f"[bold red]✖ IRL™ Error:[/bold red] Failed to install '{target}' via pip. See logs above.")
         return
 
     # Check NPM
     if check_registry(f"https://registry.npmjs.org/{target}"):
-        install_npm(target)
-        add_coins(10, "Installed a package")
-        engine.render_install_success(target)
+        success = install_npm(target)
+        if success:
+            add_coins(10, "Installed a package")
+            engine.render_install_success(target)
+        else:
+            engine.ui.render_generic(f"[bold red]✖ IRL™ Error:[/bold red] Failed to install '{target}' via npm. Check permissions (e.g., EPERM) or try a different directory.")
         return
 
     # Fallback to GitHub Keyword Search
