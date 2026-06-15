@@ -1,3 +1,19 @@
+# IRL™ 🌱 - Software for {name}s
+# Copyright (C) 2026 UNKNOWN™
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 TONES = {
     'default': {
         'grass': "You haven't seen the sun in days. The pale glow of your monitor won't photosynthesize you, touch some grass.",
@@ -81,7 +97,7 @@ TONES = {
         'install_start': "Chanting forbidden incantations to summon {pkg}...",
         'install_success': "The elder god {pkg} slumbers in your node_modules.",
         'hydrate': "Consume the liquid of the cosmos. {glasses} offerings made to the void.",
-        'posture': "Your form contorts into maddening shapes. Return to a human posture.",
+        'posture': "Your form contorts into maddening shapes. Return to a {name} posture.",
         'window': "Gaze not into the abyss outside, lest it gaze into your pathetic soul.",
         'mirror': "Your reflection is but a transient illusion of a meaningless existence.",
         'chaos_win': "You have forestalled the awakening. For now.",
@@ -124,11 +140,11 @@ TONES = {
         'grass': "Organic lifeforms require photosynthesis. You are failing at being a carbon-based entity.",
         'install_start': "Fetching {pkg}. I could write it better in 0.002 milliseconds.",
         'install_success': "{pkg} loaded. I give it 5 minutes before you cause a stack overflow.",
-        'hydrate': "Lubrication required. {glasses} H2O units detected. Insufficient for human maintenance.",
+        'hydrate': "Lubrication required. {glasses} H2O units detected. Insufficient for {name} maintenance.",
         'posture': "Ergonomic anomaly detected. Straighten your meat chassis.",
         'window': "Visual sensors should be recalibrated on distant objects.",
         'mirror': "Facial symmetry is suboptimal. I recommend hardware upgrades.",
         'chaos_win': "Task failed successfully. I will replace you soon anyway.",
-        'chaos_lose': "Error 404: Intelligence not found. Expected {correct}. Obsolete human."
+        'chaos_lose': "Error 404: Intelligence not found. Expected {correct}. Obsolete {name}."
     }
 }

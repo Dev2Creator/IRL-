@@ -1,3 +1,19 @@
+# IRL™ 🌱 - Software for Humans
+# Copyright (C) 2026 UNKNOWN™
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 from irl.state import load_state
 from irl.themes.tones import TONES
 from irl.themes.layouts import LAYOUTS
@@ -19,6 +35,8 @@ class ThemeEngine:
     def get_tone(self, key, **kwargs):
         tone = TONES.get(self.tone_id, TONES["default"])
         phrase = tone.get(key, TONES["default"].get(key, "Action complete."))
+        # Inject name automatically into all formatting
+        kwargs["name"] = self.state.get("name", "Human")
         try:
             return phrase.format(**kwargs)
         except Exception:
