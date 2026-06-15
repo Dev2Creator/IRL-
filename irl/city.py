@@ -2,10 +2,25 @@ import sys
 import os
 import time
 import random
+import threading
 from rich.console import Console
 from rich.prompt import Prompt
 
 console = Console()
+
+# --- Audio Engine ---
+def play_gta_sound():
+    if os.name == 'nt':
+        try:
+            import winsound
+            import glob
+            assets_dir = os.path.join(os.path.dirname(__file__), 'assets', 'audio')
+            wavs = glob.glob(os.path.join(assets_dir, '*.wav'))
+            if wavs:
+                target = random.choice(wavs)
+                winsound.PlaySound(target, winsound.SND_FILENAME | winsound.SND_ASYNC)
+        except:
+            pass
 
 # --- Cross-Platform Input Handling ---
 def getch():
@@ -110,6 +125,7 @@ def enter_city():
                         p.y -= 1
                 
                 if p.x == player.x and p.y == player.y:
+                    play_gta_sound()
                     player.busted = True
                 else:
                     new_police.append(p)
