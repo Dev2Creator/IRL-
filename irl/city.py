@@ -145,7 +145,7 @@ def enter_city():
                     row_str += TILE_RENDER.get(char, "  ")
             console.print(row_str)
             
-        console.print("\n[dim]Controls: W/A/S/D to move, Q to quit.[/dim]")
+        console.print("\n[dim]Controls: W/A/S/D to move, G to launch Original GTA 1997, Q to quit.[/dim]")
         
         # --- Input ---
         move = getch()
@@ -155,6 +155,16 @@ def enter_city():
         elif move == 'a': new_x -= 1
         elif move == 'd': new_x += 1
         elif move == 'q': break
+        elif move == 'g':
+            gta_path = os.path.expanduser(r"~\Downloads\Grand Theft Auto (Original, 1997)_ex3-428.exe")
+            if os.path.exists(gta_path):
+                clear_screen()
+                console.print("\n[bold green]Launching Original GTA 1997...[/bold green]")
+                time.sleep(1)
+                os.startfile(gta_path)
+                break
+            else:
+                last_msg = "[red]Original GTA executable not found in Downloads![/red]"
         
         # --- Collision & Interaction ---
         if 0 <= new_x < WIDTH and 0 <= new_y < HEIGHT:
