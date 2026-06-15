@@ -1,134 +1,287 @@
-from rich.console import Console
-from rich.prompt import IntPrompt
-import random
-import time
+import sys
 import os
+import time
+import random
+from rich.console import Console
+from rich.prompt import Prompt
 
 console = Console()
 
+# --- Cross-Platform Input Handling ---
+def getch():
+    if os.name == 'nt':
+        import msvcrt
+        return msvcrt.getch().decode('utf-8', errors='ignore').lower()
+    else:
+        import tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch.lower()
+
+# --- 2D City Engine ---
+
+CITY_MAP = [
+    "████████████████████████████████████████",
+    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
+    "█🟩🏢🏢🟩🟩🟩🟩🟩🟩████🟩🟩🏦🏦🏦🟩🟩█",
+    "█🟩🏢🏢🟩🟩🚗🟩🟩🟩████🟩🟩🏦🏦🏦🟩🟩█",
+    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
+    "████████████████████████████████████████",
+    "████████████████████████████████████████",
+    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
+    "█🟩🏁🏁🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
+    "█🟩🏁🏁🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🚪🟩█",
+    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
+    "████████████████████████████████████████"
+]
+
+WIDTH = len(CITY_MAP[0])
+HEIGHT = len(CITY_MAP)
+
+# Tiles
+WALL = '█'
+ROAD = ' '
+GRASS = '🟩'
+OFFICE = '🏢'
+BANK = '🏦'
+RACE = '🏁'
+CAR = '🚗'
+DOOR = '🚪'
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+class Player:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.wanted_level = 0
+        self.busted = False
+
+class Police:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+def get_distance(x1, y1, x2, y2):
+    return abs(x1 - x2) + abs(y1 - y2)
+
 def enter_city():
-    from irl.state import load_state, add_coins
+    from irl.state import load_state
+    
+    player = Player(19, 6) # Start in the middle of the road
+    police_units = []
+    
+    last_msg = "Welcome to IRL™ City. Use W,A,S,D to move. Walk into buildings to interact."
     
     while True:
         state = load_state()
         coins = state.get("coins", 0)
-        console.print(f"\n[bold red]🏙️  WELCOME TO IRL™ CITY[/bold red]")
-        console.print(f"[dim]The smog is thick, the rent is high, and crime pays.[/dim]")
-        console.print(f"💰 [yellow]Your Bank: {coins} coins[/yellow]\n")
         
-        console.print("  [bold cyan]1.[/bold cyan] 💼 Work a 9-5 Job (Low Reward, Depressing)")
-        console.print("  [bold magenta]2.[/bold magenta] 🏎️  Steal a Car (Medium Risk/Reward)")
-        console.print("  [bold yellow]3.[/bold yellow] 🏁 Street Racing (Bet Coins on Car Race)")
-        console.print("  [bold red]4.[/bold red] 🏦 Rob the IRL™ Store (High Risk/Reward)")
-        console.print("  [bold white]0.[/bold white] Escape back to Main Menu\n")
-        
-        choice = IntPrompt.ask("What's your move, criminal?", choices=["0", "1", "2", "3", "4"])
-        
-        if choice == 0:
-            console.print("[dim]You flee back to the safety of your terminal...[/dim]")
-            break
-        elif choice == 1:
-            work_job()
-        elif choice == 2:
-            steal_car()
-        elif choice == 3:
-            street_race()
-        elif choice == 4:
-            rob_store()
+        # --- AI Police Movement ---
+        if player.wanted_level > 0:
+            if random.random() < 0.3 * player.wanted_level: # Chance to spawn police
+                spawn_x = random.choice([1, WIDTH-2])
+                spawn_y = 6 # Spawn on road
+                police_units.append(Police(spawn_x, spawn_y))
+            
+            # Move police
+            new_police = []
+            for p in police_units:
+                if random.random() < 0.6: # Police speed
+                    if p.x < player.x and CITY_MAP[p.y][p.x+1] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                        p.x += 1
+                    elif p.x > player.x and CITY_MAP[p.y][p.x-1] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                        p.x -= 1
+                    elif p.y < player.y and CITY_MAP[p.y+1][p.x] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                        p.y += 1
+                    elif p.y > player.y and CITY_MAP[p.y-1][p.x] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                        p.y -= 1
+                
+                if p.x == player.x and p.y == player.y:
+                    player.busted = True
+                else:
+                    new_police.append(p)
+            police_units = new_police
+            
+        if player.busted:
+            busted_sequence(state, player)
+            return
 
+        # --- Render ---
+        clear_screen()
+        console.print(f"[bold cyan]🏙️ IRL™ City - {state.get('name', 'Human')}[/bold cyan]")
+        console.print(f"💰 Coins: [yellow]{coins}[/yellow]  |  ⭐ Wanted Level: [bold red]{'★' * player.wanted_level}[/bold red]")
+        console.print(f"[dim]{last_msg}[/dim]\n")
+        
+        for y in range(HEIGHT):
+            row_str = ""
+            for x in range(WIDTH):
+                is_police = any(p.x == x and p.y == y for p in police_units)
+                if x == player.x and y == player.y:
+                    row_str += "🧍"
+                elif is_police:
+                    row_str += "🚓"
+                else:
+                    char = CITY_MAP[y][x]
+                    if char == WALL: row_str += "[grey37]██[/grey37]"
+                    elif char == GRASS: row_str += "[green]🟩[/green]"
+                    elif char == OFFICE: row_str += "🏢"
+                    elif char == BANK: row_str += "🏦"
+                    elif char == RACE: row_str += "🏁"
+                    elif char == CAR: row_str += "🚗"
+                    elif char == DOOR: row_str += "🚪"
+                    else: row_str += "  " # Empty road
+            console.print(row_str)
+            
+        console.print("\n[dim]Controls: W/A/S/D to move, Q to quit.[/dim]")
+        
+        # --- Input ---
+        move = getch()
+        new_x, new_y = player.x, player.y
+        if move == 'w': new_y -= 1
+        elif move == 's': new_y += 1
+        elif move == 'a': new_x -= 1
+        elif move == 'd': new_x += 1
+        elif move == 'q': break
+        
+        # --- Collision & Interaction ---
+        if 0 <= new_x < WIDTH and 0 <= new_y < HEIGHT:
+            target_tile = CITY_MAP[new_y][new_x]
+            if target_tile in [ROAD, GRASS]:
+                player.x, player.y = new_x, new_y
+            elif target_tile == OFFICE:
+                last_msg = work_job()
+            elif target_tile == CAR:
+                last_msg = steal_car(player)
+            elif target_tile == BANK:
+                last_msg = rob_store(player)
+            elif target_tile == RACE:
+                last_msg = street_race_minigame()
+            elif target_tile == DOOR:
+                console.print("\n[dim]You exit the city...[/dim]")
+                time.sleep(1)
+                break
+            else:
+                pass # Hit a wall
+                
 def work_job():
     from irl.state import add_coins
-    console.print("\n[dim]You clock into your generic corporate job...[/dim]")
+    clear_screen()
+    console.print("\n[bold cyan]🏢 CORPORATE SLAVERY 🏢[/bold cyan]")
+    console.print("[dim]You clock into your generic corporate job...[/dim]")
     time.sleep(1)
     console.print("[dim]You stare at spreadsheets for 8 hours...[/dim]")
-    time.sleep(1)
-    console.print("[dim]Your boss yells at you for taking a 6-minute bathroom break...[/dim]")
     time.sleep(1)
     
     pay = random.randint(5, 15)
     add_coins(pay, f"Wasted 8 hours of your life")
-    console.print(f"[bold green]💼 Shift over. You earned {pay} coins. Soul crushed successfully.[/bold green]")
+    console.print(f"\n[bold green]💼 Shift over. You earned {pay} coins. Soul crushed successfully.[/bold green]")
+    Prompt.ask("\nPress Enter to leave work")
+    return "You feel empty inside."
 
-def steal_car():
-    from irl.state import load_state, add_coins
-    state = load_state()
-    
-    console.print("\n[dim]You walk up to a parked 1998 Honda Civic...[/dim]")
-    time.sleep(1)
+def steal_car(player):
+    from irl.state import add_coins
+    clear_screen()
+    console.print("\n[bold magenta]🚗 GRAND THEFT AUTO 🚗[/bold magenta]")
     console.print("[dim]You whip out your wire coat hanger...[/dim]")
     time.sleep(1)
     
     chance = random.random()
-    if chance > 0.4: # 60% chance of success
+    if chance > (0.3 + (player.wanted_level * 0.1)): # Harder if already wanted
         reward = random.randint(30, 80)
-        console.print(f"[bold green]🚗 Engine starts! You drive it to the chop shop.[/bold green]")
+        console.print(f"\n[bold green]🚗 Engine starts! You drive it to the chop shop.[/bold green]")
         add_coins(reward, "Grand Theft Auto (Success)")
+        Prompt.ask("\nPress Enter to escape")
+        return f"Stole a car! +{reward} coins."
     else:
-        penalty = min(state.get("coins", 0), random.randint(20, 50))
-        console.print(f"[bold red]🚔 BUSTED! The car alarm blares and the cops tackle you.[/bold red]")
-        if penalty > 0:
-            add_coins(-penalty, "Bail Money")
-            console.print(f"[red]You paid {penalty} coins in bail.[/red]")
-        else:
-            console.print("[red]You have no money to pay bail. You spend the night in jail.[/red]")
+        player.wanted_level = min(5, player.wanted_level + 1)
+        console.print(f"\n[bold red]🚨 The alarm blares! The cops are looking for you![/bold red]")
+        console.print(f"Wanted Level increased to: {'★' * player.wanted_level}")
+        Prompt.ask("\nPress Enter to run away")
+        return "Car alarm went off! Wanted level increased."
 
-def rob_store():
-    from irl.state import load_state, add_coins
-    state = load_state()
-    
-    console.print("\n[bold red]🏦 You put on a ski mask and kick down the door to the IRL™ Store...[/bold red]")
-    time.sleep(1.5)
-    console.print("[dim]\"EVERYBODY ON THE GROUND! PUT THE THEMES IN THE BAG!\"[/dim]")
+def rob_store(player):
+    from irl.state import add_coins
+    clear_screen()
+    console.print("\n[bold red]🏦 BANK ROBBERY 🏦[/bold red]")
+    console.print("[dim]\"EVERYBODY ON THE GROUND! PUT THE COINS IN THE BAG!\"[/dim]")
     time.sleep(1.5)
     
     chance = random.random()
-    if chance > 0.75: # 25% chance of success
+    if chance > 0.6: 
         reward = random.randint(200, 500)
-        console.print(f"[bold green]💰 SUCCESS! You got away before the cops arrived![/bold green]")
+        console.print(f"\n[bold green]💰 SUCCESS! You got away with the loot![/bold green]")
         add_coins(reward, "Armed Robbery (Success)")
+        player.wanted_level = min(5, player.wanted_level + 2)
+        console.print(f"[bold red]🚨 Wanted Level increased to: {'★' * player.wanted_level}[/bold red]")
+        Prompt.ask("\nPress Enter to escape")
+        return f"Robbed the bank for {reward} coins!"
     else:
-        penalty = min(state.get("coins", 0), int(state.get("coins", 0) * 0.5) + 50)
-        console.print(f"[bold red]💥 WASTED! The cashier had a shotgun![/bold red]")
-        if penalty > 0:
-            add_coins(-penalty, "Hospital Bills & Fines")
-            console.print(f"[red]You lost {penalty} coins in hospital bills and fines.[/red]")
-        else:
-            console.print("[red]You wake up in the hospital. You're completely broke.[/red]")
+        player.wanted_level = min(5, player.wanted_level + 3)
+        console.print(f"\n[bold red]🚨 The silent alarm was triggered! Cops are everywhere![/bold red]")
+        console.print(f"Wanted Level increased to: {'★' * player.wanted_level}")
+        Prompt.ask("\nPress Enter to run away")
+        return "Bank robbery failed! Cops are highly aggressive."
 
-def street_race():
-    from irl.state import load_state, add_coins
-    import msvcrt # For Windows quick keypress, simple fallback for standard terminals
-    import sys
+def busted_sequence(state, player):
+    from irl.state import add_coins
+    clear_screen()
+    console.print("\n[bold red]🚓🚨 BUSTED! 🚨🚓[/bold red]")
+    console.print("[dim]The police tackled you to the ground.[/dim]")
+    time.sleep(2)
     
+    penalty = min(state.get("coins", 0), int(state.get("coins", 0) * 0.5) + (player.wanted_level * 50))
+    if penalty > 0:
+        add_coins(-penalty, "Bail Money & Fines")
+        console.print(f"\n[red]You paid {penalty} coins in bail and fines.[/red]")
+    else:
+        console.print("\n[red]You have no money to pay bail. You spend the night in jail.[/red]")
+        
+    console.print("[dim]Your Wanted Level has been cleared.[/dim]")
+    Prompt.ask("\nPress Enter to return to the real world")
+
+def street_race_minigame():
+    from irl.state import load_state, add_coins
+    clear_screen()
     state = load_state()
     coins = state.get("coins", 0)
     
     if coins <= 0:
         console.print("\n[bold red]❌ You have 0 coins. You can't bet on a street race![/bold red]")
-        return
+        Prompt.ask("\nPress Enter to leave")
+        return "You are too broke to race."
         
     console.print("\n[bold cyan]🏁 IRL™ STREET RACING 🏁[/bold cyan]")
-    bet = IntPrompt.ask(f"How many coins do you bet? (Max: {coins})")
+    
+    try:
+        bet_str = Prompt.ask(f"How many coins do you bet? (Max: {coins})")
+        bet = int(bet_str)
+    except:
+        return "Invalid bet."
+        
     if bet > coins:
-        console.print(f"[bold red]You don't have {bet} coins![/bold red]")
-        return
+        return "You don't have that much."
     if bet <= 0:
-        console.print("[bold red]Coward.[/bold red]")
-        return
+        return "Coward."
         
     console.print("\n[bold yellow]Rev up your engine... Dodge the obstacles![/bold yellow]")
     console.print("[dim]When prompted, quickly press 1, 2, or 3 to change lanes.[/dim]")
     time.sleep(2)
     
     player_lane = 2
-    track_length = 6 # Rounds to survive
+    track_length = 5
     
     for round_num in range(track_length):
-        # Generate obstacles
         lanes = [1, 2, 3]
         obstacle_lane = random.choice(lanes)
         
-        # Draw track ahead
+        clear_screen()
         console.print("\n[bold cyan]=== NEW STRETCH ===[/bold cyan]")
         for _ in range(2):
             console.print("|   |   |   |")
@@ -144,14 +297,11 @@ def street_race():
         p_row[player_lane - 1] = "🏎️ "
         console.print(f"[bold green]|{p_row[0]}|{p_row[1]}|{p_row[2]}|[/bold green]")
         
-        # Input with a fake timer (since true timeout input is hard cross-platform)
-        start_time = time.time()
         console.print("\n[bold yellow]QUICK! Pick lane (1, 2, 3): [/bold yellow]", end="")
         sys.stdout.flush()
         
-        # Simple cross-platform fallback for fast input
-        # Since we use standard prompt, user must type and hit enter
-        # We will judge them based on time taken
+        start_time = time.time()
+        
         try:
             choice = input().strip()
             time_taken = time.time() - start_time
@@ -159,28 +309,31 @@ def street_race():
             if not choice in ["1", "2", "3"]:
                 console.print(f"[bold red]💥 You panicked and drove into the wall![/bold red]")
                 add_coins(-bet, "Totaled Car")
-                return
+                Prompt.ask("\nPress Enter to leave")
+                return "Crashed in the street race."
                 
             player_lane = int(choice)
             
-            if time_taken > 3.0:
-                console.print(f"[bold red]💥 TOO SLOW! ({time_taken:.1f}s) You crashed into the barricade![/bold red]")
+            if time_taken > 2.5: # 2.5 seconds to react
+                console.print(f"\n[bold red]💥 TOO SLOW! ({time_taken:.1f}s) You crashed into the barricade![/bold red]")
                 add_coins(-bet, "Totaled Car")
-                return
+                Prompt.ask("\nPress Enter to leave")
+                return "Crashed due to slow reflexes."
                 
             if player_lane == obstacle_lane:
-                console.print(f"[bold red]💥 BAM! You drove straight into the 🚧 obstacle![/bold red]")
+                console.print(f"\n[bold red]💥 BAM! You drove straight into the 🚧 obstacle![/bold red]")
                 add_coins(-bet, "Totaled Car")
-                return
+                Prompt.ask("\nPress Enter to leave")
+                return "Crashed into an obstacle."
                 
-            console.print(f"[bold green]💨 SWOOSH! You dodged it in {time_taken:.1f}s![/bold green]")
+            console.print(f"\n[bold green]💨 SWOOSH! You dodged it in {time_taken:.1f}s![/bold green]")
             time.sleep(0.5)
             
         except Exception:
-            console.print(f"[bold red]💥 You completely spun out![/bold red]")
-            add_coins(-bet, "Totaled Car")
-            return
+            return "Race aborted."
             
     console.print(f"\n[bold green]🏁 YOU CROSSED THE FINISH LINE 🏁[/bold green]")
     console.print(f"[bold yellow]You won the street race! Doubling your bet...[/bold yellow]")
     add_coins(bet, "Won Street Race")
+    Prompt.ask("\nPress Enter to collect winnings")
+    return f"Won {bet} coins in street racing!"
