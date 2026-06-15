@@ -45,16 +45,19 @@ CITY_MAP = [
 WIDTH = len(CITY_MAP[0])
 HEIGHT = len(CITY_MAP)
 
+# 1997 Retro ASCII Assets
 TILE_RENDER = {
     'W': "[grey37]██[/grey37]",
     'R': "[on grey15]  [/on grey15]",
-    'G': "[green]🟩[/green]",
-    'O': "🏢",
-    'B': "🏦",
-    'C': "🚗",
-    'F': "🏁",
-    'D': "🚪"
+    'G': "[green]▒▒[/green]",
+    'O': "[black on white]██[/black on white]",
+    'B': "[black on yellow]██[/black on yellow]",
+    'C': "[red on grey15]▄█[/red on grey15]",
+    'F': "[black on white]🏁[/black on white]",
+    'D': "[white on red]EXIT[/white on red]" # Will overflow slightly but that's ok if D is 2 spaces. Let's use [white on red]XX[/white on red]
 }
+TILE_RENDER['D'] = "[white on red]XX[/white on red]"
+TILE_RENDER['F'] = "[black on white]▒▒[/black on white]"
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -80,7 +83,7 @@ def enter_city():
     player = Player(11, 6) # Start on the road
     police_units = []
     
-    last_msg = "Welcome to IRL™ City (GTA 1997 Edition). Use W,A,S,D to move. Walk into buildings to interact."
+    last_msg = "Welcome to IRL™ City (GTA 1997 ASCII Edition). Use W,A,S,D to move. Walk into buildings to interact."
     
     while True:
         state = load_state()
@@ -118,7 +121,7 @@ def enter_city():
 
         # --- Render ---
         clear_screen()
-        console.print(f"[bold cyan]🏙️ IRL™ City - {state.get('name', 'Human')} (GTA 1997 Edition)[/bold cyan]")
+        console.print(f"[bold cyan]🏙️ IRL™ City - {state.get('name', 'Human')} (GTA 1997 ASCII Edition)[/bold cyan]")
         console.print(f"💰 Coins: [yellow]{coins}[/yellow]  |  ⭐ Wanted Level: [bold red]{'★' * player.wanted_level}[/bold red]")
         console.print(f"[dim]{last_msg}[/dim]\n")
         
@@ -127,9 +130,16 @@ def enter_city():
             for x in range(WIDTH):
                 is_police = any(p.x == x and p.y == y for p in police_units)
                 if x == player.x and y == player.y:
-                    row_str += "🧍"
+                    char = CITY_MAP[y][x]
+                    # Make player background match the tile they are standing on
+                    if char == 'R':
+                        row_str += "[bright_yellow on grey15] i[/bright_yellow on grey15]"
+                    elif char == 'G':
+                        row_str += "[bright_yellow on green] i[/bright_yellow on green]"
+                    else:
+                        row_str += "[bright_yellow] i[/bright_yellow]"
                 elif is_police:
-                    row_str += "🚓"
+                    row_str += "[white on blue]!![/white on blue]"
                 else:
                     char = CITY_MAP[y][x]
                     row_str += TILE_RENDER.get(char, "  ")
