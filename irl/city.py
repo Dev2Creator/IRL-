@@ -172,15 +172,16 @@ def enter_city():
         elif move == 'd': new_x += 1
         elif move == 'q': break
         elif move == 'g':
-            zip_path = os.path.expanduser(r"~\Downloads\gtaects.zip")
-            extract_dir = os.path.expanduser(r"~\Downloads\gta_extracted")
+            zip_path = os.path.join(os.path.dirname(__file__), 'assets', 'gtaects.zip')
+            extract_dir = os.path.expanduser(r"~\.irl_pkg\gta_extracted")
             bat_path = os.path.join(extract_dir, "GTAECTS", "GTA.BAT")
             
             if os.path.exists(zip_path):
                 if not os.path.exists(bat_path):
                     clear_screen()
-                    console.print("[yellow]Extracting Original GTA 1997 from zip...[/yellow]")
+                    console.print("[yellow]First time setup: Extracting Original GTA 1997...[/yellow]")
                     import zipfile
+                    os.makedirs(extract_dir, exist_ok=True)
                     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                         zip_ref.extractall(extract_dir)
                 
@@ -195,7 +196,7 @@ def enter_city():
                 os.chdir(old_cwd)
                 break
             else:
-                last_msg = "[red]gtaects.zip not found in Downloads![/red]"
+                last_msg = "[red]Bundled GTA 1997 assets not found in package![/red]"
         
         # --- Collision & Interaction ---
         if 0 <= new_x < WIDTH and 0 <= new_y < HEIGHT:
