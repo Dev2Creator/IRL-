@@ -71,7 +71,7 @@ def install_package(target):
     # Fallback to GitHub Keyword Search
     try:
         search_url = f"https://api.github.com/search/repositories?q={target}&sort=stars&order=desc"
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) IRL-OS"}
         response = requests.get(search_url, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
@@ -86,8 +86,12 @@ def install_package(target):
                 add_coins(10, "Installed a package")
                 engine.render_install_success(target)
                 return
+        elif response.status_code in [403, 429]:
+            engine.ui.render_generic("[bold red]✖ IRL™ Error:[/bold red] GitHub API rate limit exceeded. Slow down your hacking!")
+            return
     except Exception as e:
-        pass
+        engine.ui.render_generic(f"[bold red]✖ IRL™ Error:[/bold red] GitHub search failed ({e}).")
+        return
 
     engine.ui.render_generic(f"✖ Error: Package or keyword '{target}' not found on NPM, PyPI, or GitHub.")
 

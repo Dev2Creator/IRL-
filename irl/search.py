@@ -22,28 +22,49 @@ from irl.console import console
 from irl.install import install_package
 
 def search_and_install(query: str):
+    import re
+    import time
     console.print(f"\n[bold cyan]IRL AI™[/bold cyan] is searching the knowledge banks for: [yellow]'{query}'[/yellow]...")
     
-    prompt = f"What is the most popular Python pip package for: {query}? Reply with ONLY the exact pip package name and absolutely nothing else. No explanation, no markdown formatting, no quotes, just the name."
+    prompt = f"What is the Python pip package for: {query}? Reply with exactly one word: the pip package name. No markdown, no quotes, no explanation."
     url = "https://text.pollinations.ai/" + urllib.parse.quote(prompt)
     
-    try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'})
-        with urllib.request.urlopen(req, timeout=15) as response:
-            result = response.read().decode('utf-8').strip()
+    result = None
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) IRL-OS/1.0'})
+            with urllib.request.urlopen(req, timeout=15) as response:
+                raw_result = response.read().decode('utf-8').strip()
             
-        # Clean up the result just in case the AI added backticks or extra spaces
-        result = result.replace("`", "").replace("'", "").replace('"', "").strip()
+            # Extract anything between backticks if they exist
+            match = re.search(r'`([^`]+)`', raw_result)
+            if match:
+                result = match.group(1).strip()
+            else:
+                # Clean up any surrounding spaces or quotes
+                result = raw_result.replace("'", "").replace('"', "").strip()
+                # If there are spaces, take the last word (often "The package is requests" -> "requests")
+                if " " in result:
+                    result = result.split()[-1].strip('.')
             
-        if not result or len(result) > 50 or " " in result:
-            console.print(f"[bold red]IRL AI™[/bold red] got confused and replied with: [dim]{result}[/dim]")
-            console.print("[dim]Please try a more specific search.[/dim]")
-            return
+            if result and len(result) < 50 and " " not in result:
+                break # Good result
+            else:
+                result = None
+                time.sleep(1) # Try again
+                
+        except Exception as e:
+            if attempt == 2:
+                console.print(f"[bold red]IRL AI™ Error:[/bold red] Could not connect to the hive mind. ({e})")
+                return
+            time.sleep(1)
             
-        console.print(f"\n✨ [bold green]IRL AI™ found the perfect package:[/bold green] [bold magenta]{result}[/bold magenta]")
+    if not result:
+        console.print(f"[bold red]IRL AI™[/bold red] got confused and replied with garbage.")
+        console.print("[dim]Please try a more specific search.[/dim]")
+        return
         
-        if Confirm.ask("\nWould you like to install it now?"):
-            install_package(result)
-            
-    except Exception as e:
-        console.print(f"[bold red]IRL AI™ Error:[/bold red] Could not connect to the hive mind. ({e})")
+    console.print(f"\n✨ [bold green]IRL AI™ found the perfect package:[/bold green] [bold magenta]{result}[/bold magenta]")
+    
+    if Confirm.ask("\nWould you like to install it now?"):
+        install_package(result)
