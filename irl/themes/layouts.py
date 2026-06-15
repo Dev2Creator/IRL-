@@ -31,7 +31,7 @@ console = Console()
 
 class DefaultLayout(BaseLayout):
     def render_banner(self):
-        console.print(Panel("Welcome to IRL", border_style="blue"))
+        console.print(Panel("Welcome to IRL™", border_style="blue"))
         
     def render_grass(self, text):
         console.print(f"[green]🌿 {text}[/green]")
@@ -58,7 +58,7 @@ class HackerLayout(BaseLayout):
             time.sleep(0.05)
 
     def render_banner(self):
-        self._print_hacker("INITIALIZING IRL OS...\nSYSTEM COMPROMISED. ENJOY.")
+        self._print_hacker("INITIALIZING IRL™ OS...\nSYSTEM COMPROMISED. ENJOY.")
         
     def render_grass(self, text):
         self._print_hacker(f"EXECUTE: touch_grass.sh -> {text}")
@@ -115,7 +115,7 @@ class DraculaLayout(BaseLayout):
 
 class AnimeLayout(BaseLayout):
     def render_banner(self):
-        console.print(Panel("[bold pink1]✨ Welcome to IRL, Senpai! ✨[/bold pink1]", border_style="hot_pink", box=box.ROUNDED))
+        console.print(Panel("[bold pink1]✨ Welcome to IRL™, Senpai! ✨[/bold pink1]", border_style="hot_pink", box=box.ROUNDED))
         
     def render_grass(self, text):
         console.print(f"[green]UwU *touches grass*[/green] [pink1]{text}[/pink1] (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧")
@@ -134,10 +134,10 @@ class AnimeLayout(BaseLayout):
 
 class CryptoLayout(BaseLayout):
     def render_banner(self):
-        table = Table(title="IRL MARKET STATUS", show_header=True, header_style="bold magenta")
+        table = Table(title="IRL™ MARKET STATUS", show_header=True, header_style="bold magenta")
         table.add_column("Asset", style="cyan")
         table.add_column("Trend", justify="right", style="green")
-        table.add_row("$IRL", "🚀 MOONING")
+        table.add_row("$IRL™", "🚀 MOONING")
         console.print(table)
         
     def render_grass(self, text):
@@ -157,7 +157,7 @@ class CryptoLayout(BaseLayout):
 
 class PirateLayout(BaseLayout):
     def render_banner(self):
-        console.print(Panel("[bold yellow]⚓ Yarr! Welcome aboard the good ship IRL! ⚓[/bold yellow]", border_style="red", box=box.ASCII))
+        console.print(Panel("[bold yellow]⚓ Yarr! Welcome aboard the good ship IRL™! ⚓[/bold yellow]", border_style="red", box=box.ASCII))
         
     def render_grass(self, text):
         console.print(f"[green]🌿 Foot on dry land! {text}[/green]")
@@ -233,7 +233,7 @@ class BoomerLayout(BaseLayout):
 
 class ZenLayout(BaseLayout):
     def render_banner(self):
-        console.print(Align.center("[dim white]Breathe in. Breathe out. Welcome to IRL.[/dim white]"))
+        console.print(Align.center("[dim white]Breathe in. Breathe out. Welcome to IRL™.[/dim white]"))
         
     def render_grass(self, text):
         console.print(Align.center(f"[dim green]Nature connects us all. {text}[/dim green]"))
@@ -259,7 +259,7 @@ class ToxicLayout(BaseLayout):
         return result
 
     def render_banner(self):
-        console.print(Panel(self._rainbow_text("!!! GET REKT NOOB !!! WELCOME TO IRL !!!"), box=box.HEAVY))
+        console.print(Panel(self._rainbow_text("!!! GET REKT NOOB !!! WELCOME TO IRL™ !!!"), box=box.HEAVY))
         
     def render_grass(self, text):
         console.print(self._rainbow_text(f"TOUCH GRASS YOU SWEAT! 🌿 💀 {text}"))
@@ -278,7 +278,7 @@ class ToxicLayout(BaseLayout):
 
 class AILayout(BaseLayout):
     def render_banner(self):
-        data = {"event": "system_init", "status": "online", "model": "IRL-1.0"}
+        data = {"event": "system_init", "status": "online", "model": "IRL™-1.0"}
         console.print(f"[bold blue]SystemPrompt:[/bold blue] [dim]{json.dumps(data, indent=2)}[/dim]")
         
     def render_grass(self, text):

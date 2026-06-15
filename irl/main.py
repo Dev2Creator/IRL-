@@ -27,7 +27,7 @@ def cli():
     
     state = load_state()
     if not state.get("name"):
-        console.print("\n[bold cyan]IRL OS Initialization...[/bold cyan]")
+        console.print("\n[bold cyan]IRL™ OS Initialization...[/bold cyan]")
         user_name = Prompt.ask("What is your name, organic lifeform?")
         state["name"] = user_name
         save_state(state)
@@ -38,7 +38,7 @@ def cli():
     
     parser = argparse.ArgumentParser(
         prog="irl",
-        description="IRL (In Real Life) - Software for Humans."
+        description="IRL™ (In Real Life™) - Software for Humans™."
     )
     
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
@@ -112,14 +112,14 @@ def creative_menu():
     console = Console()
     
     while True:
-        console.print("\n[bold magenta]🎨 Creative Wellness Menu[/bold magenta]")
-        console.print("  [bold magenta]1.[/bold magenta] 🦐 Fix your posture")
-        console.print("  [bold blue]2.[/bold blue] 💧 Hydrate")
-        console.print("  [bold cyan]3.[/bold cyan] 🪟 Look outside")
-        console.print("  [bold magenta]4.[/bold magenta] 🪞 Get a compliment")
-        console.print("  [bold yellow]5.[/bold yellow] 🌪️  Chaos Quiz")
-        console.print("  [bold green]6.[/bold green] 🎭 Chaos Counter (Daily Joke)")
-        console.print("  [bold white]0.[/bold white] Back to Main Menu\n")
+        console.print("\n[bold magenta]🎨 Creative Wellness Menu™[/bold magenta]")
+        console.print("  [bold magenta]1.[/bold magenta] 🦐 Fix your posture™")
+        console.print("  [bold blue]2.[/bold blue] 💧 Hydrate™")
+        console.print("  [bold cyan]3.[/bold cyan] 🪟 Look outside™")
+        console.print("  [bold magenta]4.[/bold magenta] 🪞 Get a compliment™")
+        console.print("  [bold yellow]5.[/bold yellow] 🌪️  Chaos Quiz™")
+        console.print("  [bold green]6.[/bold green] 🎭 Chaos Counter™ (Daily Joke™)")
+        console.print("  [bold white]0.[/bold white] Back to Main Menu™\n")
         
         choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"], console=console)
         
@@ -149,14 +149,18 @@ def interactive_menu():
     from rich.console import Console
     console = Console()
     
+    from irl.state import load_state
+    state = load_state()
+    user_name = state.get("name", "human")
+    
     while True:
-        console.print("\n[bold cyan]What would you like to do?[/bold cyan]")
-        console.print("  [bold yellow]1.[/bold yellow] 📦 Install a Package")
-        console.print("  [bold cyan]2.[/bold cyan] 👓 Inspect a Package (Glasses)")
-        console.print("  [bold red]3.[/bold red] 🩺 Diagnose System (Doctor)")
-        console.print("  [bold green]4.[/bold green] 🌱 Touch Grass")
-        console.print("  [bold magenta]5.[/bold magenta] 🎨 Creative Wellness Menu")
-        console.print("  [bold yellow]6.[/bold yellow] 🏪 Open IRL Store")
+        console.print(f"\n[bold cyan]What would you like to do, {user_name}?[/bold cyan]")
+        console.print("  [bold yellow]1.[/bold yellow] 📦 Install a Package™")
+        console.print("  [bold cyan]2.[/bold cyan] 👓 Inspect a Package (Glasses™)")
+        console.print("  [bold red]3.[/bold red] 🩺 Diagnose System (Doctor™)")
+        console.print("  [bold green]4.[/bold green] 🌱 Touch Grass™")
+        console.print("  [bold magenta]5.[/bold magenta] 🎨 Creative Wellness Menu™")
+        console.print("  [bold yellow]6.[/bold yellow] 🏪 Open IRL™ Store")
         console.print("  [bold white]0.[/bold white] Exit\n")
         
         choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"], console=console)
