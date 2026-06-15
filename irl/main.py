@@ -59,6 +59,9 @@ def cli():
     hydrate_parser = subparsers.add_parser("hydrate", help="Drink water")
     chaos_parser = subparsers.add_parser("chaos", help="Take the chaos quiz")
     store_parser = subparsers.add_parser("store", help="Open the IRL store")
+    search_parser = subparsers.add_parser("search", help="AI powered package search")
+    search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
+    upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
     
     args = parser.parse_args()
     
@@ -103,6 +106,12 @@ def cli():
     elif args.command == "store":
         from irl.store import open_store
         open_store()
+    elif args.command == "search":
+        from irl.search import search_and_install
+        search_and_install(" ".join(args.query))
+    elif args.command == "upgrade":
+        from irl.install import upgrade_irl
+        upgrade_irl()
     else:
         interactive_menu()
 
@@ -200,9 +209,11 @@ def interactive_menu():
         console.print("  [bold magenta]5.[/bold magenta] 🎨 Creative Wellness Menu™")
         console.print("  [bold yellow]6.[/bold yellow] 🏪 Open IRL™ Store")
         console.print("  [bold blue]7.[/bold blue] 📊 View IRL™ Profile & Stats")
+        console.print("  [bold magenta]8.[/bold magenta] 🧠 AI Package Search™ (Pollination AI)")
+        console.print("  [bold green]9.[/bold green] 🚀 Upgrade IRL™ OS")
         console.print("  [bold white]0.[/bold white] Exit\n")
         
-        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6", "7"], console=console)
+        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], console=console)
         
         if choice == 0:
             console.print("[dim]Goodbye, human.[/dim]")
@@ -229,6 +240,14 @@ def interactive_menu():
             open_store()
         elif choice == 7:
             view_profile()
+        elif choice == 8:
+            query = Prompt.ask("What kind of package are you looking for?")
+            if query:
+                from irl.search import search_and_install
+                search_and_install(query)
+        elif choice == 9:
+            from irl.install import upgrade_irl
+            upgrade_irl()
 
 if __name__ == "__main__":
     cli()

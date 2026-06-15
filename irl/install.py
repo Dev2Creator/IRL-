@@ -84,3 +84,14 @@ def install_package(target):
         pass
 
     engine.ui.render_generic(f"✖ Error: Package or keyword '{target}' not found on NPM, PyPI, or GitHub.")
+
+def upgrade_irl():
+    from irl.console import console
+    import subprocess
+    import sys
+    console.print("\n[bold cyan]Upgrading IRL™ OS...[/bold cyan]")
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "irl-pkg"])
+        console.print("[bold green]✨ IRL™ OS successfully upgraded to the latest version! ✨[/bold green]")
+    except subprocess.CalledProcessError:
+        console.print("[bold red]Failed to upgrade IRL™ OS. Check your permissions or internet connection.[/bold red]")
