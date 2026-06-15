@@ -30,10 +30,12 @@ def search_and_install(query: str):
     url = "https://text.pollinations.ai/" + urllib.parse.quote(prompt)
     
     result = None
-    for attempt in range(3):
+    models = ["", "?model=openai", "?model=mistral", "?model=llama", "?model=search"]
+    
+    for attempt, model_suffix in enumerate(models):
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) IRL-OS/1.0'})
-            with urllib.request.urlopen(req, timeout=15) as response:
+            req = urllib.request.Request(url + model_suffix, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) IRL-OS/1.1'})
+            with urllib.request.urlopen(req, timeout=10) as response:
                 raw_result = response.read().decode('utf-8').strip()
             
             # Extract anything between backticks if they exist
@@ -43,7 +45,6 @@ def search_and_install(query: str):
             else:
                 # Clean up any surrounding spaces or quotes
                 result = raw_result.replace("'", "").replace('"', "").strip()
-                # If there are spaces, take the last word (often "The package is requests" -> "requests")
                 if " " in result:
                     result = result.split()[-1].strip('.')
             
@@ -51,16 +52,27 @@ def search_and_install(query: str):
                 break # Good result
             else:
                 result = None
-                time.sleep(1) # Try again
+                time.sleep(0.5) # Try again
                 
         except Exception as e:
-            if attempt == 2:
-                console.print(f"[bold red]IRL AI™ Error:[/bold red] Could not connect to the hive mind. ({e})")
-                return
-            time.sleep(1)
+            time.sleep(0.5)
+            
+    # Ultimate fallback if Pollinations AI is dead
+    if not result:
+        console.print("[dim]Hive mind unreachable. Falling back to GitHub keyword search...[/dim]")
+        try:
+            import requests
+            gh_url = f"https://api.github.com/search/repositories?q={urllib.parse.quote(query)}+language:python&sort=stars&order=desc"
+            resp = requests.get(gh_url, headers={'User-Agent': 'Mozilla/5.0 IRL-OS'}, timeout=10)
+            if resp.status_code == 200:
+                items = resp.json().get("items", [])
+                if items:
+                    result = items[0].get("name")
+        except:
+            pass
             
     if not result:
-        console.print(f"[bold red]IRL AI™[/bold red] got confused and replied with garbage.")
+        console.print(f"[bold red]IRL AI™[/bold red] got confused and replied with garbage or timed out completely.")
         console.print("[dim]Please try a more specific search.[/dim]")
         return
         
