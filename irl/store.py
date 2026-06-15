@@ -46,9 +46,10 @@ def open_store():
         
         c.print("1. [bold cyan]Buy Full Themes[/bold cyan] (Overwrites Banner, Tone, and UI/Color)")
         c.print("2. [bold cyan]Buy Spare Parts[/bold cyan] (Mix and Match)")
+        c.print("3. [bold cyan]Buy Games[/bold cyan] (Waste your time)")
         c.print("0. [bold white]Leave Market[/bold white]\n")
         
-        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2"])
+        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3"])
         
         if choice == 0:
             break
@@ -56,6 +57,8 @@ def open_store():
             buy_full_theme(state, c)
         elif choice == 2:
             buy_spare_parts(state, c)
+        elif choice == 3:
+            buy_games(state, c)
 
 def buy_full_theme(state, c):
     while True:
@@ -174,3 +177,45 @@ def buy_spare_parts(state, c):
                     c.print(f"\n[bold green]🎉 Purchased and equipped {THEMES[selected_key]['name']} {p_name}![/bold green]")
                 else:
                     c.print(f"\n[bold red]❌ INSUFFICIENT FUNDS. You need {part_price - coins} more coins. Maybe write better code?[/bold red]")
+
+def buy_games(state, c):
+    from irl.games import GAMES
+    while True:
+        coins = state.get("coins", 0)
+        c.print("\n[bold cyan]--- GAME STORE ---[/bold cyan]")
+        options = []
+        idx = 1
+        
+        purchased = state.get("purchased_games", [])
+        
+        for key, details in GAMES.items():
+            if key in purchased:
+                status = "[bold blue](Owned)[/bold blue]"
+            else:
+                status = f"[yellow]({details['price']} coins)[/yellow]"
+                
+            c.print(f"  [bold cyan]{idx}.[/bold cyan] {details['name']} {status} - [dim]{details['desc']}[/dim]")
+            options.append(key)
+            idx += 1
+            
+        c.print(f"  [bold white]0.[/bold white] Back\n")
+        choice = IntPrompt.ask("Select a game to buy", choices=[str(i) for i in range(len(options) + 1)])
+        
+        if choice == 0:
+            break
+            
+        selected_key = options[choice - 1]
+        price = GAMES[selected_key]['price']
+        
+        if selected_key in purchased:
+            c.print(f"\n[bold green]✅ You already own {GAMES[selected_key]['name']}![/bold green]")
+        else:
+            if coins >= price:
+                state["coins"] -= price
+                if "purchased_games" not in state:
+                    state["purchased_games"] = []
+                state["purchased_games"].append(selected_key)
+                save_state(state)
+                c.print(f"\n[bold green]🎉 Purchased {GAMES[selected_key]['name']}! Run it from the main menu.[/bold green]")
+            else:
+                c.print(f"\n[bold red]❌ BROKE ALARM! You need {price - coins} more coins.[/bold red]")

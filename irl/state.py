@@ -44,6 +44,7 @@ def load_state():
         "purchased_banners": ["default"],
         "purchased_tones": ["default"],
         "purchased_colors": ["default"],
+        "purchased_games": [],
         "total_xp": 0
     }
 
