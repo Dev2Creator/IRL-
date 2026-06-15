@@ -149,12 +149,13 @@ def interactive_menu():
     from rich.console import Console
     console = Console()
     
-    from irl.state import load_state
+    from irl.state import load_state, get_global_rank
     state = load_state()
     user_name = state.get("name", "human")
+    rank = get_global_rank(state)
     
     while True:
-        console.print(f"\n[bold cyan]What would you like to do, {user_name}?[/bold cyan]")
+        console.print(f"\n[bold cyan]What would you like to do, [{rank}] {user_name}?[/bold cyan]")
         console.print("  [bold yellow]1.[/bold yellow] 📦 Install a Package™")
         console.print("  [bold cyan]2.[/bold cyan] 👓 Inspect a Package (Glasses™)")
         console.print("  [bold red]3.[/bold red] 🩺 Diagnose System (Doctor™)")

@@ -43,8 +43,26 @@ def load_state():
         "active_color": "default",
         "purchased_banners": ["default"],
         "purchased_tones": ["default"],
-        "purchased_colors": ["default"]
+        "purchased_colors": ["default"],
+        "total_xp": 0
     }
+
+def get_global_rank(state):
+    xp = state.get("total_xp", state.get("coins", 0))
+    if xp >= 50000:
+        return "Ascended Being"
+    elif xp >= 10000:
+        return "Terminal Overlord"
+    elif xp >= 5000:
+        return "Senior IRL Developer"
+    elif xp >= 2500:
+        return "Grass Touching Expert"
+    elif xp >= 1000:
+        return "Junior Developer"
+    elif xp >= 500:
+        return "Script Kiddie"
+    else:
+        return "Wage Slave"
 
 def save_state(state):
     with open(STATE_FILE, 'w') as f:
@@ -53,6 +71,7 @@ def save_state(state):
 def add_coins(amount, message=""):
     state = load_state()
     state["coins"] += amount
+    state["total_xp"] = state.get("total_xp", state.get("coins", 0)) + amount
     save_state(state)
     
     if message:
