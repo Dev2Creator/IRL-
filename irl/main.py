@@ -144,6 +144,43 @@ def creative_menu():
             from irl.creative import chaos_counter
             chaos_counter()
 
+def view_profile():
+    from irl.state import load_state, get_global_rank
+    from irl.console import console
+    from rich.panel import Panel
+    from rich.table import Table
+    import os, json
+
+    state = load_state()
+    user_name = state.get("name", "Unknown")
+    rank = get_global_rank(state)
+    
+    table = Table(show_header=False, box=None)
+    table.add_column("Stat", style="bold cyan")
+    table.add_column("Value", style="bold yellow")
+    
+    table.add_row("Rank", rank)
+    table.add_row("Total XP", str(state.get("total_xp", 0)))
+    table.add_row("Coins", str(state.get("coins", 0)))
+    table.add_row("Active Banner", state.get("active_banner", "default").title())
+    table.add_row("Active Tone", state.get("active_tone", "default").title())
+    table.add_row("Active Layout", state.get("active_color", "default").title())
+    
+    # Try to get grass stats
+    grass_file = os.path.expanduser("~/.irl_grass.json")
+    if os.path.exists(grass_file):
+        try:
+            with open(grass_file, 'r') as f:
+                g_state = json.load(f)
+                table.add_row("Grass Streak", str(g_state.get("streak", 0)))
+        except: pass
+
+    panel = Panel(table, title=f"[bold magenta]👤 {user_name}'s IRL™ Profile[/bold magenta]", border_style="cyan")
+    console.print(panel)
+    
+    from rich.prompt import Prompt
+    Prompt.ask("\nPress Enter to return")
+
 def interactive_menu():
     from rich.prompt import Prompt, IntPrompt
     from rich.console import Console
@@ -162,9 +199,10 @@ def interactive_menu():
         console.print("  [bold green]4.[/bold green] 🌱 Touch Grass™")
         console.print("  [bold magenta]5.[/bold magenta] 🎨 Creative Wellness Menu™")
         console.print("  [bold yellow]6.[/bold yellow] 🏪 Open IRL™ Store")
+        console.print("  [bold blue]7.[/bold blue] 📊 View IRL™ Profile & Stats")
         console.print("  [bold white]0.[/bold white] Exit\n")
         
-        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"], console=console)
+        choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6", "7"], console=console)
         
         if choice == 0:
             console.print("[dim]Goodbye, human.[/dim]")
@@ -189,6 +227,8 @@ def interactive_menu():
         elif choice == 6:
             from irl.store import open_store
             open_store()
+        elif choice == 7:
+            view_profile()
 
 if __name__ == "__main__":
     cli()
