@@ -172,15 +172,30 @@ def enter_city():
         elif move == 'd': new_x += 1
         elif move == 'q': break
         elif move == 'g':
-            gta_path = os.path.expanduser(r"~\Downloads\Grand Theft Auto (Original, 1997)_ex3-428.exe")
-            if os.path.exists(gta_path):
+            zip_path = os.path.expanduser(r"~\Downloads\gtaects.zip")
+            extract_dir = os.path.expanduser(r"~\Downloads\gta_extracted")
+            bat_path = os.path.join(extract_dir, "GTAECTS", "GTA.BAT")
+            
+            if os.path.exists(zip_path):
+                if not os.path.exists(bat_path):
+                    clear_screen()
+                    console.print("[yellow]Extracting Original GTA 1997 from zip...[/yellow]")
+                    import zipfile
+                    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                        zip_ref.extractall(extract_dir)
+                
                 clear_screen()
-                console.print("\n[bold green]Launching Original GTA 1997...[/bold green]")
+                console.print("\n[bold green]Launching Original GTA 1997 (DOS)...[/bold green]")
                 time.sleep(1)
-                os.startfile(gta_path)
+                
+                import subprocess
+                old_cwd = os.getcwd()
+                os.chdir(os.path.dirname(bat_path))
+                subprocess.Popen(["cmd.exe", "/c", "GTA.BAT"])
+                os.chdir(old_cwd)
                 break
             else:
-                last_msg = "[red]Original GTA executable not found in Downloads![/red]"
+                last_msg = "[red]gtaects.zip not found in Downloads![/red]"
         
         # --- Collision & Interaction ---
         if 0 <= new_x < WIDTH and 0 <= new_y < HEIGHT:
