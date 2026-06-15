@@ -25,33 +25,36 @@ def getch():
 
 # --- 2D City Engine ---
 
+# W: Wall, R: Road, G: Grass, O: Office, B: Bank, C: Car, F: Race, D: Door
 CITY_MAP = [
-    "████████████████████████████████████████",
-    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
-    "█🟩🏢🏢🟩🟩🟩🟩🟩🟩████🟩🟩🏦🏦🏦🟩🟩█",
-    "█🟩🏢🏢🟩🟩🚗🟩🟩🟩████🟩🟩🏦🏦🏦🟩🟩█",
-    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
-    "████████████████████████████████████████",
-    "████████████████████████████████████████",
-    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
-    "█🟩🏁🏁🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
-    "█🟩🏁🏁🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🚪🟩█",
-    "█🟩🟩🟩🟩🟩🟩🟩🟩🟩████🟩🟩🟩🟩🟩🟩🟩█",
-    "████████████████████████████████████████"
+    "WWWWWWWWWWWWWWWWWWWWWW",
+    "WGGGGGGGGGGWGGGGGGGGGW",
+    "WGOOOOGGGGGWGGGBBBBGGW",
+    "WGOOOOGGCGGRRRRBBBBGGW",
+    "WGOOOOGGGGGWGGGBBBBGGW",
+    "WGGGGGGGGGGWGGGGGGGGGW",
+    "WRRRRRRRRRRWRRRRRRRRRW",
+    "WRRRRRRRRRRWRRRRRRRRRW",
+    "WGGGGGGGGGGWGGGGGGGGGW",
+    "WGFFFFGGGGGRGGGGGGGGGW",
+    "WGFFFFGGGGGWGGGGGDGGGW",
+    "WGGGGGGGGGGWGGGGGGGGGW",
+    "WWWWWWWWWWWWWWWWWWWWWW"
 ]
 
 WIDTH = len(CITY_MAP[0])
 HEIGHT = len(CITY_MAP)
 
-# Tiles
-WALL = '█'
-ROAD = ' '
-GRASS = '🟩'
-OFFICE = '🏢'
-BANK = '🏦'
-RACE = '🏁'
-CAR = '🚗'
-DOOR = '🚪'
+TILE_RENDER = {
+    'W': "[grey37]██[/grey37]",
+    'R': "[on grey15]  [/on grey15]",
+    'G': "[green]🟩[/green]",
+    'O': "🏢",
+    'B': "🏦",
+    'C': "🚗",
+    'F': "🏁",
+    'D': "🚪"
+}
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -74,10 +77,10 @@ def get_distance(x1, y1, x2, y2):
 def enter_city():
     from irl.state import load_state
     
-    player = Player(19, 6) # Start in the middle of the road
+    player = Player(11, 6) # Start on the road
     police_units = []
     
-    last_msg = "Welcome to IRL™ City. Use W,A,S,D to move. Walk into buildings to interact."
+    last_msg = "Welcome to IRL™ City (GTA 1997 Edition). Use W,A,S,D to move. Walk into buildings to interact."
     
     while True:
         state = load_state()
@@ -94,13 +97,13 @@ def enter_city():
             new_police = []
             for p in police_units:
                 if random.random() < 0.6: # Police speed
-                    if p.x < player.x and CITY_MAP[p.y][p.x+1] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                    if p.x < player.x and CITY_MAP[p.y][p.x+1] not in ['W', 'O', 'B', 'F', 'C']:
                         p.x += 1
-                    elif p.x > player.x and CITY_MAP[p.y][p.x-1] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                    elif p.x > player.x and CITY_MAP[p.y][p.x-1] not in ['W', 'O', 'B', 'F', 'C']:
                         p.x -= 1
-                    elif p.y < player.y and CITY_MAP[p.y+1][p.x] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                    elif p.y < player.y and CITY_MAP[p.y+1][p.x] not in ['W', 'O', 'B', 'F', 'C']:
                         p.y += 1
-                    elif p.y > player.y and CITY_MAP[p.y-1][p.x] not in [WALL, OFFICE, BANK, RACE, CAR]:
+                    elif p.y > player.y and CITY_MAP[p.y-1][p.x] not in ['W', 'O', 'B', 'F', 'C']:
                         p.y -= 1
                 
                 if p.x == player.x and p.y == player.y:
@@ -115,7 +118,7 @@ def enter_city():
 
         # --- Render ---
         clear_screen()
-        console.print(f"[bold cyan]🏙️ IRL™ City - {state.get('name', 'Human')}[/bold cyan]")
+        console.print(f"[bold cyan]🏙️ IRL™ City - {state.get('name', 'Human')} (GTA 1997 Edition)[/bold cyan]")
         console.print(f"💰 Coins: [yellow]{coins}[/yellow]  |  ⭐ Wanted Level: [bold red]{'★' * player.wanted_level}[/bold red]")
         console.print(f"[dim]{last_msg}[/dim]\n")
         
@@ -129,14 +132,7 @@ def enter_city():
                     row_str += "🚓"
                 else:
                     char = CITY_MAP[y][x]
-                    if char == WALL: row_str += "[grey37]██[/grey37]"
-                    elif char == GRASS: row_str += "[green]🟩[/green]"
-                    elif char == OFFICE: row_str += "🏢"
-                    elif char == BANK: row_str += "🏦"
-                    elif char == RACE: row_str += "🏁"
-                    elif char == CAR: row_str += "🚗"
-                    elif char == DOOR: row_str += "🚪"
-                    else: row_str += "  " # Empty road
+                    row_str += TILE_RENDER.get(char, "  ")
             console.print(row_str)
             
         console.print("\n[dim]Controls: W/A/S/D to move, Q to quit.[/dim]")
@@ -153,17 +149,18 @@ def enter_city():
         # --- Collision & Interaction ---
         if 0 <= new_x < WIDTH and 0 <= new_y < HEIGHT:
             target_tile = CITY_MAP[new_y][new_x]
-            if target_tile in [ROAD, GRASS]:
+            if target_tile in ['R', 'G']:
                 player.x, player.y = new_x, new_y
-            elif target_tile == OFFICE:
+            elif target_tile == 'O':
                 last_msg = work_job()
-            elif target_tile == CAR:
+            elif target_tile == 'C':
                 last_msg = steal_car(player)
-            elif target_tile == BANK:
+                player.x, player.y = new_x, new_y # Stand where car was
+            elif target_tile == 'B':
                 last_msg = rob_store(player)
-            elif target_tile == RACE:
+            elif target_tile == 'F':
                 last_msg = street_race_minigame()
-            elif target_tile == DOOR:
+            elif target_tile == 'D':
                 console.print("\n[dim]You exit the city...[/dim]")
                 time.sleep(1)
                 break
