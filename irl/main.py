@@ -60,6 +60,7 @@ def cli():
     chaos_parser = subparsers.add_parser("chaos", help="Take the chaos quiz")
     store_parser = subparsers.add_parser("store", help="Open the IRL store")
     games_parser = subparsers.add_parser("games", help="Play purchased IRL games")
+    city_parser = subparsers.add_parser("city", help="Enter the IRL City (Economy & Crime)")
     search_parser = subparsers.add_parser("search", help="AI powered package search")
     search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
     upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
@@ -110,6 +111,9 @@ def cli():
     elif args.command == "games":
         from irl.games import play_game_menu
         play_game_menu()
+    elif args.command == "city":
+        from irl.city import enter_city
+        enter_city()
     elif args.command == "search":
         from irl.search import search_and_install
         search_and_install(" ".join(args.query))
@@ -216,9 +220,10 @@ def interactive_menu():
         console.print("  [bold cyan]8.[/bold cyan] 🎮 Play Games™")
         console.print("  [bold magenta]9.[/bold magenta] 🧠 AI Package Search™ (Pollination AI)")
         console.print("  [bold green]10.[/bold green] 🚀 Upgrade IRL™ OS")
+        console.print("  [bold red]11.[/bold red] 🏙️  IRL™ City (Economy & Crime)")
         console.print("  [bold white]0.[/bold white] Exit\n")
         
-        choice = IntPrompt.ask("Select an option", choices=[str(i) for i in range(11)], console=console)
+        choice = IntPrompt.ask("Select an option", choices=[str(i) for i in range(12)], console=console)
         
         if choice == 0:
             console.print("[dim]Goodbye, human.[/dim]")
@@ -256,6 +261,9 @@ def interactive_menu():
         elif choice == 10:
             from irl.install import upgrade_irl
             upgrade_irl()
+        elif choice == 11:
+            from irl.city import enter_city
+            enter_city()
 
 if __name__ == "__main__":
     cli()
