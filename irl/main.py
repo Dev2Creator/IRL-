@@ -74,6 +74,8 @@ def cli():
     city_parser = subparsers.add_parser("city", help="Enter the IRL City (Economy & Crime)")
     dashboard_parser = subparsers.add_parser("dashboard", help="Enter Chaotic Dashboard Mode")
     dash_parser = subparsers.add_parser("dash", help="Alias for Chaotic Dashboard Mode")
+    manga_parser = subparsers.add_parser("manga", help="Read IRL Manga")
+    story_parser = subparsers.add_parser("story", help="Play the Themed Story Mode")
     search_parser = subparsers.add_parser("search", help="AI powered package search")
     search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
     upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
@@ -141,6 +143,12 @@ def cli():
             print("Error: Please provide a command to run.")
             sys.exit(1)
         run_command(args.cmd_args)
+    elif args.command == "manga":
+        from irl.manga import read_manga
+        read_manga()
+    elif args.command == "story":
+        from irl.story import play_story
+        play_story()
     elif args.command in ("dashboard", "dash"):
         chaotic_dashboard_mode(loop=True)
     else:
@@ -247,6 +255,8 @@ CHAOS_TASKS = [
     ("AI Search", "Ask the machine which package will betray you."),
     ("Upgrade IRL OS", "Download hope. Install consequences."),
     ("IRL City", "Economy, crime, and terminal capitalism."),
+    ("IRL Manga", "Experience terminal degeneracy in Japanese formatting."),
+    ("Story Mode", "Traverse a branching narrative of professional failure."),
 ]
 
 DASHBOARD_MENU_CHOICES = [str(i) for i in range(len(CHAOS_TASKS) + 1)]
@@ -397,6 +407,12 @@ def _dispatch_dashboard_choice(choice):
     elif choice == 11:
         from irl.city import enter_city
         enter_city()
+    elif choice == 12:
+        from irl.manga import read_manga
+        read_manga()
+    elif choice == 13:
+        from irl.story import play_story
+        play_story()
     return True
 
 
