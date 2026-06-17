@@ -55,21 +55,26 @@ def download_and_extract(url):
                         progress.update(task, advance=len(chunk))
                     
         extracted = False
+        extract_target = os.path.abspath(".")
         if zipfile.is_zipfile(filename):
-            print("Extracting ZIP archive...")
+            print(f"Extracting ZIP archive to {extract_target}...")
             with zipfile.ZipFile(filename, 'r') as zip_ref:
                 zip_ref.extractall(".")
             extracted = True
         elif tarfile.is_tarfile(filename):
-            print("Extracting TAR archive...")
+            print(f"Extracting TAR archive to {extract_target}...")
             with tarfile.open(filename, 'r:*') as tar_ref:
                 tar_ref.extractall(".")
             extracted = True
             
         if extracted:
             os.remove(filename)
+            if os.path.exists(extract_target):
+                print(f"✨ Successfully touched grass and installed the package! Verified located at: {extract_target}")
+            else:
+                print("❌ Extraction completed, but unable to verify path exists.")
+        else:
+            print("❌ Downloaded file was not a valid archive. Could not extract.")
             
-        print("✨ Successfully touched grass and installed the package!")
-        
     except Exception as e:
         print(f"❌ Error during download/extraction: {e}")

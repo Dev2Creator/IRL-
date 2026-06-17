@@ -48,6 +48,15 @@ class DefaultLayout(BaseLayout):
     def render_generic(self, text):
         console.print(text)
 
+    def render_node_modules(self, text):
+        console.print(f"[bold red]📦 {text}[/bold red]")
+        
+    def render_run_start(self, text):
+        console.print(f"[bold yellow]⚡ {text}[/bold yellow]")
+        
+    def render_run_success(self, text):
+        console.print(f"[bold green]✅ {text}[/bold green]")
+
 class HackerLayout(BaseLayout):
     def _hex_dump(self):
         return "".join(random.choices("0123456789ABCDEF", k=8))
@@ -75,6 +84,15 @@ class HackerLayout(BaseLayout):
     def render_generic(self, text):
         self._print_hacker(f"SYS_MSG: {text}")
 
+    def render_node_modules(self, text):
+        self._print_hacker(f"WARNING: VULNERABILITY DETECTED -> {text}")
+
+    def render_run_start(self, text):
+        self._print_hacker(f"EXEC_INIT: {text}")
+
+    def render_run_success(self, text):
+        self._print_hacker(f"EXEC_SUCCESS: {text}")
+
 class CyberpunkLayout(BaseLayout):
     def render_banner(self):
         console.print(Panel("[bold cyan]N I G H T   C I T Y[/bold cyan]", border_style="magenta", box=box.HEAVY))
@@ -93,6 +111,15 @@ class CyberpunkLayout(BaseLayout):
         
     def render_generic(self, text):
         console.print(f"[bold cyan]> [/bold cyan][white]{text}[/white]")
+
+    def render_node_modules(self, text):
+        console.print(f"[bold red]MALWARE SCAN: [/bold red][yellow]{text}[/yellow]")
+
+    def render_run_start(self, text):
+        console.print(f"[bold yellow]RUNNING SCRIPT // [/bold yellow][white]{text}[/white]")
+
+    def render_run_success(self, text):
+        console.print(f"[bold green]SCRIPT COMPLETE // [/bold green][white]{text}[/white]")
 
 class DraculaLayout(BaseLayout):
     def render_banner(self):
@@ -113,6 +140,15 @@ class DraculaLayout(BaseLayout):
     def render_generic(self, text):
         console.print(f"[white on black]🦇 {text} 🦇[/white on black]")
 
+    def render_node_modules(self, text):
+        console.print(f"[black on red]The darkness grows...[/black on red] [purple]{text}[/purple]")
+
+    def render_run_start(self, text):
+        console.print(f"[purple]Awakening the script...[/purple] [red]{text}[/red]")
+
+    def render_run_success(self, text):
+        console.print(f"[bold red]The deed is done...[/bold red] [purple]{text}[/purple]")
+
 class AnimeLayout(BaseLayout):
     def render_banner(self):
         console.print(Panel("[bold pink1]✨ Welcome to IRL™, Senpai! ✨[/bold pink1]", border_style="hot_pink", box=box.ROUNDED))
@@ -131,6 +167,15 @@ class AnimeLayout(BaseLayout):
         
     def render_generic(self, text):
         console.print(f"[pink1]{text} ~nyan[/pink1] 🐾")
+
+    def render_node_modules(self, text):
+        console.print(f"[bold red]KYAA! [/bold red][pink1]{text}[/pink1] (｡>﹏<｡)")
+
+    def render_run_start(self, text):
+        console.print(f"[yellow]Ikuzo! [/yellow][pink1]{text}[/pink1] ✧*｡٩(ˊᗜˋ*)و✧*｡")
+
+    def render_run_success(self, text):
+        console.print(f"[bold green]Sugoi! [/bold green][pink1]{text}[/pink1] (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧")
 
 class CryptoLayout(BaseLayout):
     def render_banner(self):
@@ -155,6 +200,15 @@ class CryptoLayout(BaseLayout):
     def render_generic(self, text):
         console.print(f"[white]BLOCKCHAIN EVENT: {text}[/white]")
 
+    def render_node_modules(self, text):
+        console.print(f"[bold red]📉 PORTFOLIO DUMP: {text}[/bold red]")
+
+    def render_run_start(self, text):
+        console.print(f"[bold yellow]⏳ PENDING TX: {text}[/bold yellow]")
+
+    def render_run_success(self, text):
+        console.print(f"[bold green]✅ TX CONFIRMED: {text}[/bold green]")
+
 class PirateLayout(BaseLayout):
     def render_banner(self):
         console.print(Panel("[bold yellow]⚓ Yarr! Welcome aboard the good ship IRL™! ⚓[/bold yellow]", border_style="red", box=box.ASCII))
@@ -173,6 +227,15 @@ class PirateLayout(BaseLayout):
         
     def render_generic(self, text):
         console.print(f"[white]🦜 {text}[/white]")
+
+    def render_node_modules(self, text):
+        console.print(f"[red]Kraken ahead! {text}[/red]")
+
+    def render_run_start(self, text):
+        console.print(f"[yellow]Load the cannons! {text}[/yellow]")
+
+    def render_run_success(self, text):
+        console.print(f"[green]Direct hit! {text}[/green]")
 
 class EldritchLayout(BaseLayout):
     def _zalgo(self, text):
@@ -201,6 +264,15 @@ class EldritchLayout(BaseLayout):
         
     def render_generic(self, text):
         console.print(self._zalgo(text), style="dim white")
+
+    def render_node_modules(self, text):
+        console.print(f"[bold red]{self._zalgo('Madness approaches: ')}[/bold red][dark_red]{text}[/dark_red]")
+
+    def render_run_start(self, text):
+        console.print(f"[magenta]{self._zalgo('Chanting: ')}[/magenta][purple]{text}[/purple]")
+
+    def render_run_success(self, text):
+        console.print(f"[bold green]{self._zalgo('Ritual complete: ')}[/bold green][dark_green]{text}[/dark_green]")
 
 class BoomerLayout(BaseLayout):
     def _slow_print(self, text):
@@ -231,6 +303,15 @@ class BoomerLayout(BaseLayout):
     def render_generic(self, text):
         self._slow_print(text)
 
+    def render_node_modules(self, text):
+        console.print(f"[bold red]BACK IN MY DAY! {text}[/bold red]")
+
+    def render_run_start(self, text):
+        console.print(f"[yellow]STARTING UP... {text}[/yellow]")
+
+    def render_run_success(self, text):
+        console.print(f"[bold green]FINALLY DONE. {text}[/bold green]")
+
 class ZenLayout(BaseLayout):
     def render_banner(self):
         console.print(Align.center("[dim white]Breathe in. Breathe out. Welcome to IRL™.[/dim white]"))
@@ -249,6 +330,15 @@ class ZenLayout(BaseLayout):
         
     def render_generic(self, text):
         console.print(Align.center(f"[dim white]{text}[/dim white]"))
+
+    def render_node_modules(self, text):
+        console.print(f"[dim white]Imbalance... {text}[/dim white]")
+
+    def render_run_start(self, text):
+        console.print(f"[white]Beginning... {text}[/white]")
+
+    def render_run_success(self, text):
+        console.print(f"[dim white]Ended... {text}[/dim white]")
 
 class ToxicLayout(BaseLayout):
     def _rainbow_text(self, text):
@@ -275,6 +365,15 @@ class ToxicLayout(BaseLayout):
         
     def render_generic(self, text):
         console.print(self._rainbow_text(f"🤡 {text} 🤡"))
+
+    def render_node_modules(self, text):
+        console.print(f"[bold red]LMAO TRASH: {text}[/bold red]")
+
+    def render_run_start(self, text):
+        console.print(f"[yellow]Trying and failing: {text}[/yellow]")
+
+    def render_run_success(self, text):
+        console.print(f"[bold green]Lucky guess: {text}[/bold green]")
 
 class AILayout(BaseLayout):
     def render_banner(self):

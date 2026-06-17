@@ -84,5 +84,17 @@ class ThemeEngine:
         text = self.get_tone("chaos_lose", correct=correct)
         self.ui.render_generic(text)
 
+    def render_node_modules(self):
+        text = self.get_tone("node_modules")
+        self.ui.render_node_modules(text)
+
+    def render_run_start(self, cmd):
+        text = self.get_tone("run_start", cmd=cmd)
+        self.ui.render_run_start(text)
+
+    def render_run_success(self, cmd):
+        text = self.get_tone("run_success", cmd=cmd)
+        self.ui.render_run_success(text)
+
 def get_engine():
     return ThemeEngine()

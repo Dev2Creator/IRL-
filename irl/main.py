@@ -16,6 +16,7 @@
 
 import argparse
 import sys
+import os
 from irl.install import install_package
 from irl.glasses import inspect_package
 from irl.doctor import run_doctor
@@ -35,6 +36,9 @@ def cli():
     from irl.themes import get_engine
     engine = get_engine()
     engine.render_banner()
+    
+    if os.path.isdir("node_modules"):
+        engine.render_node_modules()
     
     parser = argparse.ArgumentParser(
         prog="irl",
@@ -64,6 +68,8 @@ def cli():
     search_parser = subparsers.add_parser("search", help="AI powered package search")
     search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
     upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
+    run_parser = subparsers.add_parser("run", help="Run a command wrapped in IRL OS (e.g. irl run dev)")
+    run_parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="Command and arguments to run")
     
     args = parser.parse_args()
     
@@ -120,6 +126,12 @@ def cli():
     elif args.command == "upgrade":
         from irl.install import upgrade_irl
         upgrade_irl()
+    elif args.command == "run":
+        from irl.run import run_command
+        if not args.cmd_args:
+            print("Error: Please provide a command to run.")
+            sys.exit(1)
+        run_command(args.cmd_args)
     else:
         interactive_menu()
 

@@ -35,3 +35,12 @@ class BaseLayout:
         
     def render_generic(self, text):
         self.console.print(text)
+
+    def render_node_modules(self, text):
+        self.console.print(text)
+
+    def render_run_start(self, text):
+        self.console.print(text)
+
+    def render_run_success(self, text):
+        self.console.print(text)
