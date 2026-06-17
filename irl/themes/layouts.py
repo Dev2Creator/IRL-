@@ -18,7 +18,7 @@ import time
 import random
 import sys
 import json
-from rich.console import Console
+from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
@@ -394,6 +394,49 @@ class AILayout(BaseLayout):
         
     def render_generic(self, text):
         console.print(f"[bold cyan]Response:[/bold cyan] {text}")
+
+
+DASHBOARD_SKINS = {
+    "default": {"title": "IRL™ CORPORATE PANIC DESK", "border": "blue", "accent": "cyan", "box": box.ROUNDED, "art": "KPI: Still Employed"},
+    "hacker": {"title": "ROOT@BASEMENT:~# IRL_OVERRIDE", "border": "green", "accent": "bright_green", "box": box.HEAVY, "art": "01001001 01010010 01001100"},
+    "cyberpunk": {"title": "NEON DAMAGE CONTROL // NIGHT CITY", "border": "magenta", "accent": "cyan", "box": box.DOUBLE, "art": "CORPO BURNOUT INTERFACE"},
+    "dracula": {"title": "CASTLE CI/CD: BLOOD PIPELINE", "border": "red", "accent": "purple", "box": box.DOUBLE_EDGE, "art": "legacy code never dies"},
+    "anime": {"title": "IRL-CHAN CHAOS CONTROL DESU", "border": "hot_pink", "accent": "pink1", "box": box.ROUNDED, "art": "senpai your build is cursed"},
+    "crypto": {"title": "$IRL TERMINAL EXCHANGE", "border": "yellow", "accent": "green", "box": box.HEAVY_HEAD, "art": "HOPE/USD -99.7% | COPIUM +420%"},
+    "pirate": {"title": "THE BLACK TERMINAL", "border": "yellow", "accent": "red", "box": box.ASCII_DOUBLE_HEAD, "art": "yarr, here be dependencies"},
+    "eldritch": {"title": "THE UNSPEAKABLE DASHBOARD", "border": "dark_red", "accent": "magenta", "box": box.HEAVY_EDGE, "art": "THE LOGS ARE CHANTING"},
+    "boomer": {"title": "MAINFRAME OF DISAPPOINTMENT", "border": "yellow", "accent": "bright_yellow", "box": box.ASCII, "art": "BACK WHEN RAM WAS EARNED, NOT ALLOCATED"},
+    "zen": {"title": "VOID OPS", "border": "white", "accent": "dim cyan", "box": box.MINIMAL, "art": "the bug is temporary. the suffering is versioned."},
+    "toxic": {"title": "RANKED TERMINAL LOBBY", "border": "bright_red", "accent": "bright_magenta", "box": box.HEAVY, "art": "RATIO + L + UNHANDLED EXCEPTION"},
+    "ai": {"title": "MODEL_CONTEXT_PROTOCOL: DESPAIR", "border": "bright_blue", "accent": "bright_cyan", "box": box.SQUARE, "art": '{"status":"online","ethics":"pending","vibes":"compiled"}'},
+}
+
+
+def render_dashboard_chrome(kind, theme_id, payload, meta=None, tick=0):
+    skin = DASHBOARD_SKINS.get(theme_id, DASHBOARD_SKINS["default"])
+    pulse = "!" * ((tick % 3) + 1)
+
+    if kind == "header":
+        content = Group(
+            Align.center(Text(skin["art"], style=f"bold {skin['accent']}")),
+            Align.center(Text(f"{skin['title']} {pulse}", style=f"bold {skin['accent']}")),
+            Align.center(Text(f"operator={payload} rank={meta} refresh={tick}", style="dim")),
+        )
+        return Panel(content, border_style=skin["border"], box=skin["box"])
+
+    if kind == "menu":
+        return Panel(payload, title=f"[bold {skin['accent']}]COMMAND MENU[/bold {skin['accent']}]", subtitle="[dim]choose a bad idea professionally[/dim]", border_style=skin["border"], box=skin["box"])
+
+    if kind == "stats":
+        return Panel(payload, title=f"[bold {skin['accent']}]FAKE SYSTEM VITALS[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
+
+    if kind == "node":
+        return Panel(Group(payload, Text(str(meta), style="bold red")), title=f"[bold {skin['accent']}]DEPENDENCY LANDFILL SCAN[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
+
+    if kind == "ticker":
+        return Panel(Text(str(payload), style=f"bold {skin['accent']}"), title="[bold red]DARK HUMOR INCIDENT FEED[/bold red]", border_style=skin["border"], box=skin["box"])
+
+    return Panel(str(payload), border_style=skin["border"], box=skin["box"])
 
 LAYOUTS = {
     'default': DefaultLayout,

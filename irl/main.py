@@ -17,6 +17,13 @@
 import argparse
 import sys
 import os
+import random
+import shutil
+import time
+from rich import box
+from rich.live import Live
+from rich.layout import Layout
+from rich.table import Table
 from irl.install import install_package
 from irl.glasses import inspect_package
 from irl.doctor import run_doctor
@@ -65,6 +72,8 @@ def cli():
     store_parser = subparsers.add_parser("store", help="Open the IRL store")
     games_parser = subparsers.add_parser("games", help="Play purchased IRL games")
     city_parser = subparsers.add_parser("city", help="Enter the IRL City (Economy & Crime)")
+    dashboard_parser = subparsers.add_parser("dashboard", help="Enter Chaotic Dashboard Mode")
+    dash_parser = subparsers.add_parser("dash", help="Alias for Chaotic Dashboard Mode")
     search_parser = subparsers.add_parser("search", help="AI powered package search")
     search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
     upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
@@ -132,6 +141,8 @@ def cli():
             print("Error: Please provide a command to run.")
             sys.exit(1)
         run_command(args.cmd_args)
+    elif args.command in ("dashboard", "dash"):
+        chaotic_dashboard_mode(loop=True)
     else:
         interactive_menu()
 
@@ -210,72 +221,216 @@ def view_profile():
     from rich.prompt import Prompt
     Prompt.ask("\nPress Enter to return")
 
-def interactive_menu():
-    from rich.prompt import Prompt, IntPrompt
-    from rich.console import Console
-    console = Console()
-    
+
+CHAOS_TICKERS = [
+    "node_modules detected: disk space has filed a restraining order.",
+    "npm audit says everything is fine, which is how horror movies start.",
+    "Your dependency tree has more unresolved trauma than the sprint retro.",
+    "Localhost is running. So are your responsibilities.",
+    "A package-lock changed. Nobody knows why. Everybody is pretending.",
+    "Build succeeded with warnings: the compiler is legally distancing itself.",
+    "Docker is eating 8GB RAM to serve one button. Premium suffering.",
+    "The terminal saw your command history and quietly lowered its expectations.",
+    "CI passed because it is tired of explaining things to you.",
+    "A linter screamed. Management called it culture fit.",
+]
+
+CHAOS_TASKS = [
+    ("Install a Package", "Summon third-party code and hope it showers."),
+    ("Glasses", "Inspect a package before it inspects your soul."),
+    ("Doctor", "Diagnose your dependency swamp."),
+    ("Touch Grass", "Briefly cosplay as a mammal."),
+    ("Creative Wellness", "Posture, water, denial, and other paid DLC."),
+    ("IRL Store", "Buy personality presets. Cheaper than therapy."),
+    ("Profile", "View quantified decay."),
+    ("Games", "Productivity funeral minigames."),
+    ("AI Search", "Ask the machine which package will betray you."),
+    ("Upgrade IRL OS", "Download hope. Install consequences."),
+    ("IRL City", "Economy, crime, and terminal capitalism."),
+]
+
+DASHBOARD_MENU_CHOICES = [str(i) for i in range(len(CHAOS_TASKS) + 1)]
+
+
+def _node_modules_report():
+    path = os.path.join(os.getcwd(), "node_modules")
+    if not os.path.isdir(path):
+        return {
+            "found": False,
+            "path": path,
+            "size": "0 MB",
+            "files": 0,
+            "roast": "No node_modules here. Suspiciously healthy. Are you lost?",
+        }
+
+    total_size = 0
+    total_files = 0
+    for root, _, files in os.walk(path):
+        total_files += len(files)
+        for name in files:
+            try:
+                total_size += os.path.getsize(os.path.join(root, name))
+            except OSError:
+                pass
+
+    size_mb = total_size / (1024 * 1024)
+    return {
+        "found": True,
+        "path": path,
+        "size": f"{size_mb:,.1f} MB",
+        "files": total_files,
+        "roast": random.choice([
+            "node_modules found. The landfill has become sentient.",
+            "Your dependency folder qualifies as a minor geological event.",
+            "That is not a folder. That is capitalism with subdirectories.",
+            "Disk usage report: emotionally expensive.",
+            "The package manager opened a buffet and charged your SSD.",
+        ]),
+    }
+
+
+def _fake_stats(tick):
+    width = shutil.get_terminal_size((100, 30)).columns
+    return {
+        "CPU Shame": f"{41 + ((tick * 7) % 59)}%",
+        "RAM Regret": f"{33 + ((tick * 11) % 64)}%",
+        "Bug Humidity": f"{55 + ((tick * 5) % 42)}%",
+        "Stack Overflow Tabs": str(7 + ((tick * 3) % 81)),
+        "Terminal Width": str(width),
+        "Hope Remaining": f"{max(1, 23 - (tick % 23))}%",
+    }
+
+
+def _build_dashboard(state, rank, user_name, tick, selected=0):
+    from irl.themes import get_engine
+    from irl.themes.layouts import render_dashboard_chrome
+
+    engine = get_engine()
+    node = _node_modules_report()
+    stats = _fake_stats(tick)
+    ticker_offset = tick % len(CHAOS_TICKERS)
+    ticker = "  //  ".join(CHAOS_TICKERS[ticker_offset:] + CHAOS_TICKERS[:ticker_offset])
+
+    menu = Table.grid(expand=True)
+    menu.add_column(ratio=1)
+    for idx, (label, desc) in enumerate(CHAOS_TASKS, start=1):
+        cursor = ">" if idx - 1 == selected else " "
+        style = "bold black on bright_cyan" if idx - 1 == selected else "bold white"
+        menu.add_row(f"[{style}] {cursor} {idx:02}. {label}[/]")
+        menu.add_row(f"[dim]     {desc}[/dim]")
+
+    stats_table = Table(show_header=False, box=box.SIMPLE_HEAVY, expand=True)
+    stats_table.add_column("Metric", style="bold magenta")
+    stats_table.add_column("Value", justify="right", style="bold cyan")
+    for key, value in stats.items():
+        stats_table.add_row(key, value)
+
+    node_table = Table(show_header=False, box=box.ROUNDED, expand=True)
+    node_table.add_column("K", style="bold red")
+    node_table.add_column("V", style="white", overflow="fold")
+    node_table.add_row("Found", "YES, unfortunately" if node["found"] else "No")
+    node_table.add_row("Path", node["path"])
+    node_table.add_row("Size", node["size"])
+    node_table.add_row("Files", str(node["files"]))
+
+    layout = Layout()
+    layout.split_column(
+        Layout(name="header", size=6),
+        Layout(name="main", ratio=1, minimum_size=13),
+        Layout(name="ticker", size=3),
+    )
+    layout["main"].split_row(
+        Layout(name="left", ratio=2, minimum_size=38),
+        Layout(name="right", ratio=1, minimum_size=30),
+    )
+    layout["right"].split_column(
+        Layout(name="stats"),
+        Layout(name="node"),
+    )
+
+    layout["header"].update(render_dashboard_chrome("header", engine.color_id, user_name, rank, tick))
+    layout["left"].update(render_dashboard_chrome("menu", engine.color_id, menu, selected, tick))
+    layout["stats"].update(render_dashboard_chrome("stats", engine.color_id, stats_table, None, tick))
+    layout["node"].update(render_dashboard_chrome("node", engine.color_id, node_table, node["roast"], tick))
+    layout["ticker"].update(render_dashboard_chrome("ticker", engine.color_id, ticker, None, tick))
+    return layout
+
+
+def _dispatch_dashboard_choice(choice):
+    from rich.prompt import Prompt
+
+    if choice == 0:
+        return False
+    if choice == 1:
+        pkg = Prompt.ask("Package name or URL")
+        if pkg:
+            install_package(pkg)
+    elif choice == 2:
+        pkg = Prompt.ask("Package to inspect")
+        if pkg:
+            inspect_package(pkg)
+    elif choice == 3:
+        pkg = Prompt.ask("Package to diagnose")
+        if pkg:
+            run_doctor(pkg)
+    elif choice == 4:
+        from irl.grass import touch_grass
+        touch_grass()
+    elif choice == 5:
+        creative_menu()
+    elif choice == 6:
+        from irl.store import open_store
+        open_store()
+    elif choice == 7:
+        view_profile()
+    elif choice == 8:
+        from irl.games import play_game_menu
+        play_game_menu()
+    elif choice == 9:
+        query = Prompt.ask("What package are you looking for?")
+        if query:
+            from irl.search import search_and_install
+            search_and_install(query)
+    elif choice == 10:
+        from irl.install import upgrade_irl
+        upgrade_irl()
+    elif choice == 11:
+        from irl.city import enter_city
+        enter_city()
+    return True
+
+
+def chaotic_dashboard_mode(loop=False):
+    from rich.prompt import IntPrompt
+    from irl.console import console
     from irl.state import load_state, get_global_rank
-    state = load_state()
-    user_name = state.get("name", "human")
-    rank = get_global_rank(state)
-    
+
     while True:
-        console.print(f"\n[bold cyan]What would you like to do, [{rank}] {user_name}?[/bold cyan]")
-        console.print("  [bold yellow]1.[/bold yellow] 📦 Install a Package™")
-        console.print("  [bold cyan]2.[/bold cyan] 👓 Inspect a Package (Glasses™)")
-        console.print("  [bold red]3.[/bold red] 🩺 Diagnose System (Doctor™)")
-        console.print("  [bold green]4.[/bold green] 🌱 Touch Grass™")
-        console.print("  [bold magenta]5.[/bold magenta] 🎨 Creative Wellness Menu™")
-        console.print("  [bold yellow]6.[/bold yellow] 🏪 Open IRL™ Store")
-        console.print("  [bold blue]7.[/bold blue] 📊 View IRL™ Profile & Stats")
-        console.print("  [bold cyan]8.[/bold cyan] 🎮 Play Games™")
-        console.print("  [bold magenta]9.[/bold magenta] 🧠 AI Package Search™ (Pollination AI)")
-        console.print("  [bold green]10.[/bold green] 🚀 Upgrade IRL™ OS")
-        console.print("  [bold red]11.[/bold red] 🏙️  IRL™ City (Economy & Crime)")
-        console.print("  [bold white]0.[/bold white] Exit\n")
-        
-        choice = IntPrompt.ask("Select an option", choices=[str(i) for i in range(12)], console=console)
-        
-        if choice == 0:
-            console.print("[dim]Goodbye, human.[/dim]")
-            sys.exit(0)
-        elif choice == 1:
-            pkg = Prompt.ask("Enter package name or URL")
-            if pkg:
-                install_package(pkg)
-        elif choice == 2:
-            pkg = Prompt.ask("Enter package name to inspect")
-            if pkg:
-                inspect_package(pkg)
-        elif choice == 3:
-            pkg = Prompt.ask("Enter package name to diagnose")
-            if pkg:
-                run_doctor(pkg)
-        elif choice == 4:
-            from irl.grass import touch_grass
-            touch_grass()
-        elif choice == 5:
-            creative_menu()
-        elif choice == 6:
-            from irl.store import open_store
-            open_store()
-        elif choice == 7:
-            view_profile()
-        elif choice == 8:
-            from irl.games import play_game_menu
-            play_game_menu()
-        elif choice == 9:
-            query = Prompt.ask("What kind of package are you looking for?")
-            if query:
-                from irl.search import search_and_install
-                search_and_install(query)
-        elif choice == 10:
-            from irl.install import upgrade_irl
-            upgrade_irl()
-        elif choice == 11:
-            from irl.city import enter_city
-            enter_city()
+        state = load_state()
+        user_name = state.get("name", "human")
+        rank = get_global_rank(state)
+        selected = 0
+
+        with Live(
+            _build_dashboard(state, rank, user_name, 0, selected),
+            console=console._console,
+            screen=True,
+            refresh_per_second=10,
+        ) as live:
+            for tick in range(36):
+                selected = tick % len(CHAOS_TASKS)
+                live.update(_build_dashboard(state, rank, user_name, tick, selected))
+                time.sleep(0.07)
+
+        console.print("\n[bold cyan]Dashboard stabilized. Barely. Choose your damage:[/bold cyan]")
+        console.print("[dim]0 exits. Everything else is a lifestyle choice.[/dim]")
+        choice = IntPrompt.ask("Select option", choices=DASHBOARD_MENU_CHOICES, console=console)
+        keep_going = _dispatch_dashboard_choice(choice)
+        if not loop or not keep_going:
+            break
+
+def interactive_menu():
+    chaotic_dashboard_mode(loop=True)
 
 if __name__ == "__main__":
     cli()
