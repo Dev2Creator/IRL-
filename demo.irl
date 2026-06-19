@@ -1,0 +1,39 @@
+// This is a full demonstration of the .irl language!
+
+task greet(name) {
+    spill("Welcome to the matrix, " + name + "!");
+}
+
+task get_status(braincells) {
+    bet (braincells > 5 fr braincells <= 10) {
+        brb "Healthy!";
+    } cap {
+        bet (braincells > 10) {
+            brb "Overclocked!";
+        } cap {
+            brb "Fried.";
+        }
+    }
+}
+
+// 1. Arrays and built-in functions
+snag my_array = ["apple", "banana"];
+push(my_array, "cherry");
+spill("Array length is:");
+spill(len(my_array));
+
+// 2. Logic Operators and string concat
+snag is_tired = fax;
+snag is_caffeinated = fake;
+
+bet (is_tired fr nah is_caffeinated) {
+    spill("Need coffee " + "ASAP");
+}
+
+// 3. Functions & Input
+snag user_name = ask("What is your username? ");
+greet(user_name);
+
+snag my_braincells = 7;
+snag status = get_status(my_braincells);
+spill("Status: " + status);

@@ -395,6 +395,35 @@ class AILayout(BaseLayout):
     def render_generic(self, text):
         console.print(f"[bold cyan]Response:[/bold cyan] {text}")
 
+class UiProLayout(BaseLayout):
+    def render_banner(self):
+        console.print(Panel("[bold #F8FAFC]IRL™ // DASHBOARD[/bold #F8FAFC]", border_style="#334155", box=box.SQUARE))
+        
+    def render_grass(self, text):
+        console.print(f"[bold #22C55E]ACTION /[/bold #22C55E] [white]ENV_UPDATE: {text}[/white]")
+        
+    def render_hydrate(self, text, glasses):
+        console.print(f"[bold #38BDF8]ACTION /[/bold #38BDF8] [white]FLUID_INTAKE: {glasses}u. {text}[/white]")
+        
+    def render_install(self, text):
+        console.print(f"[bold #EAB308]SYS /[/bold #EAB308] [white]PKG_INSTALL: {text}[/white]")
+        
+    def render_coin_gain(self, amount, msg):
+        console.print(f"[bold #22C55E]SYS /[/bold #22C55E] [white]TX_REWARD: +{amount} ({msg})[/white]")
+        
+    def render_generic(self, text):
+        console.print(f"[bold #94A3B8]>[/bold #94A3B8] [white]{text}[/white]")
+
+    def render_node_modules(self, text):
+        console.print(f"[bold #EF4444]ALERT /[/bold #EF4444] [white]SYS_WARNING: {text}[/white]")
+
+    def render_run_start(self, text):
+        console.print(f"[bold #EAB308]EXEC /[/bold #EAB308] [white]STARTING: {text}[/white]")
+
+    def render_run_success(self, text):
+        console.print(f"[bold #22C55E]EXEC /[/bold #22C55E] [white]SUCCESS: {text}[/white]")
+
+
 
 DASHBOARD_SKINS = {
     "default": {"title": "IRL™ CORPORATE PANIC DESK", "border": "blue", "accent": "cyan", "box": box.ROUNDED, "art": "KPI: Still Employed"},
@@ -409,6 +438,7 @@ DASHBOARD_SKINS = {
     "zen": {"title": "VOID OPS", "border": "white", "accent": "dim cyan", "box": box.MINIMAL, "art": "the bug is temporary. the suffering is versioned."},
     "toxic": {"title": "RANKED TERMINAL LOBBY", "border": "bright_red", "accent": "bright_magenta", "box": box.HEAVY, "art": "RATIO + L + UNHANDLED EXCEPTION"},
     "ai": {"title": "MODEL_CONTEXT_PROTOCOL: DESPAIR", "border": "bright_blue", "accent": "bright_cyan", "box": box.SQUARE, "art": '{"status":"online","ethics":"pending","vibes":"compiled"}'},
+    "uipro": {"title": "IRL™ PRO // BENTO DATA-DENSE", "border": "#334155", "accent": "#22C55E", "box": box.SQUARE, "art": "PATTERN: BENTO // TYPOGRAPHY: JETBRAINS // MODE: DARK"},
 }
 
 
@@ -434,7 +464,8 @@ def render_dashboard_chrome(kind, theme_id, payload, meta=None, tick=0):
         return Panel(Group(payload, Text(str(meta), style="bold red")), title=f"[bold {skin['accent']}]DEPENDENCY LANDFILL SCAN[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
 
     if kind == "ticker":
-        return Panel(Text(str(payload), style=f"bold {skin['accent']}"), title="[bold red]DARK HUMOR INCIDENT FEED[/bold red]", border_style=skin["border"], box=skin["box"])
+        title = meta if meta else f"[bold red]DARK HUMOR INCIDENT FEED[/bold red]"
+        return Panel(Text(str(payload), style=f"bold {skin['accent']}"), title=title, border_style=skin["border"], box=skin["box"])
 
     return Panel(str(payload), border_style=skin["border"], box=skin["box"])
 
@@ -450,5 +481,6 @@ LAYOUTS = {
     'boomer': BoomerLayout,
     'zen': ZenLayout,
     'toxic': ToxicLayout,
-    'ai': AILayout
+    'ai': AILayout,
+    'uipro': UiProLayout
 }

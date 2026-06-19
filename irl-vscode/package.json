@@ -1,0 +1,36 @@
+{
+    "name": "irl-lang",
+    "displayName": "IRL Language Support",
+    "description": "Syntax highlighting and snippets for the highly chaotic .irl programming language.",
+    "version": "1.0.0",
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "irl",
+                "aliases": ["IRL", "irl"],
+                "extensions": [".irl"],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "irl",
+                "scopeName": "source.irl",
+                "path": "./syntaxes/irl.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "irl",
+                "path": "./snippets/snippets.json"
+            }
+        ]
+    }
+}

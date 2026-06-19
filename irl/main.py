@@ -74,8 +74,13 @@ def cli():
     city_parser = subparsers.add_parser("city", help="Enter the IRL City (Economy & Crime)")
     dashboard_parser = subparsers.add_parser("dashboard", help="Enter Chaotic Dashboard Mode")
     dash_parser = subparsers.add_parser("dash", help="Alias for Chaotic Dashboard Mode")
-    manga_parser = subparsers.add_parser("manga", help="Read IRL Manga")
+    manga_parser = subparsers.add_parser("manga", help="Read or Download IRL Manga")
+    manga_parser.add_argument("--download", action="store_true", help="Download manga for offline reading")
+    manga_parser.add_argument("query", nargs="*", help="Optional manga title search query")
     story_parser = subparsers.add_parser("story", help="Play the Themed Story Mode")
+    bones_parser = subparsers.add_parser("bones", help="Summon Professor Bones for Lofi")
+    joke_parser = subparsers.add_parser("joke", help="Tell a random developer joke via JokeAPI")
+    dog_parser = subparsers.add_parser("dog", help="Fetch an ASCII dog from Dog API")
     search_parser = subparsers.add_parser("search", help="AI powered package search")
     search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
     upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
@@ -145,10 +150,20 @@ def cli():
         run_command(args.cmd_args)
     elif args.command == "manga":
         from irl.manga import read_manga
-        read_manga()
+        query = " ".join(args.query) if args.query else None
+        read_manga(download=args.download, initial_query=query)
     elif args.command == "story":
         from irl.story import play_story
         play_story()
+    elif args.command == "bones":
+        from irl.bones import summon_bones
+        summon_bones()
+    elif args.command == "joke":
+        from irl.joke import tell_joke
+        tell_joke()
+    elif args.command == "dog":
+        from irl.dog import render_dog
+        render_dog()
     elif args.command in ("dashboard", "dash"):
         chaotic_dashboard_mode(loop=True)
     else:
@@ -257,6 +272,9 @@ CHAOS_TASKS = [
     ("IRL City", "Economy, crime, and terminal capitalism."),
     ("IRL Manga", "Experience terminal degeneracy in Japanese formatting."),
     ("Story Mode", "Traverse a branching narrative of professional failure."),
+    ("Summon Bones", "Lofi Beats to Compile Code To."),
+    ("Tell Joke", "Fetch a Joke via JokeAPI."),
+    ("Random Doggo", "Fetch an ASCII Dog via Dog API."),
 ]
 
 DASHBOARD_MENU_CHOICES = [str(i) for i in range(len(CHAOS_TASKS) + 1)]
@@ -313,9 +331,14 @@ def _fake_stats(tick):
 
 def _build_dashboard(state, rank, user_name, tick, selected=0):
     from irl.themes import get_engine
-    from irl.themes.layouts import render_dashboard_chrome
+    from irl.themes.layouts import render_dashboard_chrome, DASHBOARD_SKINS
 
     engine = get_engine()
+    skin = DASHBOARD_SKINS.get(engine.color_id, DASHBOARD_SKINS["default"])
+    accent = skin["accent"]
+    border = skin["border"]
+    theme_box = skin["box"]
+
     node = _node_modules_report()
     stats = _fake_stats(tick)
     ticker_offset = tick % len(CHAOS_TICKERS)
@@ -324,19 +347,26 @@ def _build_dashboard(state, rank, user_name, tick, selected=0):
     menu = Table.grid(expand=True)
     menu.add_column(ratio=1)
     for idx, (label, desc) in enumerate(CHAOS_TASKS, start=1):
-        cursor = ">" if idx - 1 == selected else " "
-        style = "bold black on bright_cyan" if idx - 1 == selected else "bold white"
+        if idx - 1 == selected:
+            style = f"bold black on {accent}"
+            cursor = ">"
+        else:
+            style = f"bold {border}"
+            cursor = " "
         menu.add_row(f"[{style}] {cursor} {idx:02}. {label}[/]")
         menu.add_row(f"[dim]     {desc}[/dim]")
+        
+    menu.add_row("")
+    menu.add_row(f"[{accent}]CONTROLS: \[W]/\[S] or \[UP]/\[DOWN] to scroll • \[ENTER] to select • \[Q] to exit[/{accent}]")
 
-    stats_table = Table(show_header=False, box=box.SIMPLE_HEAVY, expand=True)
-    stats_table.add_column("Metric", style="bold magenta")
-    stats_table.add_column("Value", justify="right", style="bold cyan")
+    stats_table = Table(show_header=False, box=theme_box, expand=True)
+    stats_table.add_column("Metric", style=f"bold {border}")
+    stats_table.add_column("Value", justify="right", style=f"bold {accent}")
     for key, value in stats.items():
         stats_table.add_row(key, value)
 
-    node_table = Table(show_header=False, box=box.ROUNDED, expand=True)
-    node_table.add_column("K", style="bold red")
+    node_table = Table(show_header=False, box=theme_box, expand=True)
+    node_table.add_column("K", style=f"bold {border}")
     node_table.add_column("V", style="white", overflow="fold")
     node_table.add_row("Found", "YES, unfortunately" if node["found"] else "No")
     node_table.add_row("Path", node["path"])
@@ -362,7 +392,10 @@ def _build_dashboard(state, rank, user_name, tick, selected=0):
     layout["left"].update(render_dashboard_chrome("menu", engine.color_id, menu, selected, tick))
     layout["stats"].update(render_dashboard_chrome("stats", engine.color_id, stats_table, None, tick))
     layout["node"].update(render_dashboard_chrome("node", engine.color_id, node_table, node["roast"], tick))
-    layout["ticker"].update(render_dashboard_chrome("ticker", engine.color_id, ticker, None, tick))
+    
+    # Use theme colors for the ticker
+    ticker_text = f"[bold {border}]DARK HUMOR INCIDENT FEED[/bold {border}]"
+    layout["ticker"].update(render_dashboard_chrome("ticker", engine.color_id, ticker, ticker_text, tick))
     return layout
 
 
@@ -413,35 +446,82 @@ def _dispatch_dashboard_choice(choice):
     elif choice == 13:
         from irl.story import play_story
         play_story()
+    elif choice == 14:
+        from irl.bones import summon_bones
+        summon_bones()
+    elif choice == 15:
+        from irl.joke import tell_joke
+        tell_joke()
+    elif choice == 16:
+        from irl.dog import render_dog
+        render_dog()
     return True
 
 
 def chaotic_dashboard_mode(loop=False):
-    from rich.prompt import IntPrompt
     from irl.console import console
     from irl.state import load_state, get_global_rank
+    import msvcrt
 
     while True:
         state = load_state()
         user_name = state.get("name", "human")
         rank = get_global_rank(state)
         selected = 0
+        
+        # ROBUST FLUSH: Terminals can take a split second to send the Enter key
+        # that was used to launch the command. We must wait and flush completely.
+        end_flush = time.time() + 0.35
+        while time.time() < end_flush:
+            while msvcrt.kbhit():
+                msvcrt.getch()
+            time.sleep(0.01)
+        
+        # Open the full-screen alternate buffer
+        with console._console.screen():
+            # Animate infinitely, tracking keypresses
+            with Live(
+                _build_dashboard(state, rank, user_name, 0, selected),
+                console=console._console,
+                screen=False,
+                refresh_per_second=10,
+            ) as live:
+                tick = 0
+                chosen = None
+                
+                while True:
+                    live.update(_build_dashboard(state, rank, user_name, tick, selected))
+                    time.sleep(0.1) # 10 FPS animation
+                    tick += 1
+                    
+                    while msvcrt.kbhit():
+                        key = msvcrt.getch()
+                        if key in (b'\xe0', b'\x00'): # Arrow keys
+                            arrow = msvcrt.getch()
+                            if arrow == b'H': # Up
+                                selected = (selected - 1) % len(CHAOS_TASKS)
+                            elif arrow == b'P': # Down
+                                selected = (selected + 1) % len(CHAOS_TASKS)
+                        else:
+                            key_lower = key.lower()
+                            if key_lower == b'w':
+                                selected = (selected - 1) % len(CHAOS_TASKS)
+                            elif key_lower == b's':
+                                selected = (selected + 1) % len(CHAOS_TASKS)
+                            elif key in (b'\r', b'\n', b' '):
+                                chosen = selected + 1
+                                break
+                            elif key_lower in (b'q', b'\x1b') or key == b'0':
+                                chosen = 0
+                                break
+                                
+                    if chosen is not None:
+                        break
 
-        with Live(
-            _build_dashboard(state, rank, user_name, 0, selected),
-            console=console._console,
-            screen=True,
-            refresh_per_second=10,
-        ) as live:
-            for tick in range(36):
-                selected = tick % len(CHAOS_TASKS)
-                live.update(_build_dashboard(state, rank, user_name, tick, selected))
-                time.sleep(0.07)
-
-        console.print("\n[bold cyan]Dashboard stabilized. Barely. Choose your damage:[/bold cyan]")
-        console.print("[dim]0 exits. Everything else is a lifestyle choice.[/dim]")
-        choice = IntPrompt.ask("Select option", choices=DASHBOARD_MENU_CHOICES, console=console)
-        keep_going = _dispatch_dashboard_choice(choice)
+        if chosen == 0:
+            break
+        
+        keep_going = _dispatch_dashboard_choice(chosen)
         if not loop or not keep_going:
             break
 

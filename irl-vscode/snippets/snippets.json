@@ -1,0 +1,54 @@
+{
+    "Bet (If Statement)": {
+        "prefix": "bet",
+        "body": [
+            "bet (${1:condition}) {",
+            "\t$2",
+            "}"
+        ],
+        "description": "Create a conditional bet (if) block"
+    },
+    "Bet / Cap (If / Else Statement)": {
+        "prefix": "betcap",
+        "body": [
+            "bet (${1:condition}) {",
+            "\t$2",
+            "} cap {",
+            "\t$3",
+            "}"
+        ],
+        "description": "Create a conditional bet/cap (if/else) block"
+    },
+    "Grind (While Loop)": {
+        "prefix": "grind",
+        "body": [
+            "grind (${1:condition}) {",
+            "\t$2",
+            "}"
+        ],
+        "description": "Create a grind (while) loop"
+    },
+    "Task (Function)": {
+        "prefix": "task",
+        "body": [
+            "task ${1:name}(${2:params}) {",
+            "\t$3",
+            "}"
+        ],
+        "description": "Create a new task (function)"
+    },
+    "Spill (Print)": {
+        "prefix": "spill",
+        "body": [
+            "spill(${1:\"text\"});"
+        ],
+        "description": "Print to the console"
+    },
+    "Snag (Variable)": {
+        "prefix": "snag",
+        "body": [
+            "snag ${1:name} = ${2:value};"
+        ],
+        "description": "Declare a variable"
+    }
+}

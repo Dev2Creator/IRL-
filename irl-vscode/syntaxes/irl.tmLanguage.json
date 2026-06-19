@@ -1,0 +1,63 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "IRL",
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#functions"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "match": "//.*",
+                    "name": "comment.line.double-slash.irl"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "match": "\\b(snag|spill|bet|cap|grind|brb|task)\\b",
+                    "name": "keyword.control.irl"
+                },
+                {
+                    "match": "\\b(fax|fake|fr|or|nah)\\b",
+                    "name": "constant.language.irl"
+                }
+            ]
+        },
+        "strings": {
+            "name": "string.quoted.double.irl",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape.irl",
+                    "match": "\\\\."
+                }
+            ]
+        },
+        "numbers": {
+            "match": "\\b\\d+\\b",
+            "name": "constant.numeric.irl"
+        },
+        "functions": {
+            "match": "\\b([a-zA-Z_]\\w*)\\s*(?=\\()",
+            "name": "entity.name.function.irl"
+        }
+    },
+    "scopeName": "source.irl"
+}
