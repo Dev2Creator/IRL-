@@ -110,7 +110,7 @@ Vision enhanced.
 ```
 
 ## Authors
-© 2026 **UNKNOWN™**
+© 2026 **UNKNOWN™** made with Aneek Mukherjee 
 
 ## License
 This project is licensed under the **AGPL-3.0 License** - see the `LICENSE` file for details.
