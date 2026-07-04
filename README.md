@@ -7,6 +7,7 @@
 A warm, keyboard-driven command center for installing packages, inspecting registries, diagnosing setup problems, and remembering that developers require water and sunlight.
 
 [![PyPI](https://img.shields.io/pypi/v/irl-pkg?style=flat-square&color=E47C55&label=PyPI)](https://pypi.org/project/irl-pkg/)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/irl-pkg?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/irl-pkg)
 [![Python](https://img.shields.io/pypi/pyversions/irl-pkg?style=flat-square&color=D7C0AA)](https://pypi.org/project/irl-pkg/)
 [![License](https://img.shields.io/github/license/Dev2Creator/IRL-?style=flat-square&color=614B39)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/Dev2Creator/IRL-?style=flat-square&color=3478F6)](https://github.com/Dev2Creator/IRL-/stargazers)
