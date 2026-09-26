@@ -4,6 +4,7 @@ import tarfile
 import zipfile
 
 import pytest
+
 from irl.extract import (
     UnsafeArchiveError,
     _member_target,

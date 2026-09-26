@@ -28,7 +28,6 @@ def test_hit_window_sane():
 
 
 def test_track_duration_real_wav():
-    import os
 
     from irl.audio import list_lofi
 
