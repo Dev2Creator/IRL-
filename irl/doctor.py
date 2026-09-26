@@ -23,8 +23,11 @@ from irl.install import check_registry
 
 def check_command(cmd):
     try:
-        # On windows we use shell=True or the specific executable name
-        subprocess.run(f"{cmd} --version", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(
+            [cmd, "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
         return True
     except Exception:
         return False

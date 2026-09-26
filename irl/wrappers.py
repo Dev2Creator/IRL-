@@ -18,21 +18,20 @@ import subprocess
 import sys
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 
-def run_with_progress(command_str, package, manager_name):
+def run_with_progress(command_args, package, manager_name):
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         transient=True,
     ) as progress:
         task = progress.add_task(f"[green]🌱 Touching grass... Installing {package} via {manager_name}...", start=False)
-        
+
         process = subprocess.Popen(
-            command_str,
+            command_args,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            shell=True
         )
-        
+
         stdout, stderr = process.communicate()
         
     if process.returncode == 0:
@@ -45,7 +44,9 @@ def run_with_progress(command_str, package, manager_name):
         return False
 
 def install_npm(package):
-    return run_with_progress(f"npm install {package}", package, "npm")
+    return run_with_progress(["npm", "install", package], package, "npm")
 
 def install_pip(package):
-    return run_with_progress(f"pip install {package}", package, "pip")
+    return run_with_progress(
+        [sys.executable, "-m", "pip", "install", package], package, "pip"
+    )

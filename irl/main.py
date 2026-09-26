@@ -163,7 +163,7 @@ def _launch_package_install(package_name, target_version):
         "time.sleep(1.5); "
         "raise SystemExit(subprocess.call(sys.argv[1:]))"
     )
-    creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
+    creation_flags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
     subprocess.Popen([sys.executable, "-c", helper, *pip_command], creationflags=creation_flags)
 
 
@@ -600,7 +600,7 @@ def _build_dashboard(state, rank, user_name, tick, selected=0):
         menu.add_row(f"[dim]     {desc}[/dim]")
         
     menu.add_row("")
-    menu.add_row(f"[{accent}]CONTROLS: \[W]/\[S] or \[UP]/\[DOWN] to scroll • \[ENTER] to select • \[Q] to exit[/{accent}]")
+    menu.add_row(f"[{accent}]CONTROLS: \\[W]/\\[S] or \\[UP]/\\[DOWN] to scroll • \\[ENTER] to select • \\[Q] to exit[/{accent}]")
 
     stats_table = Table(show_header=False, box=theme_box, expand=True)
     stats_table.add_column("Metric", style=f"bold {border}")
@@ -702,24 +702,47 @@ def _dispatch_dashboard_choice(choice):
 
 
 def chaotic_dashboard_mode(loop=False):
+    from rich.prompt import Prompt
     from irl.console import console
     from irl.state import load_state, get_global_rank
-    import msvcrt
+    from irl.keys import (
+        read_key, flush_keys, kbhit, is_interactive,
+        KEY_UP, KEY_DOWN, KEY_ENTER, KEY_ESC, KEY_SPACE, KEY_CTRL_C,
+    )
+
+    if not is_interactive():
+        # No terminal to draw on (piped/CI): offer the numbered menu instead.
+        user_name = load_state().get("name", "human")
+        console.print(f"[bold {IRL_ACCENT}]IRL™ Dashboard (compact mode — pipe detected)[/bold {IRL_ACCENT}]")
+        table = Table(show_header=False, box=None, expand=True, pad_edge=False)
+        table.add_column("No", style=f"bold {IRL_MUTED}", no_wrap=True)
+        table.add_column("Task", style=f"bold {IRL_ACCENT}", no_wrap=True)
+        for idx, (label, desc) in enumerate(CHAOS_TASKS, start=1):
+            table.add_row(f"[{idx}]", f"{label} — {desc}")
+        console.print(table)
+        raw = Prompt.ask("Pick a task number (0 to leave)", default="0").strip()
+        try:
+            chosen = int(raw)
+        except ValueError:
+            chosen = 0
+        if chosen <= 0 or chosen > len(CHAOS_TASKS):
+            return
+        _dispatch_dashboard_choice(chosen)
+        return
 
     while True:
         state = load_state()
         user_name = state.get("name", "human")
         rank = get_global_rank(state)
         selected = 0
-        
+
         # ROBUST FLUSH: Terminals can take a split second to send the Enter key
         # that was used to launch the command. We must wait and flush completely.
         end_flush = time.time() + 0.35
         while time.time() < end_flush:
-            while msvcrt.kbhit():
-                msvcrt.getch()
+            flush_keys()
             time.sleep(0.01)
-        
+
         # Open the full-screen alternate buffer
         with console._console.screen():
             # Animate infinitely, tracking keypresses
@@ -731,39 +754,42 @@ def chaotic_dashboard_mode(loop=False):
             ) as live:
                 tick = 0
                 chosen = None
-                
+
                 while True:
                     live.update(_build_dashboard(state, rank, user_name, tick, selected))
                     time.sleep(0.1) # 10 FPS animation
                     tick += 1
-                    
-                    while msvcrt.kbhit():
-                        key = msvcrt.getch()
-                        if key in (b'\xe0', b'\x00'): # Arrow keys
-                            arrow = msvcrt.getch()
-                            if arrow == b'H': # Up
-                                selected = (selected - 1) % len(CHAOS_TASKS)
-                            elif arrow == b'P': # Down
-                                selected = (selected + 1) % len(CHAOS_TASKS)
-                        else:
-                            key_lower = key.lower()
-                            if key_lower == b'w':
-                                selected = (selected - 1) % len(CHAOS_TASKS)
-                            elif key_lower == b's':
-                                selected = (selected + 1) % len(CHAOS_TASKS)
-                            elif key in (b'\r', b'\n', b' '):
-                                chosen = selected + 1
-                                break
-                            elif key_lower in (b'q', b'\x1b') or key == b'0':
-                                chosen = 0
-                                break
-                                
+
+                    while kbhit():
+                        try:
+                            key = read_key()
+                        except EOFError:
+                            chosen = 0
+                            break
+                        if key in (KEY_UP,):
+                            selected = (selected - 1) % len(CHAOS_TASKS)
+                        elif key in (KEY_DOWN,):
+                            selected = (selected + 1) % len(CHAOS_TASKS)
+                        elif key.is_char("w"):
+                            selected = (selected - 1) % len(CHAOS_TASKS)
+                        elif key.is_char("s"):
+                            selected = (selected + 1) % len(CHAOS_TASKS)
+                        elif key in (KEY_ENTER, KEY_SPACE):
+                            chosen = selected + 1
+                            break
+                        elif key.is_char("0"):
+                            chosen = 0
+                            break
+                        elif key.is_char("q") or key in (KEY_ESC, KEY_CTRL_C):
+                            chosen = 0
+                            break
+
                     if chosen is not None:
                         break
 
         if chosen == 0:
             break
-        
+
         keep_going = _dispatch_dashboard_choice(chosen)
         if not loop or not keep_going:
             break

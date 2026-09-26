@@ -3,11 +3,24 @@
 import requests
 import io
 import os
-from PIL import Image
 from rich.align import Align
 from irl.console import console
 
+try:
+    from PIL import Image
+except ImportError:  # Pillow is optional; irl-pkg keeps working without it
+    Image = None
+
+
 def render_dog():
+    if Image is None:
+        console.print(
+            "[yellow]🐶 Pillow is missing, so the dog arrives in text form:[/yellow]\n"
+            "[cyan]  __\no-''|\\_____/)\n \\_/|_)     )\n    \\  __  /\n    (_/ (_/  woof.[/cyan]\n"
+            "[dim]Install Pillow for the full-technicolor experience: pip install Pillow[/dim]"
+        )
+        return
+
     try:
         with console._console.status("[dim cyan]Fetching a very good boy from dog.ceo...[/dim cyan]"):
             resp = requests.get("https://dog.ceo/api/breeds/image/random", timeout=5, verify=False)

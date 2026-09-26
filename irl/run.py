@@ -34,10 +34,10 @@ def run_command(cmd_args):
         display_cmd = cmd_str
         
     engine.render_run_start(display_cmd)
-    
+
     try:
-        # Pass through the process directly to terminal
-        subprocess.run(full_cmd, shell=True, check=True)
+        # Pass through the process directly to terminal (arg list, no shell)
+        subprocess.run(full_cmd, check=True)
         engine.render_run_success(display_cmd)
     except subprocess.CalledProcessError as e:
         engine.ui.render_generic(f"[bold red]❌ Command failed with code {e.returncode}[/bold red]")

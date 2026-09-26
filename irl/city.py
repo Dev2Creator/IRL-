@@ -10,33 +10,18 @@ console = Console()
 
 # --- Audio Engine ---
 def play_gta_sound():
-    if os.name == 'nt':
-        try:
-            import winsound
-            import glob
-            assets_dir = os.path.join(os.path.dirname(__file__), 'assets', 'audio')
-            wavs = glob.glob(os.path.join(assets_dir, '*.wav'))
-            if wavs:
-                target = random.choice(wavs)
-                winsound.PlaySound(target, winsound.SND_FILENAME | winsound.SND_ASYNC)
-        except:
-            pass
+    """Play a random bundled lofi track (busted jingle since 2.0)."""
+    try:
+        from irl.audio import play_random_lofi
+        play_random_lofi()
+    except Exception:
+        pass
 
 # --- Cross-Platform Input Handling ---
 def getch():
-    if os.name == 'nt':
-        import msvcrt
-        return msvcrt.getch().decode('utf-8', errors='ignore').lower()
-    else:
-        import tty, termios
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch.lower()
+    """Normalized single-key input from irl.keys (see keys.read_char)."""
+    from irl.keys import read_char
+    return read_char(default='q')
 
 # --- 2D City Engine ---
 
