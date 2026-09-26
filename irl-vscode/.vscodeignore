@@ -1,0 +1,9 @@
+.vscode/**
+src/**
+node_modules/**
+test/**
+scripts/**
+.gitignore
+yarn.lock
+package-lock.json
+**/*.map

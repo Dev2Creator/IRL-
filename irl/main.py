@@ -29,6 +29,7 @@ from rich.table import Table
 from irl.install import install_package
 from irl.glasses import inspect_package
 from irl.doctor import run_doctor
+from irl.rollback import rollback_irl
 
 IRL_ACCENT = "#F29265"
 IRL_CREAM = "#D7C0AA"
@@ -55,6 +56,13 @@ IRL_COMMANDS = [
     ("dog", "Summon an ASCII dog", "dog"),
     ("upgrade", "Upgrade IRL OS", "upgrade"),
     ("rollback", "Roll back to an older IRL version", "rollback"),
+    ("pet", "Visit your terminal pet", "pet"),
+    ("quests", "See today's daily quests", "quests"),
+    ("achievements", "View trophies and your dev level", "achievements"),
+    ("grassland", "Play Grassland Quest (free roguelike)", "grassland"),
+    ("rhythm", "Play Lofi Rhythm (beat game)", "rhythm"),
+    ("lang", "Run the .irl toy language", "lang"),
+    ("tui", "Launch the full-screen TUI (needs irl-pkg[tui])", "tui"),
     ("exit", "Leave IRL", "exit"),
 ]
 
@@ -130,110 +138,6 @@ def _render_irl_custom_help(state=None):
     c.print(f"[{IRL_MUTED}](Use `irl <command> --help` for command-specific options.)[/{IRL_MUTED}]")
 
 
-def _version_tuple(value):
-    try:
-        return tuple(int(part) for part in str(value).split("."))
-    except Exception:
-        return (0,)
-
-
-def _pypi_versions(package_name):
-    import json
-    import urllib.request
-    request = urllib.request.Request(
-        f"https://pypi.org/pypi/{package_name}/json",
-        headers={"User-Agent": "IRL-Rollback/1.0"},
-    )
-    with urllib.request.urlopen(request, timeout=10) as response:
-        data = json.load(response)
-    return sorted(data.get("releases", {}).keys(), key=_version_tuple, reverse=True)
-
-
-def _launch_package_install(package_name, target_version):
-    import subprocess
-    pip_command = [
-        sys.executable,
-        "-m",
-        "pip",
-        "install",
-        "--upgrade",
-        "--disable-pip-version-check",
-        f"{package_name}=={target_version}",
-    ]
-    helper = (
-        "import subprocess, sys, time; "
-        "time.sleep(1.5); "
-        "raise SystemExit(subprocess.call(sys.argv[1:]))"
-    )
-    creation_flags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
-    subprocess.Popen([sys.executable, "-c", helper, *pip_command], creationflags=creation_flags)
-
-
-def rollback_irl(target_version=None, yes=False):
-    from rich.console import Console
-    from rich.panel import Panel
-    from rich import box
-    c = Console(highlight=False)
-    package_name = "irl-pkg"
-    try:
-        versions = _pypi_versions(package_name)
-    except Exception:
-        c.print(f"[{IRL_CREAM}]The Moai cannot reach PyPI right now. Check your connection and try again.[/{IRL_CREAM}]")
-        return
-
-    if not versions:
-        c.print(f"[{IRL_CREAM}]No old stones were found on PyPI.[/{IRL_CREAM}]")
-        return
-
-    if target_version is None:
-        from rich.prompt import Prompt
-        table = Table(show_header=False, box=None, expand=True, pad_edge=False)
-        table.add_column("No", style=f"bold {IRL_MUTED}", no_wrap=True)
-        table.add_column("Version", style=f"bold {IRL_ACCENT}", no_wrap=True)
-        table.add_column("Action", style=IRL_CREAM)
-        shown = versions[:12]
-        aliases = {}
-        for index, version_value in enumerate(shown, start=1):
-            table.add_row(f"[{index}]", f"/{version_value:<12}", f"Install irl-pkg {version_value}")
-            aliases[str(index)] = version_value
-            aliases[version_value] = version_value
-            aliases[f"/{version_value}"] = version_value
-        table.add_row("[0]", "/cancel", "Leave the current stone in place")
-        aliases["0"] = None
-        aliases["cancel"] = None
-        aliases["/cancel"] = None
-        c.print(table)
-        raw_version = Prompt.ask(f"[{IRL_CREAM}]Version to install[/{IRL_CREAM}]", default="cancel").strip()
-        target_version = aliases.get(raw_version.lower(), raw_version.lstrip("/"))
-
-    if not target_version:
-        c.print(f"[{IRL_MUTED}]Rollback cancelled. The stone stays still.[/{IRL_MUTED}]")
-        return
-    if target_version not in versions:
-        c.print(f"[{IRL_CREAM}]Version {target_version} was not found for {package_name} on PyPI.[/{IRL_CREAM}]")
-        return
-
-    c.print(Panel(
-        f"[{IRL_MUTED}]Package    [/{IRL_MUTED}][{IRL_CREAM}]{package_name}[/{IRL_CREAM}]\n"
-        f"[{IRL_MUTED}]Target     [/{IRL_MUTED}][{IRL_ACCENT}]v{target_version}[/{IRL_ACCENT}]\n"
-        f"[{IRL_MUTED}]Moai      [/{IRL_MUTED}][{IRL_ACCENT}]Rolling the stone backward.[/{IRL_ACCENT}]",
-        title=f"[{IRL_ACCENT}]IRL Rollback Ritual[/{IRL_ACCENT}]",
-        border_style=IRL_BORDER,
-        box=box.SQUARE,
-    ))
-
-    if not yes:
-        try:
-            import questionary
-            approved = questionary.confirm("Install this older IRL version?", default=True).ask()
-        except Exception:
-            approved = input("Install this older IRL version? [Y/n] ").strip().lower() not in ("n", "no")
-        if not approved:
-            c.print(f"[{IRL_MUTED}]Rollback cancelled. No files changed.[/{IRL_MUTED}]")
-            return
-
-    _launch_package_install(package_name, target_version)
-    c.print(f"[{IRL_ACCENT}]🗿 Rollback started.[/{IRL_ACCENT}] [{IRL_CREAM}]pip will install {package_name}=={target_version} in a moment.[/{IRL_CREAM}]")
 
 def _run_shared_identity_first_run():
     try:

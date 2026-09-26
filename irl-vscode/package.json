@@ -2,7 +2,10 @@
     "name": "irl-lang",
     "displayName": "IRL Language Support",
     "description": "Syntax highlighting and snippets for the highly chaotic .irl programming language.",
-    "version": "1.0.0",
+    "version": "1.1.0",
+    "publisher": "Dev2Creator",
+    "license": "AGPL-3.0-or-later",
+    "icon": "icon.png",
     "engines": {
         "vscode": "^1.60.0"
     },
@@ -10,6 +13,21 @@
         "Programming Languages",
         "Snippets"
     ],
+    "keywords": [
+        "irl",
+        "toy language",
+        "snag",
+        "spill",
+        "esoteric"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Dev2Creator/IRL-"
+    },
+    "bugs": {
+        "url": "https://github.com/Dev2Creator/IRL-/issues"
+    },
+    "homepage": "https://github.com/Dev2Creator/IRL-/tree/main/irl-vscode",
     "contributes": {
         "languages": [
             {
