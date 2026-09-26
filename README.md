@@ -4,201 +4,149 @@
 
 ### Software for humans. Useful tools. Less terminal drama.
 
-A warm, keyboard-driven command center for installing packages, inspecting registries, diagnosing setup problems, and remembering that developers require water and sunlight.
+A warm, keyboard-driven command center for installing packages, inspecting registries, diagnosing setup problems, and remembering that developers require water and sunlight. Now with a garden roguelike, a rhythm game, and a pet.
 
 [![PyPI](https://img.shields.io/pypi/v/irl-pkg?style=flat-square&color=E47C55&label=PyPI)](https://pypi.org/project/irl-pkg/)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/irl-pkg?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/irl-pkg)
 [![Python](https://img.shields.io/pypi/pyversions/irl-pkg?style=flat-square&color=D7C0AA)](https://pypi.org/project/irl-pkg/)
 [![License](https://img.shields.io/github/license/Dev2Creator/IRL-?style=flat-square&color=614B39)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/Dev2Creator/IRL-?style=flat-square&color=3478F6)](https://github.com/Dev2Creator/IRL-/stargazers)
+[![CI](https://img.shields.io/badge/CI-Actions-2088FF?style=flat-square)](https://github.com/Dev2Creator/IRL-/actions)
 
-[Install](#install) · [Explore](#what-is-inside) · [Commands](#commands) · [Routing](#one-command-several-sources) · [Rollback](#the-moai-rollback-ritual)
+[Install](#install) · [Commands](#commands) · [Routing](#one-command-several-sources) · [Rollback](#the-moai-rollback-ritual)
 
 </div>
 
 ---
-
-    ██╗ ██████╗  ██╗
-    ██║ ██╔══██╗ ██║        IRL™
-    ██║ ██████╔╝ ██║        ─────────────
-    ██║ ██╔══██╗ ██║        Find the useful thing.
-    ██║ ██║  ██║ ███████╗   Let the terminal handle it.
-    ╚═╝ ╚═╝  ╚═╝ ╚══════╝
-
-IRL turns a terminal window into a human-friendly software toolbox. Ask it to install a package, inspect what a registry knows, check whether your machine is ready, or step away from the screen for thirty seconds.
 
 ## Install
 
-    pip install --upgrade irl-pkg
+```bash
+pip install --upgrade irl-pkg
+```
 
-Then open the interactive command board:
+Then run:
 
-    irl
+```bash
+irl
+```
 
-Or go directly to a command:
-
-    irl glasses requests
-    irl doctor chalk
-    irl install octocat/Hello-World
+First launch walks you through a short onboarding: a splash, a name, a vibe picker with live previews, and a 30-second tour. Works on **Linux, macOS, and Windows** — same commands, same chaos, zero crashes.
 
 ## What is inside
 
-| Path | What you get |
+| | |
 |---|---|
-| Universal install | Routes names, GitHub repositories, and direct URLs |
-| Glasses | Package version, size, source, and install method |
-| Doctor | Network, storage, package-source, and tool checks |
-| Package search | Natural-language discovery for useful packages |
-| Dashboard | The full keyboard-driven IRL command board |
-| Store and games | Local progression, themes, and playable tools |
-| IRL City | Terminal economy and story-like exploration |
-| Manga and story | Reading, downloads, and branching terminal play |
-| Wellness | Grass streaks, posture, hydration, weather, and compliments |
-| Moai rituals | Safe delayed upgrades and version rollback |
-
-The interface uses Rich panels, command palettes, warm burnt-orange accents, persistent local progress, and the same human-first visual language as IRL Wisdom.
+| 📦 **Universal installer** | PyPI, npm, GitHub, or a direct URL — `irl install` figures out the registry. |
+| 🩺 **Doctor & glasses** | Diagnose your setup; inspect a package before trusting it. |
+| 🌱 **Grass streak** | Touch grass daily. Ranks, XP, and a GitHub-style contribution heatmap. |
+| 🎮 **Games** | Classics plus **Grassland Quest** (garden roguelike) and **Lofi Rhythm** (beat game) — free. |
+| 🐾 **IRL Pet** | A terminal tamagotchi that evolves with your streak and sulks when skipped. |
+| 🏆 **Achievements & quests** | Daily quests pay coins; coins buy themes, games, and personality. |
+| 🏪 **18 themes** | Synthwave, Sakura, Terminal Classic, High-Contrast... and one you have to find. |
+| 🎵 **71 lofi loops** | Bundled. Play cross-platform via winsound/aplay/ffplay/afplay/paplay. |
+| 🌈 **Full-screen TUI** | `irl tui` — an optional Textual app (`pip install 'irl-pkg[tui]'`). |
 
 ## Commands
 
-Core package tools:
+### The useful part
 
-    irl install <package-or-url>
-    irl glasses <package>
-    irl doctor <package>
-    irl search <natural-language-query>
-    irl run <command>
+| Command | What it does |
+|---|---|
+| `irl install <pkg>` | Installs from PyPI, npm, GitHub (`owner/repo`), or a direct URL. |
+| `irl glasses <pkg>` | Version, size, and source of any package, before you commit. |
+| `irl doctor <pkg>` | Checks network, storage, and toolchain before installs go sideways. |
+| `irl search <query>` | AI-assisted package search that ends in an install offer. |
+| `irl run <cmd>` | Runs a command; in a project folder it quietly becomes `npm run <cmd>`. |
+| `irl upgrade` | Upgrades IRL™ itself. |
+| `irl rollback [ver]` | Time-travels irl-pkg to any published version. Interactive picker; `--yes` for the impatient. |
+| `irl lang` | The bundled `.irl` toy language: `run <file>`, `demo`, or `repl`. |
 
-Human maintenance:
+### The wellness part
 
-    irl grass
-    irl posture
-    irl hydrate
-    irl window
-    irl mirror
-    irl chaos
+| Command | What it does |
+|---|---|
+| `irl grass` | Touch grass. Daily. The streak is guarded by your pet and your conscience. |
+| `irl hydrate` / `irl posture` / `irl window` / `irl mirror` / `irl chaos` | Small rituals with strong opinions about your spine. |
+| `irl quests` | Three daily quests that pay coins. |
+| `irl achievements` | Trophies and your level: Noob → Code Gremlin → 10x Dev → Grass Sensei. |
+| `irl pet` | Adopt a duck, cat, dog, or plant. It earns coins. It remembers neglect. |
 
-The wider command center:
+### The fun part
 
-    irl dashboard
-    irl store
-    irl games
-    irl city
-    irl manga
-    irl story
-    irl bones
-    irl joke
-    irl dog
+| Command | What it does |
+|---|---|
+| `irl dashboard` | Mission control: real stats, grass heatmap, tips, everything one keypress away. |
+| `irl games` | Tic-Tac-Toe, RPS, Chess & Ludo sims — plus Grassland Quest (G) and Lofi Rhythm (R), free. |
+| `irl grassland` | Garden-maze roguelike: collect water and sunshine, dodge literal bugs, defeat The Deadline. Winning extends your streak. |
+| `irl rhythm` | 4-lane falling-note beat game (D/F/J/K) charted from the bundled lofi loops. |
+| `irl city` | IRL City: jobs, car theft, bank robberies, a wanted level. |
+| `irl store` | Buy themes, spare parts, and games with coins. Live previews included. |
+| `irl story` | Themed branching stories. One of them is about MS-DOS. |
+| `irl bones` / `irl joke` / `irl dog` / `irl manga` | Lofi beats, developer jokes, ASCII dogs, manga. |
+| `irl tui` | Full-screen Textual app: home, installer, games, and a lofi player. |
 
-Package maintenance:
+### The secret part
 
-    irl upgrade
-    irl rollback
-
-Run `irl --help` for the current command list and command-specific options.
+Some things aren't in the help. Codes open doors. That is all we say.
 
 ## One command, several sources
 
-IRL chooses a route from the target you give it:
+```bash
+irl install requests                      # PyPI
+irl install express                       # npm
+irl install owner/repo                    # GitHub (branch resolved via the API)
+irl install https://example.com/pkg.zip   # direct URL
+```
 
-| Input | Route |
-|---|---|
-| `requests` | Checks PyPI, then npm, then GitHub search |
-| `chalk` | Installs from npm when the package exists there |
-| `owner/repository` | Downloads the repository's default archive |
-| `https://.../archive.zip` | Downloads and extracts a direct archive |
-| `https://.../script.py` | Downloads the direct file |
-
-Examples:
-
-    irl install requests
-    irl install chalk
-    irl install octocat/Hello-World
-    irl install https://example.com/tool.zip
-
-Review third-party code before running it. IRL simplifies routing; it does not certify the safety of packages or repositories.
+Detection order: direct URL → GitHub `owner/repo` → PyPI → npm → GitHub keyword search. Archives are extracted into a **named directory** with a preview of what lands on disk, and path-traversal tricks ("zip-slip") are blocked and reported.
 
 ## The Moai upgrade ritual
 
-On Windows, a running launcher can lock its own executable. IRL hands the upgrade to a delayed helper so the current process can exit first:
+```bash
+irl upgrade
+```
 
-    irl upgrade
-
-The helper runs:
-
-    python -m pip install --upgrade irl-pkg
+Upgrade entrusts the stone to a delayed pip process, so your current command exits cleanly on every OS.
 
 ## The Moai rollback ritual
 
-Choose from available PyPI releases:
+```bash
+irl rollback             # interactive version picker
+irl rollback 1.7.5 --yes # direct, no confirmations, for the brave
+```
 
-    irl rollback
-
-Or request a known version directly:
-
-    irl rollback 1.7.5 --yes
-
-Manual pinning remains available:
-
-    pip index versions irl-pkg
-    pip install --upgrade irl-pkg==1.7.5
-
-Rollback changes the installed package version. Local IRL state remains on your machine.
+Versions come straight from PyPI; the downgrade runs detached so your terminal stays yours.
 
 ## Local state
 
-IRL stores its own progression locally:
+Everything lives in your home folder: `~/.irl_state.json` (profile, coins, themes), `~/.irl_grass.json` (streak + heatmap), `~/.irl_pet.json` (your pet), `~/.irl_quests.json` (daily board), `~/.irl_rhythm.json` (high scores), `~/.irl_achievements.json` (trophies). Delete them to start over; your pet will remember, briefly.
 
-    ~/.irl_state.json
-    ~/.irl_grass.json
+## Audio
 
-When the optional shared IRL identity package is installed, IRL can also greet the profile stored at:
-
-    ~/.irl/profile.json
-
-No IRL account is required for the core package tools.
-
-## How it works
-
-    irl
-    ├── argparse command routing
-    ├── Rich terminal rendering
-    ├── PyPI and npm registry checks
-    ├── GitHub repository lookup
-    ├── direct download and extraction
-    ├── local progression and themes
-    └── delayed pip maintenance helpers
+Bundled lofi loops play via winsound (Windows), aplay, ffplay, afplay, or paplay — whatever your system has. No audio backend? IRL™ degrades to air guitar, gracefully.
 
 ## Development
 
-    git clone https://github.com/Dev2Creator/IRL-.git
-    cd IRL-
-    python -m pip install -e .
-    irl
+```bash
+git clone https://github.com/Dev2Creator/IRL- IRL-
+cd IRL-
+pip install -e '.[dev,tui]'
+ruff check .
+pytest
+python -m build
+```
 
-Build a release:
-
-    python -m build
+CI runs ruff + pytest + build on Ubuntu, macOS, and Windows across Python 3.9–3.13. See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## Author
 
-Created by **Anika Mukherjee**
+**Anika Mukherjee** — [Dev2Creator](https://github.com/Dev2Creator)
 
-Email: [cuteypieanika@gmail.com](mailto:cuteypieanika@gmail.com)
+## Copyright, trademark & license
 
-GitHub: [@Dev2Creator](https://github.com/Dev2Creator)
+IRL™ is a trademark of Anika Mukherjee. All rights reserved regarding the mark.
 
-## Copyright, trademark, and license
+Copyright © 2026 Anika Mukherjee. This program is free software: you can redistribute it and/or modify it under the terms of the **GNU Affero General Public License v3 or later** — see [LICENSE](LICENSE).
 
-Copyright © 2026 Anika Mukherjee. All rights reserved.
-
-**IRL™** is a trademark of Anika Mukherjee.
-
-The source code is licensed under the [GNU Affero General Public License v3 or later](LICENSE).
-
----
-
-<div align="center">
-
-Built for humans who use terminals, not terminals pretending humans do not exist. 🗿
-
-</div>
+*In loving memory of the bundled GTA 1997 zip (2024–2026). It has ridden into the sunset for licensing-karma reasons. Touch real grass instead.*

@@ -4,19 +4,93 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "irl-pkg"
-version = "1.7.6"
-description = "A creative toolkit for developers."
+version = "2.0.0"
+description = "A gamified terminal command center: universal installer, games, lofi, and a pet. Software for Humans."
+readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
 authors = [
-    { name = "UNKNOWN™" }
+    { name = "Anika Mukherjee" }
 ]
+requires-python = ">=3.8"
 dependencies = [
     "requests",
     "rich",
     "Pillow",
     "questionary>=2.0.0"
 ]
-readme = "README.md"
-requires-python = ">=3.7"
+keywords = ["terminal", "cli", "installer", "games", "lofi", "tui", "productivity"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development",
+    "Topic :: Games/Entertainment",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/Dev2Creator/IRL-"
+Repository = "https://github.com/Dev2Creator/IRL-"
+Issues = "https://github.com/Dev2Creator/IRL-/issues"
+Changelog = "https://github.com/Dev2Creator/IRL-/blob/main/CHANGELOG.md"
 
 [project.scripts]
 irl = "irl.main:cli"
+
+[project.optional-dependencies]
+tui = ["textual>=0.40.0"]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "build",
+    "twine",
+    "pre-commit"
+]
+
+[tool.setuptools.packages.find]
+include = ["irl*"]
+
+[tool.setuptools.package-data]
+irl = [
+    "assets/audio/*.wav",
+    "lang/*.irl",
+    "lang/py.typed"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+source = ["irl"]
+omit = ["irl/tui_app.py"]
+
+[tool.coverage.report]
+fail_under = 40
+
+[tool.ruff]
+line-length = 200
+target-version = "py38"
+exclude = ["irl/quiz_bank.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "S"]
+ignore = [
+    "S101",  # assert is fine outside pytest-unfiltered code
+    "S603",  # subprocess with arg lists is the whole point
+    "S607",  # partial-path executable lookup (npm, aplay) is deliberate
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106"]
+"irl/lang/*" = ["E741"]  # lexer/parser single-letter tokens are fine

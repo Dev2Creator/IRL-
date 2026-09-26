@@ -1,5 +1,5 @@
 # IRL™ 🌱 - Software for Humans
-# Copyright (C) 2026 UNKNOWN™
+# Copyright (C) 2026 Anika Mukherjee
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -14,4 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# IRL Package Init
+"""IRL™ - Software for Humans. Useful tools. Less terminal drama."""
+
+__version__ = "2.0.0"
+__author__ = "Anika Mukherjee"

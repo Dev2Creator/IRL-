@@ -2,7 +2,7 @@ import os
 import glob
 
 COPYRIGHT = """# IRL™ 🌱 - Software for Humans
-# Copyright (C) 2026 UNKNOWN™
+# Copyright (C) 2026 Anika Mukherjee
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
