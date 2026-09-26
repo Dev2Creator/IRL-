@@ -28,21 +28,260 @@ from irl.install import install_package
 from irl.glasses import inspect_package
 from irl.doctor import run_doctor
 
+IRL_ACCENT = "#F29265"
+IRL_CREAM = "#D7C0AA"
+IRL_MUTED = "#614B39"
+IRL_BORDER = "#6B4E36"
+IRL_SELECT = "#3478F6"
+
+IRL_COMMANDS = [
+    ("install", "Install a package, repo, or URL", "install"),
+    ("glasses", "Inspect a package before trusting it", "glasses"),
+    ("doctor", "Diagnose a package like a calm terminal medic", "doctor"),
+    ("grass", "Touch grass; outdoor patch installed", "grass"),
+    ("posture", "Fix your posture before the stone judges you", "posture"),
+    ("hydrate", "Drink water; bugs hate hydration", "hydrate"),
+    ("search", "Find a useful package with AI help", "search"),
+    ("store", "Open the IRL store", "store"),
+    ("games", "Play purchased IRL games", "games"),
+    ("dashboard", "Enter the full terminal command board", "dashboard"),
+    ("city", "Enter IRL City economy mode", "city"),
+    ("manga", "Read or download IRL Manga", "manga"),
+    ("story", "Play the themed story mode", "story"),
+    ("bones", "Summon Professor Bones for lofi", "bones"),
+    ("joke", "Fetch a developer joke", "joke"),
+    ("dog", "Summon an ASCII dog", "dog"),
+    ("upgrade", "Upgrade IRL OS", "upgrade"),
+    ("rollback", "Roll back to an older IRL version", "rollback"),
+    ("exit", "Leave IRL", "exit"),
+]
+
+
+def _get_identity_line(state):
+    try:
+        import json
+        from pathlib import Path
+        profile_path = Path.home() / ".irl" / "profile.json"
+        if profile_path.exists():
+            profile = json.loads(profile_path.read_text(encoding="utf-8"))
+            name = profile.get("name") or state.get("name")
+            pronouns = profile.get("pronouns")
+            pronunciation = profile.get("name_pronunciation")
+            if name:
+                pronunciation_text = f" [{IRL_MUTED}]({pronunciation})[/{IRL_MUTED}]" if pronunciation else ""
+                pronouns_text = f" [{IRL_CREAM}]• {pronouns}[/{IRL_CREAM}]" if pronouns else ""
+                return f"[{IRL_MUTED}]Identity   [/{IRL_MUTED}][{IRL_ACCENT}]🗿 {name}[/{IRL_ACCENT}]{pronunciation_text}{pronouns_text}\n"
+    except Exception:
+        pass
+    name = state.get("name") or "traveler"
+    return f"[{IRL_MUTED}]Identity   [/{IRL_MUTED}][{IRL_ACCENT}]🗿 {name}[/{IRL_ACCENT}]\n"
+
+
+def _print_irl_wisdom_header(state=None):
+    from datetime import datetime
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.text import Text
+    from rich import box
+
+    c = Console(highlight=False)
+    state = state or {}
+    title = Text("IRL", style=f"bold {IRL_ACCENT}")
+    title.append("\nWISDOM OS", style=f"bold {IRL_ACCENT}")
+    c.print(title)
+    c.print(Text("✦  Software for humans. Terminal rituals. Useful choices.  ✦", style=IRL_CREAM))
+    c.print()
+
+    status_text = (
+        _get_identity_line(state)
+        + f"[{IRL_MUTED}]Mode       [/{IRL_MUTED}][{IRL_CREAM}]Ready[/{IRL_CREAM}]\n"
+        + f"[{IRL_MUTED}]Today      [/{IRL_MUTED}][{IRL_CREAM}]{datetime.now().strftime('%Y-%m-%d')}[/{IRL_CREAM}]\n"
+        + f"[{IRL_MUTED}]Stone      [/{IRL_MUTED}][{IRL_ACCENT}]The useful command remembers you.[/{IRL_ACCENT}]"
+    )
+    c.print(Panel(status_text, border_style=IRL_BORDER, box=box.SQUARE, expand=True, width=min(88, max(52, c.width - 2)), padding=(0, 1)))
+
+    line = Text()
+    line.append("● ", style=IRL_ACCENT)
+    line.append("irl       ", style=IRL_MUTED)
+    line.append("Ready — choose a command below", style=IRL_CREAM)
+    c.print(line)
+    version_line = Text("IRL™ ", style=IRL_MUTED)
+    version_line.append("terminal-safe human software", style=f"bold {IRL_ACCENT}")
+    c.print(version_line)
+    c.print()
+    return c
+
+
+def _render_irl_custom_help(state=None):
+    from rich.table import Table
+
+    c = _print_irl_wisdom_header(state or {})
+    table = Table(show_header=False, box=None, expand=True, pad_edge=False)
+    table.add_column("Command", style=f"bold {IRL_ACCENT}", no_wrap=True)
+    table.add_column("Description", style=IRL_CREAM)
+    for command, description, _ in IRL_COMMANDS:
+        if command == "exit":
+            continue
+        table.add_row(f"/{command:<11}", description)
+    c.print(table)
+    c.print()
+    c.print(f"[{IRL_MUTED}](Use `irl <command> --help` for command-specific options.)[/{IRL_MUTED}]")
+
+
+def _version_tuple(value):
+    try:
+        return tuple(int(part) for part in str(value).split("."))
+    except Exception:
+        return (0,)
+
+
+def _pypi_versions(package_name):
+    import json
+    import urllib.request
+    request = urllib.request.Request(
+        f"https://pypi.org/pypi/{package_name}/json",
+        headers={"User-Agent": "IRL-Rollback/1.0"},
+    )
+    with urllib.request.urlopen(request, timeout=10) as response:
+        data = json.load(response)
+    return sorted(data.get("releases", {}).keys(), key=_version_tuple, reverse=True)
+
+
+def _launch_package_install(package_name, target_version):
+    import subprocess
+    pip_command = [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--upgrade",
+        "--disable-pip-version-check",
+        f"{package_name}=={target_version}",
+    ]
+    helper = (
+        "import subprocess, sys, time; "
+        "time.sleep(1.5); "
+        "raise SystemExit(subprocess.call(sys.argv[1:]))"
+    )
+    creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
+    subprocess.Popen([sys.executable, "-c", helper, *pip_command], creationflags=creation_flags)
+
+
+def rollback_irl(target_version=None, yes=False):
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich import box
+    c = Console(highlight=False)
+    package_name = "irl-pkg"
+    try:
+        versions = _pypi_versions(package_name)
+    except Exception:
+        c.print(f"[{IRL_CREAM}]The Moai cannot reach PyPI right now. Check your connection and try again.[/{IRL_CREAM}]")
+        return
+
+    if not versions:
+        c.print(f"[{IRL_CREAM}]No old stones were found on PyPI.[/{IRL_CREAM}]")
+        return
+
+    if target_version is None:
+        from rich.prompt import Prompt
+        table = Table(show_header=False, box=None, expand=True, pad_edge=False)
+        table.add_column("No", style=f"bold {IRL_MUTED}", no_wrap=True)
+        table.add_column("Version", style=f"bold {IRL_ACCENT}", no_wrap=True)
+        table.add_column("Action", style=IRL_CREAM)
+        shown = versions[:12]
+        aliases = {}
+        for index, version_value in enumerate(shown, start=1):
+            table.add_row(f"[{index}]", f"/{version_value:<12}", f"Install irl-pkg {version_value}")
+            aliases[str(index)] = version_value
+            aliases[version_value] = version_value
+            aliases[f"/{version_value}"] = version_value
+        table.add_row("[0]", "/cancel", "Leave the current stone in place")
+        aliases["0"] = None
+        aliases["cancel"] = None
+        aliases["/cancel"] = None
+        c.print(table)
+        raw_version = Prompt.ask(f"[{IRL_CREAM}]Version to install[/{IRL_CREAM}]", default="cancel").strip()
+        target_version = aliases.get(raw_version.lower(), raw_version.lstrip("/"))
+
+    if not target_version:
+        c.print(f"[{IRL_MUTED}]Rollback cancelled. The stone stays still.[/{IRL_MUTED}]")
+        return
+    if target_version not in versions:
+        c.print(f"[{IRL_CREAM}]Version {target_version} was not found for {package_name} on PyPI.[/{IRL_CREAM}]")
+        return
+
+    c.print(Panel(
+        f"[{IRL_MUTED}]Package    [/{IRL_MUTED}][{IRL_CREAM}]{package_name}[/{IRL_CREAM}]\n"
+        f"[{IRL_MUTED}]Target     [/{IRL_MUTED}][{IRL_ACCENT}]v{target_version}[/{IRL_ACCENT}]\n"
+        f"[{IRL_MUTED}]Moai      [/{IRL_MUTED}][{IRL_ACCENT}]Rolling the stone backward.[/{IRL_ACCENT}]",
+        title=f"[{IRL_ACCENT}]IRL Rollback Ritual[/{IRL_ACCENT}]",
+        border_style=IRL_BORDER,
+        box=box.SQUARE,
+    ))
+
+    if not yes:
+        try:
+            import questionary
+            approved = questionary.confirm("Install this older IRL version?", default=True).ask()
+        except Exception:
+            approved = input("Install this older IRL version? [Y/n] ").strip().lower() not in ("n", "no")
+        if not approved:
+            c.print(f"[{IRL_MUTED}]Rollback cancelled. No files changed.[/{IRL_MUTED}]")
+            return
+
+    _launch_package_install(package_name, target_version)
+    c.print(f"[{IRL_ACCENT}]🗿 Rollback started.[/{IRL_ACCENT}] [{IRL_CREAM}]pip will install {package_name}=={target_version} in a moment.[/{IRL_CREAM}]")
+
+def _run_shared_identity_first_run():
+    try:
+        from irl_identity.first_run import ensure_first_run_login
+
+        ensure_first_run_login("irl", app_label="IRL", argv=sys.argv)
+    except Exception:
+        return
+
+
+def _sync_shared_identity_name(state):
+    try:
+        from irl_identity.profile import load_profile
+
+        profile = load_profile() or {}
+        name = profile.get("name")
+        if name and not state.get("name"):
+            state["name"] = name
+            return True
+    except Exception:
+        return False
+    return False
+
+
 def cli():
+    _run_shared_identity_first_run()
     from irl.state import load_state, save_state
     from irl.console import console
     from rich.prompt import Prompt
     
     state = load_state()
+    if _sync_shared_identity_name(state):
+        save_state(state)
     if not state.get("name"):
         console.print("\n[bold cyan]IRL™ OS Initialization...[/bold cyan]")
         user_name = Prompt.ask("What is your name, organic lifeform?")
         state["name"] = user_name
         save_state(state)
 
+    if len(sys.argv) == 2 and sys.argv[1] in ("-h", "--help"):
+        _render_irl_custom_help(state)
+        return
+
+    if len(sys.argv) == 1:
+        interactive_menu()
+        return
+
     from irl.themes import get_engine
     engine = get_engine()
-    engine.render_banner()
+    _print_irl_wisdom_header(state)
     
     if os.path.isdir("node_modules"):
         engine.render_node_modules()
@@ -84,6 +323,9 @@ def cli():
     search_parser = subparsers.add_parser("search", help="AI powered package search")
     search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
     upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
+    rollback_parser = subparsers.add_parser("rollback", help="Roll back IRL OS to an older version")
+    rollback_parser.add_argument("version", nargs="?", help="Version to install, e.g. 1.7.1")
+    rollback_parser.add_argument("--yes", "-y", action="store_true", help="Rollback without confirmation")
     run_parser = subparsers.add_parser("run", help="Run a command wrapped in IRL OS (e.g. irl run dev)")
     run_parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="Command and arguments to run")
     
@@ -142,6 +384,8 @@ def cli():
     elif args.command == "upgrade":
         from irl.install import upgrade_irl
         upgrade_irl()
+    elif args.command == "rollback":
+        rollback_irl(args.version, args.yes)
     elif args.command == "run":
         from irl.run import run_command
         if not args.cmd_args:
@@ -168,7 +412,6 @@ def cli():
         chaotic_dashboard_mode(loop=True)
     else:
         interactive_menu()
-
 def creative_menu():
     from rich.prompt import IntPrompt
     from rich.console import Console
@@ -394,7 +637,7 @@ def _build_dashboard(state, rank, user_name, tick, selected=0):
     layout["node"].update(render_dashboard_chrome("node", engine.color_id, node_table, node["roast"], tick))
     
     # Use theme colors for the ticker
-    ticker_text = f"[bold {border}]DARK HUMOR INCIDENT FEED[/bold {border}]"
+    ticker_text = f"[bold {border}]IRL SIGNAL FEED[/bold {border}]"
     layout["ticker"].update(render_dashboard_chrome("ticker", engine.color_id, ticker, ticker_text, tick))
     return layout
 
@@ -526,7 +769,64 @@ def chaotic_dashboard_mode(loop=False):
             break
 
 def interactive_menu():
-    chaotic_dashboard_mode(loop=True)
+    from rich.prompt import Prompt
+    from rich.table import Table
+    from irl.state import load_state
+
+    state = load_state()
+
+    visible_commands = [item for item in IRL_COMMANDS if item[0] != "exit"]
+    table = Table(show_header=False, box=None, expand=True, pad_edge=False)
+    table.add_column("No", style=f"bold {IRL_MUTED}", no_wrap=True)
+    table.add_column("Command", style=f"bold {IRL_ACCENT}", no_wrap=True)
+    table.add_column("Description", style=IRL_CREAM)
+    aliases = {}
+    for index, (cmd, desc, value) in enumerate(visible_commands, start=1):
+        table.add_row(f"[{index}]", f"/{cmd:<11}", desc)
+        aliases[str(index)] = value
+        aliases[cmd] = value
+        aliases[f"/{cmd}"] = value
+    c = _print_irl_wisdom_header(state)
+    c.print(table)
+    c.print(f"[{IRL_MUTED}]Type a number or slash command. Example: /rollback[/{IRL_MUTED}]")
+    raw_choice = Prompt.ask(f"[{IRL_CREAM}]Choose command[/{IRL_CREAM}]", default="dashboard").strip()
+    choice = aliases.get(raw_choice.lower(), raw_choice.lower().lstrip("/"))
+
+    if not choice or choice == "exit":
+        return
+    if choice in ("install", "glasses", "doctor"):
+        from rich.console import Console
+        c = Console(highlight=False)
+        prompt = {"install": "Package name, repo, or URL", "glasses": "Package to inspect", "doctor": "Package to diagnose"}[choice]
+        target = Prompt.ask(f"[{IRL_CREAM}]{prompt}[/{IRL_CREAM}]")
+        if not target:
+            return
+        if choice == "install":
+            install_package(target)
+        elif choice == "glasses":
+            inspect_package(target)
+        else:
+            run_doctor(target)
+        return
+    if choice == "search":
+        query = Prompt.ask(f"[{IRL_CREAM}]What package are you looking for?[/{IRL_CREAM}]")
+        if query:
+            from irl.search import search_and_install
+            search_and_install(query)
+        return
+    mapping = {"dashboard": 0, "grass": 4, "store": 6, "games": 8, "upgrade": 10, "city": 11, "manga": 12, "story": 13, "bones": 14, "joke": 15, "dog": 16}
+    if choice == "rollback":
+        rollback_irl()
+    elif choice == "posture":
+        from irl.creative import posture
+        posture()
+    elif choice == "hydrate":
+        from irl.creative import hydrate
+        hydrate()
+    elif choice == "dashboard":
+        chaotic_dashboard_mode(loop=True)
+    elif choice in mapping:
+        _dispatch_dashboard_choice(mapping[choice])
 
 if __name__ == "__main__":
     cli()

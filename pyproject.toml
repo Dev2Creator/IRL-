@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "irl-pkg"
-version = "1.7.0"
+version = "1.7.6"
 description = "A creative toolkit for developers."
 authors = [
     { name = "UNKNOWN™" }
@@ -12,7 +12,8 @@ authors = [
 dependencies = [
     "requests",
     "rich",
-    "Pillow"
+    "Pillow",
+    "questionary>=2.0.0"
 ]
 readme = "README.md"
 requires-python = ">=3.7"

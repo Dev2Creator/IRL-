@@ -29,33 +29,40 @@ from irl.themes.base import BaseLayout
 
 console = Console()
 
+IRL_WISDOM_ORANGE = "#F29265"
+IRL_WISDOM_CREAM = "#D7C0AA"
+IRL_WISDOM_MUTED = "#614B39"
+IRL_WISDOM_BORDER = "#6B4E36"
+
 class DefaultLayout(BaseLayout):
     def render_banner(self):
-        console.print(Panel("Welcome to IRL™", border_style="blue"))
+        title = Text("IRL", style=f"bold {IRL_WISDOM_ORANGE}")
+        body = Text("✦ Software for humans. Terminal rituals. Useful choices. ✦", style=IRL_WISDOM_CREAM)
+        console.print(Panel(Group(title, body), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
         
     def render_grass(self, text):
-        console.print(f"[green]🌿 {text}[/green]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]🌿 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
         
     def render_hydrate(self, text, glasses):
-        console.print(f"[cyan]💧 {text} ({glasses} glasses)[/cyan]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]💧 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text} ({glasses} glasses)[/{IRL_WISDOM_CREAM}]")
         
     def render_install(self, text):
-        console.print(f"[yellow]📦 {text}[/yellow]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]📦 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
         
     def render_coin_gain(self, amount, msg):
-        console.print(f"[gold1]💰 +{amount} coins: {msg}[/gold1]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]◆ +{amount} coins[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{msg}[/{IRL_WISDOM_CREAM}]")
         
     def render_generic(self, text):
-        console.print(text)
+        console.print(Panel(Text(str(text), style=IRL_WISDOM_CREAM), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
 
     def render_node_modules(self, text):
-        console.print(f"[bold red]📦 {text}[/bold red]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]◆ node_modules[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
         
     def render_run_start(self, text):
-        console.print(f"[bold yellow]⚡ {text}[/bold yellow]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]▶ RUN[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
         
     def render_run_success(self, text):
-        console.print(f"[bold green]✅ {text}[/bold green]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]◆ DONE[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
 
 class HackerLayout(BaseLayout):
     def _hex_dump(self):
@@ -95,31 +102,33 @@ class HackerLayout(BaseLayout):
 
 class CyberpunkLayout(BaseLayout):
     def render_banner(self):
-        console.print(Panel("[bold cyan]N I G H T   C I T Y[/bold cyan]", border_style="magenta", box=box.HEAVY))
+        title = Text("IRL", style=f"bold {IRL_WISDOM_ORANGE}")
+        subtitle = Text("✦ Any tool. Every useful thing. Zero terminal drama. ✦", style=IRL_WISDOM_CREAM)
+        console.print(Panel(Group(title, subtitle), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
         
     def render_grass(self, text):
-        console.print(f"[bold magenta]SYNTH-GRASS DETECTED // [/bold magenta][yellow]{text}[/yellow]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]🌿 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
         
     def render_hydrate(self, text, glasses):
-        console.print(f"[bold cyan]HYDRATION IMPLANT ACTIVATED // [/bold cyan][white]{glasses} VIALS // {text}[/white]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]💧 HYDRATE /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{glasses} glasses · {text}[/{IRL_WISDOM_CREAM}]")
         
     def render_install(self, text):
-        console.print(f"[bold yellow]DOWNLOADING CYBERWARE // [/bold yellow][magenta]{text}[/magenta]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]📦 INSTALL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
         
     def render_coin_gain(self, amount, msg):
-        console.print(f"[bold green]CREDITS TRANSFERRED: +{amount} EDDIES // {msg}[/bold green]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]◆ +{amount} coins[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{msg}[/{IRL_WISDOM_CREAM}]")
         
     def render_generic(self, text):
-        console.print(f"[bold cyan]> [/bold cyan][white]{text}[/white]")
+        console.print(Panel(Text(str(text), style=IRL_WISDOM_CREAM), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
 
     def render_node_modules(self, text):
-        console.print(f"[bold red]MALWARE SCAN: [/bold red][yellow]{text}[/yellow]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]◆ NODE_MODULES /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
 
     def render_run_start(self, text):
-        console.print(f"[bold yellow]RUNNING SCRIPT // [/bold yellow][white]{text}[/white]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]▶ RUN /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
 
     def render_run_success(self, text):
-        console.print(f"[bold green]SCRIPT COMPLETE // [/bold green][white]{text}[/white]")
+        console.print(f"[{IRL_WISDOM_ORANGE}]◆ DONE /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
 
 class DraculaLayout(BaseLayout):
     def render_banner(self):
@@ -397,38 +406,37 @@ class AILayout(BaseLayout):
 
 class UiProLayout(BaseLayout):
     def render_banner(self):
-        console.print(Panel("[bold #F8FAFC]IRL™ // DASHBOARD[/bold #F8FAFC]", border_style="#334155", box=box.SQUARE))
+        console.print(Panel("[bold #F29265]IRL™[/bold #F29265]\n[#D7C0AA]Ancient terminal. Modern tools. Better choices.[/#D7C0AA]", border_style="#6B4E36", box=box.SQUARE, padding=(1, 2)))
         
     def render_grass(self, text):
-        console.print(f"[bold #22C55E]ACTION /[/bold #22C55E] [white]ENV_UPDATE: {text}[/white]")
+        console.print(f"[bold #F29265]IRL /[/bold #F29265] [#D7C0AA]ENV_UPDATE: {text}[/#D7C0AA]")
         
     def render_hydrate(self, text, glasses):
-        console.print(f"[bold #38BDF8]ACTION /[/bold #38BDF8] [white]FLUID_INTAKE: {glasses}u. {text}[/white]")
+        console.print(f"[bold #F29265]IRL /[/bold #F29265] [#D7C0AA]FLUID_INTAKE: {glasses}u. {text}[/#D7C0AA]")
         
     def render_install(self, text):
-        console.print(f"[bold #EAB308]SYS /[/bold #EAB308] [white]PKG_INSTALL: {text}[/white]")
+        console.print(f"[bold #F29265]IRL /[/bold #F29265] [#D7C0AA]PKG_INSTALL: {text}[/#D7C0AA]")
         
     def render_coin_gain(self, amount, msg):
-        console.print(f"[bold #22C55E]SYS /[/bold #22C55E] [white]TX_REWARD: +{amount} ({msg})[/white]")
+        console.print(f"[bold #F29265]◆ +{amount} coins[/bold #F29265] [#D7C0AA]({msg})[/#D7C0AA]")
         
     def render_generic(self, text):
-        console.print(f"[bold #94A3B8]>[/bold #94A3B8] [white]{text}[/white]")
+        console.print(f"[bold #F29265]>[/bold #F29265] [#D7C0AA]{text}[/#D7C0AA]")
 
     def render_node_modules(self, text):
-        console.print(f"[bold #EF4444]ALERT /[/bold #EF4444] [white]SYS_WARNING: {text}[/white]")
+        console.print(f"[bold #F29265]◆ NODE_MODULES[/bold #F29265] [#D7C0AA]{text}[/#D7C0AA]")
 
     def render_run_start(self, text):
-        console.print(f"[bold #EAB308]EXEC /[/bold #EAB308] [white]STARTING: {text}[/white]")
+        console.print(f"[bold #F29265]▶ RUN[/bold #F29265] [#D7C0AA]{text}[/#D7C0AA]")
 
     def render_run_success(self, text):
-        console.print(f"[bold #22C55E]EXEC /[/bold #22C55E] [white]SUCCESS: {text}[/white]")
-
+        console.print(f"[bold #F29265]◆ DONE[/bold #F29265] [#D7C0AA]{text}[/#D7C0AA]")
 
 
 DASHBOARD_SKINS = {
-    "default": {"title": "IRL™ CORPORATE PANIC DESK", "border": "blue", "accent": "cyan", "box": box.ROUNDED, "art": "KPI: Still Employed"},
+    "default": {"title": "IRL™ COMMAND STONE", "border": "#6B4E36", "accent": "#F29265", "box": box.SQUARE, "art": "Ancient terminal. Modern tools. Better choices."},
     "hacker": {"title": "ROOT@BASEMENT:~# IRL_OVERRIDE", "border": "green", "accent": "bright_green", "box": box.HEAVY, "art": "01001001 01010010 01001100"},
-    "cyberpunk": {"title": "NEON DAMAGE CONTROL // NIGHT CITY", "border": "magenta", "accent": "cyan", "box": box.DOUBLE, "art": "CORPO BURNOUT INTERFACE"},
+    "cyberpunk": {"title": "IRL™ AMBER TERMINAL", "border": "#6B4E36", "accent": "#F29265", "box": box.SQUARE, "art": "The stone remembers your command history."},
     "dracula": {"title": "CASTLE CI/CD: BLOOD PIPELINE", "border": "red", "accent": "purple", "box": box.DOUBLE_EDGE, "art": "legacy code never dies"},
     "anime": {"title": "IRL-CHAN CHAOS CONTROL DESU", "border": "hot_pink", "accent": "pink1", "box": box.ROUNDED, "art": "senpai your build is cursed"},
     "crypto": {"title": "$IRL TERMINAL EXCHANGE", "border": "yellow", "accent": "green", "box": box.HEAVY_HEAD, "art": "HOPE/USD -99.7% | COPIUM +420%"},
@@ -438,7 +446,7 @@ DASHBOARD_SKINS = {
     "zen": {"title": "VOID OPS", "border": "white", "accent": "dim cyan", "box": box.MINIMAL, "art": "the bug is temporary. the suffering is versioned."},
     "toxic": {"title": "RANKED TERMINAL LOBBY", "border": "bright_red", "accent": "bright_magenta", "box": box.HEAVY, "art": "RATIO + L + UNHANDLED EXCEPTION"},
     "ai": {"title": "MODEL_CONTEXT_PROTOCOL: DESPAIR", "border": "bright_blue", "accent": "bright_cyan", "box": box.SQUARE, "art": '{"status":"online","ethics":"pending","vibes":"compiled"}'},
-    "uipro": {"title": "IRL™ PRO // BENTO DATA-DENSE", "border": "#334155", "accent": "#22C55E", "box": box.SQUARE, "art": "PATTERN: BENTO // TYPOGRAPHY: JETBRAINS // MODE: DARK"},
+    "uipro": {"title": "IRL™ WISDOM PANEL", "border": "#6B4E36", "accent": "#F29265", "box": box.SQUARE, "art": "Warm amber monitor // human-focused software"},
 }
 
 
@@ -455,16 +463,16 @@ def render_dashboard_chrome(kind, theme_id, payload, meta=None, tick=0):
         return Panel(content, border_style=skin["border"], box=skin["box"])
 
     if kind == "menu":
-        return Panel(payload, title=f"[bold {skin['accent']}]COMMAND MENU[/bold {skin['accent']}]", subtitle="[dim]choose a bad idea professionally[/dim]", border_style=skin["border"], box=skin["box"])
+        return Panel(payload, title=f"[bold {skin['accent']}]COMMAND MENU[/bold {skin['accent']}]", subtitle="[#614B39]choose a useful command[/#614B39]", border_style=skin["border"], box=skin["box"])
 
     if kind == "stats":
-        return Panel(payload, title=f"[bold {skin['accent']}]FAKE SYSTEM VITALS[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
+        return Panel(payload, title=f"[bold {skin['accent']}]SYSTEM VITALS[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
 
     if kind == "node":
-        return Panel(Group(payload, Text(str(meta), style="bold red")), title=f"[bold {skin['accent']}]DEPENDENCY LANDFILL SCAN[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
+        return Panel(Group(payload, Text(str(meta), style="bold red")), title=f"[bold {skin['accent']}]DEPENDENCY SCAN[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
 
     if kind == "ticker":
-        title = meta if meta else f"[bold red]DARK HUMOR INCIDENT FEED[/bold red]"
+        title = meta if meta else f"[bold red]IRL SIGNAL FEED[/bold red]"
         return Panel(Text(str(payload), style=f"bold {skin['accent']}"), title=title, border_style=skin["border"], box=skin["box"])
 
     return Panel(str(payload), border_style=skin["border"], box=skin["box"])

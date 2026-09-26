@@ -99,9 +99,28 @@ def upgrade_irl():
     from irl.console import console
     import subprocess
     import sys
-    console.print("\n[bold cyan]Upgrading IRL™ OS...[/bold cyan]")
+    import os
+
+    console.print("\n[bold #F29265]🗿 Moai upgrade ritual started.[/bold #F29265]")
+    console.print("[#D7C0AA]The upgrade will run after this CLI exits so Windows can release irl.exe.[/#D7C0AA]")
+
+    pip_command = [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--upgrade",
+        "--disable-pip-version-check",
+        "irl-pkg",
+    ]
+    helper = (
+        "import subprocess, sys, time; "
+        "time.sleep(1.5); "
+        "raise SystemExit(subprocess.call(sys.argv[1:]))"
+    )
+    creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
     try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "irl-pkg"])
-        console.print("[bold green]✨ IRL™ OS successfully upgraded to the latest version! ✨[/bold green]")
-    except subprocess.CalledProcessError:
-        console.print("[bold red]Failed to upgrade IRL™ OS. Check your permissions or internet connection.[/bold red]")
+        subprocess.Popen([sys.executable, "-c", helper, *pip_command], creationflags=creation_flags)
+        console.print("[bold #F29265]Upgrade entrusted to the stone.[/bold #F29265] [#D7C0AA]pip will start in a moment.[/#D7C0AA]")
+    except Exception as exc:
+        console.print(f"[bold red]Failed to start IRL™ upgrade helper: {exc}[/bold red]")
