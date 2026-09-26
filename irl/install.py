@@ -15,9 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import requests
-from irl.wrappers import install_npm, install_pip
+
 from irl.extract import download_and_extract
 from irl.state import add_coins
+from irl.wrappers import install_npm, install_pip
+
 
 def check_registry(url):
     try:
@@ -27,16 +29,19 @@ def check_registry(url):
     except Exception:
         return False
 
+
 def _celebrate_install():
     """Coins + quests + achievements for every successful install path."""
     add_coins(10, "Installed a package")
     try:
         from irl.quests import report as report_quest
+
         report_quest("install")
     except Exception:
         pass
     try:
         from irl.achievements import check_auto
+
         check_auto(context={"installed": True})
     except Exception:
         pass
@@ -44,8 +49,9 @@ def _celebrate_install():
 
 def install_package(target):
     from irl.themes import get_engine
+
     engine = get_engine()
-    
+
     engine.render_install_start(target)
 
     # Direct URL
@@ -95,7 +101,7 @@ def install_package(target):
                 best_match = items[0]
                 repo_full_name = best_match.get("full_name", target)
                 default_branch = best_match.get("default_branch", "main")
-                
+
                 zip_url = f"https://github.com/{repo_full_name}/archive/refs/heads/{default_branch}.zip"
                 download_and_extract(zip_url)
                 _celebrate_install()
@@ -110,11 +116,13 @@ def install_package(target):
 
     engine.ui.render_generic(f"✖ Error: Package or keyword '{target}' not found on NPM, PyPI, or GitHub.")
 
+
 def upgrade_irl():
-    from irl.console import console
+    import os
     import subprocess
     import sys
-    import os
+
+    from irl.console import console
 
     console.print("\n[bold #F29265]🗿 Moai upgrade ritual started.[/bold #F29265]")
     console.print("[#D7C0AA]The upgrade will run after this CLI exits so Windows can release irl.exe.[/#D7C0AA]")
@@ -128,11 +136,7 @@ def upgrade_irl():
         "--disable-pip-version-check",
         "irl-pkg",
     ]
-    helper = (
-        "import subprocess, sys, time; "
-        "time.sleep(1.5); "
-        "raise SystemExit(subprocess.call(sys.argv[1:]))"
-    )
+    helper = "import subprocess, sys, time; time.sleep(1.5); raise SystemExit(subprocess.call(sys.argv[1:]))"
     creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
     try:
         subprocess.Popen([sys.executable, "-c", helper, *pip_command], creationflags=creation_flags)

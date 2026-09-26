@@ -16,7 +16,9 @@
 
 import subprocess
 import sys
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
+
+from rich.progress import Progress, SpinnerColumn, TextColumn
+
 
 def run_with_progress(command_args, package, manager_name):
     with Progress(
@@ -24,7 +26,7 @@ def run_with_progress(command_args, package, manager_name):
         TextColumn("[progress.description]{task.description}"),
         transient=True,
     ) as progress:
-        task = progress.add_task(f"[green]🌱 Touching grass... Installing {package} via {manager_name}...", start=False)
+        _task = progress.add_task(f"[green]🌱 Touching grass... Installing {package} via {manager_name}...", start=False)
 
         process = subprocess.Popen(
             command_args,
@@ -33,9 +35,9 @@ def run_with_progress(command_args, package, manager_name):
         )
 
         stdout, stderr = process.communicate()
-        
+
     if process.returncode == 0:
-        print(f"✨ Successfully touched grass and installed the package!")
+        print("✨ Successfully touched grass and installed the package!")
         return True
     else:
         print(f"❌ Failed to install {package}.")
@@ -43,10 +45,10 @@ def run_with_progress(command_args, package, manager_name):
             print(stderr.decode("utf-8", errors="ignore"))
         return False
 
+
 def install_npm(package):
     return run_with_progress(["npm", "install", package], package, "npm")
 
+
 def install_pip(package):
-    return run_with_progress(
-        [sys.executable, "-m", "pip", "install", package], package, "pip"
-    )
+    return run_with_progress([sys.executable, "-m", "pip", "install", package], package, "pip")

@@ -1,23 +1,25 @@
-import sys
 import os
-from .lexer import lex, IrlSyntaxError
+import sys
+
+from .interpreter import IrlRuntimeError, evaluate
+from .lexer import IrlSyntaxError, lex
 from .parser import parse
-from .interpreter import evaluate, IrlRuntimeError
+
 
 def main():
     if len(sys.argv) < 2:
         print("☠️  BRUH. You didn't give me a file to run.")
         print("Usage: python -m irl_lang <file.irl>")
         sys.exit(1)
-        
+
     filepath = sys.argv[1]
     if not os.path.exists(filepath):
         print(f"☠️  BRUH. The file '{filepath}' literally doesn't exist.")
         sys.exit(1)
-        
-    with open(filepath, 'r', encoding='utf-8') as f:
+
+    with open(filepath, encoding="utf-8") as f:
         code = f.read()
-        
+
     try:
         tokens = lex(code)
         ast = parse(tokens)
@@ -28,6 +30,7 @@ def main():
     except Exception as e:
         print(f"\n[IRL_CRITICAL] ☠️ Something went catastrophically wrong: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

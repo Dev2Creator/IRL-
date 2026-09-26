@@ -14,15 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
 import json
+import os
 
 STATE_FILE = os.path.expanduser("~/.irl_state.json")
+
 
 def load_state():
     if os.path.exists(STATE_FILE):
         try:
-            with open(STATE_FILE, 'r') as f:
+            with open(STATE_FILE) as f:
                 state = json.load(f)
                 # Migration for old state format
                 if "active_banner" not in state:
@@ -33,7 +34,7 @@ def load_state():
                     state["purchased_tones"] = state.get("purchased_themes", ["default"])
                     state["purchased_colors"] = state.get("purchased_themes", ["default"])
                 return state
-        except:
+        except Exception:
             pass
     return {
         "name": None,
@@ -45,8 +46,9 @@ def load_state():
         "purchased_tones": ["default"],
         "purchased_colors": ["default"],
         "purchased_games": [],
-        "total_xp": 0
+        "total_xp": 0,
     }
+
 
 def get_global_rank(state):
     xp = state.get("total_xp", state.get("coins", 0))
@@ -65,23 +67,27 @@ def get_global_rank(state):
     else:
         return "Wage Slave"
 
+
 def save_state(state):
-    with open(STATE_FILE, 'w') as f:
+    with open(STATE_FILE, "w") as f:
         json.dump(state, f)
+
 
 def add_coins(amount, message=""):
     state = load_state()
     state["coins"] += amount
     state["total_xp"] = state.get("total_xp", state.get("coins", 0)) + amount
     save_state(state)
-    
+
     if message:
         try:
             from irl.themes import get_engine
+
             engine = get_engine()
             engine.render_coin_gain(amount, message)
         except Exception:
             from rich.console import Console
+
             Console().print(f"\n[yellow]🪙  +{amount} IRL Coins[/yellow] [dim]({message})[/dim]")
-        
+
     return state["coins"]

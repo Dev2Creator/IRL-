@@ -23,7 +23,6 @@ cleanly on every OS.
 """
 
 import json
-import os
 import subprocess
 import sys
 import urllib.request
@@ -33,7 +32,7 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.table import Table
 
-from irl.ui import IRL_ACCENT, IRL_CREAM, IRL_MUTED, IRL_BORDER
+from irl.ui import IRL_ACCENT, IRL_BORDER, IRL_CREAM, IRL_MUTED
 
 PACKAGE_NAME = "irl-pkg"
 USER_AGENT = "IRL-Rollback/2.0"
@@ -47,11 +46,11 @@ def _version_tuple(value):
 
 
 def pypi_versions(package_name=PACKAGE_NAME):
-    request = urllib.request.Request(
+    request = urllib.request.Request(  # noqa: S310 - pypi.org over https, fixed scheme
         f"https://pypi.org/pypi/{package_name}/json",
         headers={"User-Agent": USER_AGENT},
     )
-    with urllib.request.urlopen(request, timeout=10) as response:
+    with urllib.request.urlopen(request, timeout=10) as response:  # noqa: S310 - pypi.org over https
         data = json.load(response)
     return sorted(data.get("releases", {}).keys(), key=_version_tuple, reverse=True)
 
@@ -66,11 +65,7 @@ def _launch_package_install(package_name, target_version):
         "--disable-pip-version-check",
         f"{package_name}=={target_version}",
     ]
-    helper = (
-        "import subprocess, sys, time; "
-        "time.sleep(1.5); "
-        "raise SystemExit(subprocess.call(sys.argv[1:]))"
-    )
+    helper = "import subprocess, sys, time; time.sleep(1.5); raise SystemExit(subprocess.call(sys.argv[1:]))"
     creation_flags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
     subprocess.Popen([sys.executable, "-c", helper, *pip_command], creationflags=creation_flags)
 
@@ -79,6 +74,7 @@ def _pick_version(versions):
     """questionary picker with a numbered-table fallback."""
     try:
         import questionary
+
         shown = versions[:12]
         choices = [questionary.Choice(title=f"v{v}", value=v) for v in shown]
         choices.append(questionary.Choice(title="cancel — keep the current stone", value=None))
@@ -105,6 +101,7 @@ def _pick_version(versions):
     aliases["cancel"] = None
     aliases["/cancel"] = None
     from rich.console import Console
+
     Console().print(table)
     raw_version = Prompt.ask(f"[{IRL_CREAM}]Version to install[/{IRL_CREAM}]", default="cancel").strip()
     return aliases.get(raw_version.lower(), raw_version.lstrip("/"))
@@ -112,6 +109,7 @@ def _pick_version(versions):
 
 def rollback_irl(target_version=None, yes=False):
     from rich.console import Console
+
     c = Console(highlight=False)
     package_name = PACKAGE_NAME
 
@@ -139,18 +137,21 @@ def rollback_irl(target_version=None, yes=False):
         c.print(f"[{IRL_CREAM}]Version {target_version} was not found for {package_name} on PyPI.[/{IRL_CREAM}]")
         return
 
-    c.print(Panel(
-        f"[{IRL_MUTED}]Package    [/{IRL_MUTED}][{IRL_CREAM}]{package_name}[/{IRL_CREAM}]\n"
-        f"[{IRL_MUTED}]Target     [/{IRL_MUTED}][{IRL_ACCENT}]v{target_version}[/{IRL_ACCENT}]\n"
-        f"[{IRL_MUTED}]Moai      [/{IRL_MUTED}][{IRL_ACCENT}]Rolling the stone backward.[/{IRL_ACCENT}]",
-        title=f"[{IRL_ACCENT}]IRL Rollback Ritual[/{IRL_ACCENT}]",
-        border_style=IRL_BORDER,
-        box=box.SQUARE,
-    ))
+    c.print(
+        Panel(
+            f"[{IRL_MUTED}]Package    [/{IRL_MUTED}][{IRL_CREAM}]{package_name}[/{IRL_CREAM}]\n"
+            f"[{IRL_MUTED}]Target     [/{IRL_MUTED}][{IRL_ACCENT}]v{target_version}[/{IRL_ACCENT}]\n"
+            f"[{IRL_MUTED}]Moai      [/{IRL_MUTED}][{IRL_ACCENT}]Rolling the stone backward.[/{IRL_ACCENT}]",
+            title=f"[{IRL_ACCENT}]IRL Rollback Ritual[/{IRL_ACCENT}]",
+            border_style=IRL_BORDER,
+            box=box.SQUARE,
+        )
+    )
 
     if not yes:
         try:
             import questionary
+
             approved = questionary.confirm("Install this older IRL version?", default=True).ask()
         except Exception:
             approved = input("Install this older IRL version? [Y/n] ").strip().lower() not in ("n", "no")
@@ -159,5 +160,6 @@ def rollback_irl(target_version=None, yes=False):
             return
 
     _launch_package_install(package_name, target_version)
-    c.print(f"[{IRL_ACCENT}]🗿 Rollback started.[/{IRL_ACCENT}] [{IRL_CREAM}]pip will install {package_name}=={target_version} in a moment. "
-            f"Run `irl --help` after it finishes to confirm.[/{IRL_CREAM}]")
+    c.print(
+        f"[{IRL_ACCENT}]🗿 Rollback started.[/{IRL_ACCENT}] [{IRL_CREAM}]pip will install {package_name}=={target_version} in a moment. Run `irl --help` after it finishes to confirm.[/{IRL_CREAM}]"
+    )

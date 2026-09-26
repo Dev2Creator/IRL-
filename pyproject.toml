@@ -89,8 +89,14 @@ ignore = [
     "S101",  # assert is fine outside pytest-unfiltered code
     "S603",  # subprocess with arg lists is the whole point
     "S607",  # partial-path executable lookup (npm, aplay) is deliberate
+    "S110",  # try-except-pass: graceful degradation is load-bearing here
+    "S311",  # random is used for game RNG, not cryptography
+    "E701",  # one-line render methods are the house style for themes
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "S105", "S106"]
 "irl/lang/*" = ["E741"]  # lexer/parser single-letter tokens are fine
+"irl/themes/story_content.py" = ["E501"]  # prose: story text shouldn't wrap
+"irl/search.py" = ["S310"]  # dynamic AI endpoints; scheme comes from a fixed list
+"irl/manga*.py" = ["S310"]

@@ -46,12 +46,7 @@ def summon_bones():
     time.sleep(2)
 
     msg4 = Text("Now Playing:\nFlamenco Beats to Compile Code To", style="bold cyan")
-    panel = Panel(
-        Align.center(msg4),
-        border_style="cyan",
-        box=DOUBLE_EDGE,
-        padding=(1, 5)
-    )
+    panel = Panel(Align.center(msg4), border_style="cyan", box=DOUBLE_EDGE, padding=(1, 5))
     console.print(panel)
 
     temp_file = os.path.join(tempfile.gettempdir(), "irl_flamenco.mp3")
@@ -62,10 +57,7 @@ def summon_bones():
                 urlretrieve(BONES_MP3_URL, temp_file)
 
         if not play_mp3(temp_file):
-            console.print(
-                "[yellow]💀 No audio backend found (tried winmm/ffplay/afplay/paplay). "
-                "Bones plays air guitar instead.[/yellow]"
-            )
+            console.print("[yellow]💀 No audio backend found (tried winmm/ffplay/afplay/paplay). Bones plays air guitar instead.[/yellow]")
             return
 
         console.print(Align.center(Text("(Audio playing directly in terminal... Press Ctrl+C to stop)", style="dim italic")))

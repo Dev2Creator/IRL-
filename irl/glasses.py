@@ -14,19 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import requests
-import json
-from irl.console import console
 import time
+
+import requests
+
+from irl.console import console
+
 
 def format_size(size_in_bytes):
     if not size_in_bytes:
         return "Unknown"
-    for unit in ['B', 'KB', 'MB', 'GB']:
+    for unit in ["B", "KB", "MB", "GB"]:
         if size_in_bytes < 1024.0:
             return f"{size_in_bytes:.1f} {unit}"
         size_in_bytes /= 1024.0
     return f"{size_in_bytes:.1f} TB"
+
 
 def get_npm_info(package):
     url = f"https://registry.npmjs.org/{package}"
@@ -39,16 +42,11 @@ def get_npm_info(package):
             if latest_version and latest_version in data.get("versions", {}):
                 version_data = data["versions"][latest_version]
                 size = version_data.get("dist", {}).get("unpackedSize")
-                return {
-                    "package": package,
-                    "version": latest_version,
-                    "size": format_size(size) if size else "Unknown (Tarball)",
-                    "source": "NPM",
-                    "install_method": "npm"
-                }
-    except:
+                return {"package": package, "version": latest_version, "size": format_size(size) if size else "Unknown (Tarball)", "source": "NPM", "install_method": "npm"}
+    except Exception:
         pass
     return None
+
 
 def get_pypi_info(package):
     url = f"https://pypi.org/pypi/{package}/json"
@@ -67,22 +65,17 @@ def get_pypi_info(package):
                         break
                 if not size and urls:
                     size = urls[0].get("size")
-                    
-            return {
-                "package": package,
-                "version": version,
-                "size": format_size(size) if size else "Unknown",
-                "source": "PyPI",
-                "install_method": "pip"
-            }
-    except:
+
+            return {"package": package, "version": version, "size": format_size(size) if size else "Unknown", "source": "PyPI", "install_method": "pip"}
+    except Exception:
         pass
     return None
+
 
 def get_github_info(package):
     if "/" not in package or package.startswith("@"):
         return None
-        
+
     url = f"https://api.github.com/repos/{package}"
     try:
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -95,23 +88,24 @@ def get_github_info(package):
                 "version": data.get("default_branch", "main"),
                 "size": format_size(size_kb * 1024) if size_kb else "Unknown",
                 "source": "GitHub",
-                "install_method": "Available"
+                "install_method": "Available",
             }
-    except:
+    except Exception:
         pass
     return None
 
+
 def inspect_package(package):
     console.print("\n[bold cyan]👓 Looking closely...[/bold cyan]\n")
-    
+
     time.sleep(1)
-    
+
     info = get_npm_info(package)
     if not info:
         info = get_pypi_info(package)
     if not info:
         info = get_github_info(package)
-        
+
     if info:
         console.print(f"[bold]Package:[/bold] {info['package']}")
         console.print(f"[bold]Version:[/bold] {info['version']}")
@@ -125,6 +119,7 @@ def inspect_package(package):
 
     try:
         from irl.quests import report as _rq
+
         _rq("glasses")
     except Exception:
         pass

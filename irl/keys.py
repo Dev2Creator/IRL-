@@ -92,10 +92,19 @@ KEY_UNKNOWN = Key(UNKNOWN)
 
 def _named(name):
     return {
-        UP: KEY_UP, DOWN: KEY_DOWN, LEFT: KEY_LEFT, RIGHT: KEY_RIGHT,
-        ENTER: KEY_ENTER, ESC: KEY_ESC, SPACE: KEY_SPACE, TAB: KEY_TAB,
-        BACKSPACE: KEY_BACKSPACE, CTRL_C: KEY_CTRL_C, CTRL_D: KEY_CTRL_D,
-        EOF: KEY_EOF, UNKNOWN: KEY_UNKNOWN,
+        UP: KEY_UP,
+        DOWN: KEY_DOWN,
+        LEFT: KEY_LEFT,
+        RIGHT: KEY_RIGHT,
+        ENTER: KEY_ENTER,
+        ESC: KEY_ESC,
+        SPACE: KEY_SPACE,
+        TAB: KEY_TAB,
+        BACKSPACE: KEY_BACKSPACE,
+        CTRL_C: KEY_CTRL_C,
+        CTRL_D: KEY_CTRL_D,
+        EOF: KEY_EOF,
+        UNKNOWN: KEY_UNKNOWN,
     }[name]
 
 
@@ -110,6 +119,7 @@ def is_interactive():
 def _select_byte(timeout):
     """Read one byte if it arrives within ``timeout`` seconds; else None (POSIX)."""
     import select
+
     ready, _, _ = select.select([sys.stdin], [], [], timeout)
     if not ready:
         return None
@@ -121,6 +131,7 @@ def _read_byte():
     if _POSIX:
         return sys.stdin.read(1)
     import msvcrt
+
     return msvcrt.getwch()
 
 
@@ -130,7 +141,9 @@ def read_key():
         raise EOFError("stdin is not a terminal; single-key input unavailable")
 
     if _POSIX:
-        import termios, tty
+        import termios
+        import tty
+
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
         try:
@@ -193,6 +206,7 @@ def _normalize_windows(ch):
 
 def msvcrt_getwch():
     import msvcrt
+
     return msvcrt.getwch()
 
 
@@ -222,6 +236,7 @@ def kbhit():
     if _POSIX:
         return _select_byte(0) is not None
     import msvcrt
+
     return msvcrt.kbhit()
 
 
@@ -230,12 +245,14 @@ def flush_keys():
     if _POSIX:
         try:
             import termios
+
             termios.tcflush(sys.stdin.fileno(), termios.TCIFLUSH)
         except Exception:
             pass
         return
     try:
         import msvcrt
+
         while msvcrt.kbhit():
             msvcrt.getwch()
     except Exception:

@@ -55,6 +55,7 @@ def _spawn(args, wait=False):
 
 def _play_winsound(path, wait):
     import winsound
+
     flags = winsound.SND_FILENAME
     flags |= winsound.SND_WAIT if wait else winsound.SND_ASYNC
     winsound.PlaySound(path, flags)
@@ -64,6 +65,7 @@ def _play_winsound(path, wait):
 def _play_winmm_mp3(path, wait):
     import ctypes
     import time
+
     winmm = ctypes.windll.winmm
     alias = "irl_audio"
     winmm.mciSendStringW(f'open "{path}" type mpegvideo alias {alias}', None, 0, None)
@@ -118,6 +120,7 @@ def play_wav_loop(path):
     spinning for the length of a chart.
     """
     import threading
+
     global _stopped
 
     def _loop():
@@ -177,6 +180,7 @@ def stop_audio():
     if os.name == "nt":
         try:
             import winsound
+
             winsound.PlaySound(None, winsound.SND_PURGE)
         except Exception:
             pass

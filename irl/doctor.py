@@ -15,22 +15,22 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import shutil
-import requests
-import time
 import subprocess
+import time
+
+import requests
+
 from irl.console import console
 from irl.install import check_registry
 
+
 def check_command(cmd):
     try:
-        subprocess.run(
-            [cmd, "--version"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        subprocess.run([cmd, "--version"], capture_output=True)
         return True
     except Exception:
         return False
+
 
 def check_package_type(package):
     if package.startswith("http") or ("/" in package and not package.startswith("@")):
@@ -40,6 +40,7 @@ def check_package_type(package):
     if check_registry(f"https://pypi.org/pypi/{package}/json"):
         return "pip"
     return None
+
 
 def run_doctor(package):
     if package.istitle() or package.lower() == "system" or package.lower() == "me":
@@ -52,20 +53,20 @@ def run_doctor(package):
 
     console.print("\n[bold cyan]🩺 Checking package...[/bold cyan]\n")
     time.sleep(1)
-    
+
     # Check Network
     network = False
     try:
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
         requests.get("https://github.com", headers=headers, timeout=10)
         network = True
-    except:
+    except Exception:
         pass
 
     # Check Storage
     total, used, free = shutil.disk_usage("/")
-    storage = free > (50 * 1024 * 1024) # 50 MB free
-    
+    storage = free > (50 * 1024 * 1024)  # 50 MB free
+
     # Check Package & Dependencies
     pkg_type = check_package_type(package)
     deps = False
@@ -75,7 +76,7 @@ def run_doctor(package):
         deps = check_command("pip")
     elif pkg_type == "direct":
         deps = True
-        
+
     # Output
     if deps:
         console.print("[green]✅ Dependencies installed[/green]")
@@ -86,17 +87,17 @@ def run_doctor(package):
             console.print("[red]❌ PIP is not installed[/red]")
         else:
             console.print("[red]❌ Package not found, cannot check dependencies[/red]")
-            
+
     if network:
         console.print("[green]✅ Network available[/green]")
     else:
         console.print("[red]❌ Network unavailable[/red]")
-        
+
     if storage:
         console.print("[green]✅ Storage available[/green]")
     else:
         console.print("[red]❌ Insufficient storage[/red]")
-        
+
     console.print("\n[bold]Diagnosis:[/bold]")
     if pkg_type and deps and network and storage:
         console.print("[green]Ready for installation.[/green]\n")
@@ -107,6 +108,7 @@ def run_doctor(package):
 
     try:
         from irl.quests import report as report_quest
+
         report_quest("doctor")
     except Exception:
         pass

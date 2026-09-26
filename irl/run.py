@@ -16,15 +16,17 @@
 
 import os
 import subprocess
+
 from irl.themes import get_engine
+
 
 def run_command(cmd_args):
     engine = get_engine()
-    
+
     use_npm = False
     if os.path.exists("package.json"):
         use_npm = True
-    
+
     cmd_str = " ".join(cmd_args)
     if use_npm:
         full_cmd = ["npm", "run"] + cmd_args
@@ -32,7 +34,7 @@ def run_command(cmd_args):
     else:
         full_cmd = cmd_args
         display_cmd = cmd_str
-        
+
     engine.render_run_start(display_cmd)
 
     try:

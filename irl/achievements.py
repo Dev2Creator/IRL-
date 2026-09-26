@@ -22,15 +22,15 @@ survive reinstalls of your dignity. Coins → XP → levels:
 Noob → Code Gremlin → 10x Dev → Grass Sensei.
 """
 
-import os
 import json
+import os
 from datetime import datetime
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from irl.state import load_state, save_state, add_coins
+from irl.state import add_coins, load_state, save_state
 
 console = Console()
 
@@ -63,7 +63,7 @@ LEVELS = [
 
 def load_unlocked():
     try:
-        with open(ACHIEVEMENTS_FILE, "r", encoding="utf-8") as f:
+        with open(ACHIEVEMENTS_FILE, encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {}
@@ -103,12 +103,12 @@ def award(achievement_id, quiet=False):
     state["total_xp"] = state.get("total_xp", 0) + 50
     save_state(state)
     if not quiet:
-        console.print(Panel(
-            f"[bold yellow]🏆 ACHIEVEMENT UNLOCKED[/bold yellow]\n\n"
-            f"[bold]{title}[/bold] — [dim]{desc}[/dim]\n"
-            f"Reward: [bold]+{reward} coins[/bold], +50 XP",
-            border_style="yellow",
-        ))
+        console.print(
+            Panel(
+                f"[bold yellow]🏆 ACHIEVEMENT UNLOCKED[/bold yellow]\n\n[bold]{title}[/bold] — [dim]{desc}[/dim]\nReward: [bold]+{reward} coins[/bold], +50 XP",
+                border_style="yellow",
+            )
+        )
     return True
 
 
@@ -122,7 +122,7 @@ def check_auto(context=None):
     if hour in (1, 2, 3, 4):
         award("night_owl", quiet=True)
     try:
-        with open(os.path.expanduser("~/.irl_grass.json"), "r", encoding="utf-8") as f:
+        with open(os.path.expanduser("~/.irl_grass.json"), encoding="utf-8") as f:
             grass = json.load(f)
         streak = grass.get("streak", 0)
         if grass.get("last_touched"):
@@ -174,10 +174,11 @@ def show_achievements():
             status = "[dim]locked[/dim]"
         table.add_row(title, desc, status)
 
-    console.print(Panel(
-        f"[bold]Level: {level_name}[/bold] — [dim]{level_tagline}[/dim]\n"
-        f"Total XP: {xp}\n"
-        f"Unlocked: {len([a for a in ACHIEVEMENTS if a in unlocked])}/{len(ACHIEVEMENTS)}",
-        title="🏆 Achievements", border_style="yellow",
-    ))
+    console.print(
+        Panel(
+            f"[bold]Level: {level_name}[/bold] — [dim]{level_tagline}[/dim]\nTotal XP: {xp}\nUnlocked: {len([a for a in ACHIEVEMENTS if a in unlocked])}/{len(ACHIEVEMENTS)}",
+            title="🏆 Achievements",
+            border_style="yellow",
+        )
+    )
     console.print(table)

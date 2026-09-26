@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from irl.state import load_state
-from irl.themes.tones import TONES
-from irl.themes.layouts import LAYOUTS
 from rich.console import Console
+
+from irl.state import load_state
+from irl.themes.layouts import LAYOUTS
+from irl.themes.tones import TONES
+
 
 class ThemeEngine:
     def __init__(self):
@@ -25,11 +27,11 @@ class ThemeEngine:
         self.tone_id = self.state.get("active_tone", "default")
         self.banner_id = self.state.get("active_banner", "default")
         self.color_id = self.state.get("active_color", "default")
-        
+
         layout_cls = LAYOUTS.get(self.color_id, LAYOUTS["default"])
         self.console = Console()
         self.ui = layout_cls(self.console)
-        
+
         self.banner_ui = LAYOUTS.get(self.banner_id, LAYOUTS["default"])(self.console)
 
     def get_tone(self, key, **kwargs):
@@ -79,7 +81,7 @@ class ThemeEngine:
     def render_chaos_win(self):
         text = self.get_tone("chaos_win")
         self.ui.render_generic(text)
-        
+
     def render_chaos_lose(self, correct):
         text = self.get_tone("chaos_lose", correct=correct)
         self.ui.render_generic(text)
@@ -95,6 +97,7 @@ class ThemeEngine:
     def render_run_success(self, cmd):
         text = self.get_tone("run_success", cmd=cmd)
         self.ui.render_run_success(text)
+
 
 def get_engine():
     return ThemeEngine()

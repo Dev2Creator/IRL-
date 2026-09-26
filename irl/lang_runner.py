@@ -16,13 +16,12 @@
 
 """``irl lang`` — the .irl toy language, finally shipped with the package.
 
-  irl lang run <file.irl>   execute a file
-  irl lang demo             run the bundled demo program
-  irl lang repl             interactive loop with a persistent brain
+irl lang run <file.irl>   execute a file
+irl lang demo             run the bundled demo program
+irl lang repl             interactive loop with a persistent brain
 """
 
 import os
-import sys
 
 from rich.console import Console
 
@@ -38,7 +37,7 @@ def run_file(path):
     if not os.path.exists(path):
         console.print(f"[red]☠ The file '{path}' literally doesn't exist.[/red]")
         return 1
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         code = f.read()
     try:
         evaluate(parse(lex(code)))
@@ -64,11 +63,12 @@ def repl():
     """
     from rich.panel import Panel
 
-    console.print(Panel(
-        "[bold]IRL™ Lang REPL[/bold] — snag/spill/bet/cap/grind/brb/task/fax/fake/fr/nah\n"
-        "[dim]Blank line = run. `exit` = leave. Ctrl-C = clear buffer.[/dim]",
-        border_style="cyan",
-    ))
+    console.print(
+        Panel(
+            "[bold]IRL™ Lang REPL[/bold] — snag/spill/bet/cap/grind/brb/task/fax/fake/fr/nah\n[dim]Blank line = run. `exit` = leave. Ctrl-C = clear buffer.[/dim]",
+            border_style="cyan",
+        )
+    )
     interpreter = Interpreter()
     buffer = []
 

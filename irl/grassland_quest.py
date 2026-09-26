@@ -31,7 +31,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from irl.keys import read_char, is_interactive
+from irl.keys import is_interactive, read_char
 
 console = Console()
 
@@ -80,12 +80,7 @@ def generate_maze(width=15, height=15, seed=None):
 def place_items(grid, seed=None):
     """Drop water/sun pickups and bugs on path cells (never near start)."""
     rng = random.Random(seed if seed is not None else random.randrange(1 << 30))
-    paths = [
-        (x, y)
-        for y in range(len(grid))
-        for x in range(len(grid[0]))
-        if grid[y][x] == "." and (x, y) != (1, 1)
-    ]
+    paths = [(x, y) for y in range(len(grid)) for x in range(len(grid[0])) if grid[y][x] == "." and (x, y) != (1, 1)]
     rng.shuffle(paths)
 
     def take(n):
@@ -119,9 +114,7 @@ class Game:
         header = Text(" G R A S S L A N D   Q U E S T ", style="bold green")
         console.print(Panel(header, border_style="green"))
         status = (
-            f" HP: {'[red]♥[/red]' * self.hp}{'[dim]·[/dim]' * (START_HP - self.hp)}  "
-            f"water [cyan]{self.collected_water}/{WATER_NEEDED}[/cyan]  "
-            f"sun [yellow]{self.collected_sun}/{SUN_NEEDED}[/yellow]"
+            f" HP: {'[red]♥[/red]' * self.hp}{'[dim]·[/dim]' * (START_HP - self.hp)}  water [cyan]{self.collected_water}/{WATER_NEEDED}[/cyan]  sun [yellow]{self.collected_sun}/{SUN_NEEDED}[/yellow]"
         )
         console.print(status)
         for y in range(len(self.grid)):
@@ -156,7 +149,7 @@ class Game:
     def move_bugs(self):
         """Bugs shamble toward the player, one step, 60% of the time."""
         moved = []
-        for (bx, by) in self.bugs:
+        for bx, by in self.bugs:
             if random.random() < 0.6:
                 dx = (self.px > bx) - (self.px < bx)
                 dy = (self.py > by) - (self.py < by)
@@ -211,14 +204,16 @@ class Game:
     def boss_fight(self):
         """The Deadline: turn-based, three actions, one highly stressed boss."""
         boss_hp = 5
-        console.print(Panel(
-            "[bold magenta]§ THE DEADLINE §[/bold magenta]\n"
-            "[dim]It is 23:58 on a Friday, personified. It must ship. Or must you?[/dim]",
-            border_style="magenta",
-        ))
+        console.print(
+            Panel(
+                "[bold magenta]§ THE DEADLINE §[/bold magenta]\n[dim]It is 23:58 on a Friday, personified. It must ship. Or must you?[/dim]",
+                border_style="magenta",
+            )
+        )
         actions = {"1": "Ship it", "2": "Dodge the standup", "3": "Debug bravely"}
         while boss_hp > 0 and self.hp > 0:
             prompt = "  ".join(f"[{k}] {v}" for k, v in actions.items())
+            console.print(f"[bold]{prompt}[/bold]")
             choice = read_char(default="2")
             if choice == "q":
                 return
@@ -257,11 +252,12 @@ class Game:
 
 def extend_grass_streak(days=1):
     """Winning the quest extends the grass streak (bonus days, capped daily)."""
-    import os
     import json
+    import os
+
     path = os.path.expanduser("~/.irl_grass.json")
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             grass = json.load(f)
     except Exception:
         grass = {"streak": 0, "xp": 0, "history": {}}
@@ -297,28 +293,34 @@ def play_grassland_quest(seed=None):
     if game.won:
         loot = 10 * game.collected_water + 15 * game.collected_sun + 100
         from irl.state import add_coins
+
         add_coins(loot, "Grassland Quest victory")
         new_streak = extend_grass_streak(1)
         try:
             from irl.achievements import check_auto
+
             check_auto(context={"game": "grassland_win"})
         except Exception:
             pass
-        console.print(Panel(
-            f"[bold green]VICTORY[/bold green]\n\n"
-            f"Loot: [bold yellow]+{loot} coins[/bold yellow]\n"
-            f"Grass streak: [bold green]{new_streak} days[/bold green] (+1 bonus)\n"
-            f"[dim]The garden thanks you. The bugs hold a grudge.[/dim]",
-            border_style="green",
-        ))
+        console.print(
+            Panel(
+                f"[bold green]VICTORY[/bold green]\n\n"
+                f"Loot: [bold yellow]+{loot} coins[/bold yellow]\n"
+                f"Grass streak: [bold green]{new_streak} days[/bold green] (+1 bonus)\n"
+                f"[dim]The garden thanks you. The bugs hold a grudge.[/dim]",
+                border_style="green",
+            )
+        )
         return True
     loot = 10 * game.collected_water + 15 * game.collected_sun
     if loot:
         from irl.state import add_coins
+
         add_coins(loot, "Grassland Quest (partial loot)")
-    console.print(Panel(
-        f"[bold red]QUEST FAILED[/bold red]\n[dim]Water: {game.collected_water}, sun: {game.collected_sun}. "
-        f"The Deadline remains smug. Salvaged coins: {loot}.[/dim]",
-        border_style="red",
-    ))
+    console.print(
+        Panel(
+            f"[bold red]QUEST FAILED[/bold red]\n[dim]Water: {game.collected_water}, sun: {game.collected_sun}. The Deadline remains smug. Salvaged coins: {loot}.[/dim]",
+            border_style="red",
+        )
+    )
     return False

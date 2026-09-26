@@ -31,7 +31,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from irl.state import load_state, save_state, add_coins
+from irl.state import add_coins
 
 console = Console()
 
@@ -53,7 +53,7 @@ QUEST_POOL = {
 
 def load_board():
     try:
-        with open(QUESTS_FILE, "r", encoding="utf-8") as f:
+        with open(QUESTS_FILE, encoding="utf-8") as f:
             board = json.load(f)
     except Exception:
         board = {}
@@ -95,23 +95,26 @@ def report(quest_id, done=True):
             board.setdefault("history", {})[board["date"]] = True
             save_board(board)
             from irl.achievements import check_auto
+
             check_auto(context={"quests_all_done": True})
-            console.print(Panel(
-                "[bold green]ALL DAILY QUESTS COMPLETE[/bold green]\n"
-                "[dim]The void has been held at bay for one more day.[/dim]",
-                border_style="green",
-            ))
+            console.print(
+                Panel(
+                    "[bold green]ALL DAILY QUESTS COMPLETE[/bold green]\n[dim]The void has been held at bay for one more day.[/dim]",
+                    border_style="green",
+                )
+            )
     return changed
 
 
 def show_quests():
     board = load_board()
     done = sum(1 for q in board["today"] if q["done"])
-    console.print(Panel(
-        f"[bold cyan]📋 DAILY QUESTS[/bold cyan] — [dim]{board['date']}[/dim]\n"
-        f"Progress: {done}/3 — rewards pay out the moment a quest completes.",
-        border_style="cyan",
-    ))
+    console.print(
+        Panel(
+            f"[bold cyan]📋 DAILY QUESTS[/bold cyan] — [dim]{board['date']}[/dim]\nProgress: {done}/3 — rewards pay out the moment a quest completes.",
+            border_style="cyan",
+        )
+    )
     table = Table(show_header=True, expand=True)
     table.add_column("Quest", style="bold")
     table.add_column("Command", style="dim")

@@ -14,25 +14,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
 import json
+import os
 from datetime import datetime, timedelta
+
 from irl.state import add_coins
 
 STATE_FILE = os.path.expanduser("~/.irl_grass.json")
 
+
 def load_state():
     if os.path.exists(STATE_FILE):
         try:
-            with open(STATE_FILE, 'r') as f:
+            with open(STATE_FILE) as f:
                 return json.load(f)
-        except:
+        except Exception:
             pass
     return {"last_touched": None, "streak": 0, "xp": 0}
 
+
 def save_state(state):
-    with open(STATE_FILE, 'w') as f:
+    with open(STATE_FILE, "w") as f:
         json.dump(state, f)
+
 
 def get_rank(streak):
     if streak >= 365:
@@ -54,20 +58,20 @@ def get_rank(streak):
     else:
         return "🌿 Rookie Grass Toucher"
 
+
 def touch_grass():
     from irl.themes import get_engine
+
     engine = get_engine()
-    
+
     state = load_state()
     today_str = datetime.now().strftime("%Y-%m-%d")
     today_date = datetime.strptime(today_str, "%Y-%m-%d").date()
-    
+
     if state["last_touched"] == today_str:
         engine.ui.render_generic("⚠️ Grass already touched today. Come back tomorrow.")
         return
 
-    prev_streak = state["streak"]
-    
     if state["last_touched"]:
         last_date = datetime.strptime(state["last_touched"], "%Y-%m-%d").date()
         if today_date - last_date == timedelta(days=1):
@@ -81,21 +85,23 @@ def touch_grass():
     state["last_touched"] = today_str
     state.setdefault("history", {})[today_str] = 1
     save_state(state)
-    
+
     engine.render_grass()
     add_coins(50, "Touched grass")
-    
+
     rank = get_rank(state["streak"])
     days_text = "day" if state["streak"] == 1 else "days"
     engine.ui.render_generic(f"Current Streak: {state['streak']} {days_text}\nRank: {rank}\n")
 
     try:
         from irl.quests import report as report_quest
+
         report_quest("grass")
     except Exception:
         pass
     try:
         from irl.achievements import check_auto
+
         check_auto()
     except Exception:
         pass

@@ -30,9 +30,8 @@ from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import IntPrompt
-from rich.table import Table
 
-from irl.state import load_state, save_state, add_coins
+from irl.state import add_coins, load_state
 
 console = Console()
 
@@ -65,7 +64,7 @@ MOODS = {
 def load_pet():
     if os.path.exists(PET_FILE):
         try:
-            with open(PET_FILE, "r", encoding="utf-8") as f:
+            with open(PET_FILE, encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             pass
@@ -144,6 +143,7 @@ def adopt_pet():
     console.print(f"\n[bold green]🎉 {name} the {SPECIES[species]['name']} joined your terminal![/bold green]")
     try:
         from irl.achievements import check_auto
+
         check_auto(context={"pet_adopted": True})
     except Exception:
         pass
@@ -152,10 +152,9 @@ def adopt_pet():
 
 def _sync_pet(pet):
     """Evolution + mood housekeeping on every visit."""
-    state = load_state()
     streak = 0
     try:
-        with open(os.path.expanduser("~/.irl_grass.json"), "r", encoding="utf-8") as f:
+        with open(os.path.expanduser("~/.irl_grass.json"), encoding="utf-8") as f:
             streak = json.load(f).get("streak", 0)
     except Exception:
         pass
@@ -187,7 +186,7 @@ def render_pet(pet):
 def feed_pet(pet):
     state = load_state()
     if state.get("coins", 0) < 10:
-        console.print("[red]Feeding costs 10 coins. You have {0}. Earn coins via games or quests.[/red]".format(state.get("coins", 0)))
+        console.print(f"[red]Feeding costs 10 coins. You have {state.get('coins', 0)}. Earn coins via games or quests.[/red]")
         return pet
     add_coins(-10, f"Feeding {pet.get('name', 'the pet')}")
     pet["hunger"] = max(0, pet.get("hunger", 0) - 2)
@@ -217,6 +216,7 @@ def pet_cli():
     _sync_pet(pet)
     try:
         from irl.quests import report as report_quest
+
         report_quest("pet")
     except Exception:
         pass

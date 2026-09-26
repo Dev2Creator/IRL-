@@ -22,11 +22,11 @@ you get a preview of what will be written before anything touches disk.
 """
 
 import os
-import requests
 import tarfile
 import urllib.parse
 import zipfile
 
+import requests
 from rich.panel import Panel
 from rich.progress import DownloadColumn, Progress, TextColumn, TransferSpeedColumn
 
@@ -101,11 +101,7 @@ def archive_preview(archive_path):
         return None
     more = f"\n  … and {count - 8} more" if count > 8 else ""
     listing = "".join(f"\n  {e}" for e in entries) + more
-    return (
-        f"Archive: [bold]{os.path.basename(archive_path)}[/bold]\n"
-        f"Entries: {count}   Uncompressed: {total / 1024 / 1024:.1f} MB\n"
-        f"Contents:{listing}"
-    )
+    return f"Archive: [bold]{os.path.basename(archive_path)}[/bold]\nEntries: {count}   Uncompressed: {total / 1024 / 1024:.1f} MB\nContents:{listing}"
 
 
 def safe_extract(archive_path, target_dir, assume_yes=False):
@@ -120,6 +116,7 @@ def safe_extract(archive_path, target_dir, assume_yes=False):
 
     if not assume_yes:
         from rich.prompt import Prompt
+
         approved = Prompt.ask("Extract here? [y/N]", default="no").strip().lower() in ("y", "yes")
         if not approved:
             print("Extraction cancelled. The archive stays put, unloved.")
@@ -128,11 +125,11 @@ def safe_extract(archive_path, target_dir, assume_yes=False):
     if zipfile.is_zipfile(archive_path):
         _validate_zip(archive_path, target_dir)
         with zipfile.ZipFile(archive_path) as zf:
-            zf.extractall(target_dir)
+            zf.extractall(target_dir)  # noqa: S202 - every member validated in _validate_zip above
     else:
         _validate_tar(archive_path, target_dir)
         with tarfile.open(archive_path, "r:*") as tf:
-            tf.extractall(target_dir)
+            tf.extractall(target_dir)  # noqa: S202 - every member validated in _validate_tar above
     return True
 
 
@@ -148,18 +145,13 @@ def download_and_extract(url):
         total_size = int(response.headers.get("content-length", 0))
         filename = _sanitize_filename(response.headers.get("content-disposition"), url)
 
-        with Progress(
-            TextColumn("[bold blue]🌱 Touching grass..."),
-            "[progress.percentage]{task.percentage:>3.0f}%",
-            DownloadColumn(),
-            TransferSpeedColumn()
-        ) as progress:
-            task = progress.add_task("Downloading", total=total_size)
+        with Progress(TextColumn("[bold blue]🌱 Touching grass..."), "[progress.percentage]{task.percentage:>3.0f}%", DownloadColumn(), TransferSpeedColumn()) as progress:
+            _task = progress.add_task("Downloading", total=total_size)
             with open(filename, "wb") as file:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:
                         file.write(chunk)
-                        progress.update(task, advance=len(chunk))
+                        progress.update(_task, advance=len(chunk))
 
         # Named target dir (no more spraying files into the CWD).
         stem = os.path.splitext(filename)[0].rstrip(".-") or "package"

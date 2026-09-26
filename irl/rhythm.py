@@ -49,7 +49,7 @@ HIT_WINDOW = 0.42  # seconds a note waits at the judgment line
 
 def load_scores():
     try:
-        with open(SCORE_FILE, "r", encoding="utf-8") as f:
+        with open(SCORE_FILE, encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return {}
@@ -89,7 +89,7 @@ def make_chart(track_name, duration, density=1.4):
             lane = rng.randrange(4)
             notes.append((round(t, 2), lane))
             if rng.random() < 0.18:  # occasional chord
-                other = rng.choice([l for l in range(4) if l != lane])
+                other = rng.choice([lane2 for lane2 in range(4) if lane2 != lane])
                 notes.append((round(t, 2), other))
         t += beat
     return notes
@@ -111,7 +111,7 @@ def render(pending, score, combo, max_combo, judgments, now, title):
     height = 14
     span = 4.0  # seconds a note is visible before the judgment line
     grid = [[" " for _ in range(4)] for _ in range(height)]
-    for (t, lane) in pending:
+    for t, lane in pending:
         distance = t - now
         if distance < -HIT_WINDOW or distance > span:
             continue
@@ -119,14 +119,11 @@ def render(pending, score, combo, max_combo, judgments, now, title):
         grid[row][lane] = "▼"
     body = Text()
     for row in range(height):
-        line = "".join(f"  {grid[row][l]}  " for l in range(4))
+        line = "".join(f"  {grid[row][lane]}  " for lane in range(4))
         style = "bold white on grey15" if row == height - 1 else "cyan"
         body.append(line + "\n", style=style)
     body.append("     ┴──┴──┴──┴", style="dim")
-    stats = (
-        f"score {score:>6}   combo {combo:>3}x   best {max_combo:>3}x\n"
-        f"PERFECT {judgments.get('perfect', 0)}   GOOD {judgments.get('good', 0)}   MISS {judgments.get('miss', 0)}"
-    )
+    stats = f"score {score:>6}   combo {combo:>3}x   best {max_combo:>3}x\nPERFECT {judgments.get('perfect', 0)}   GOOD {judgments.get('good', 0)}   MISS {judgments.get('miss', 0)}"
     return Panel(body, title=f"♪ {title}", subtitle=stats, border_style="cyan")
 
 
@@ -135,7 +132,6 @@ def play_chart(track_path, notes, duration):
 
     ``duration`` is the chart length in seconds; audio loops underneath.
     """
-    lane_rows = {l: [] for l in range(4)}
     score = 0
     combo = 0
     max_combo = 0
@@ -154,6 +150,7 @@ def play_chart(track_path, notes, duration):
                 judgments["miss"] += 1
             # Drain input
             from irl.keys import kbhit, read_key
+
             while kbhit():
                 try:
                     key = read_key()
@@ -164,7 +161,7 @@ def play_chart(track_path, notes, duration):
                 lane = LANE_KEYS.get(key.char.lower() if key.char else "")
                 if lane is None:
                     continue
-                hit = next(((t, l) for (t, l) in pending if l == lane and abs(t - now) <= HIT_WINDOW), None)
+                hit = next(((t, ln) for (t, ln) in pending if ln == lane and abs(t - now) <= HIT_WINDOW), None)
                 if hit:
                     pending.remove(hit)
                     delta = abs(hit[0] - now)
@@ -198,15 +195,17 @@ def play_rhythm():
     title = os.path.basename(track)
     best = load_scores().get(title, 0)
 
-    console.print(Panel(
-        f"[bold cyan]♪ LOFI RHYTHM ♪[/bold cyan]\n\n"
-        f"Track: [bold]{title}[/bold]\n"
-        f"Lanes: {LANE_LABELS}   (Q to quit mid-song)\n"
-        f"Personal best on this track: [bold yellow]{best}[/bold yellow]\n\n"
-        f"[dim]Notes fall; tap the lane key when ▼ crosses the bottom line.\n"
-        f"The chart is deterministic: same song, same map. Practice makes perfect.[/dim]",
-        border_style="cyan",
-    ))
+    console.print(
+        Panel(
+            f"[bold cyan]♪ LOFI RHYTHM ♪[/bold cyan]\n\n"
+            f"Track: [bold]{title}[/bold]\n"
+            f"Lanes: {LANE_LABELS}   (Q to quit mid-song)\n"
+            f"Personal best on this track: [bold yellow]{best}[/bold yellow]\n\n"
+            f"[dim]Notes fall; tap the lane key when ▼ crosses the bottom line.\n"
+            f"The chart is deterministic: same song, same map. Practice makes perfect.[/dim]",
+            border_style="cyan",
+        )
+    )
     console.print("[dim]Press any lane key to start...[/dim]")
     read_char(default="\n")
 
@@ -222,16 +221,19 @@ def play_rhythm():
     save_scores(scores)
 
     rank = "🥇 Certified Groover" if score >= 4000 else "🥈 Beat Enjoyer" if score >= 2000 else "🥉 Lofi Apprentice"
-    console.print(Panel(
-        f"[bold]Score: {score}[/bold]  (best: {scores[title]})\n"
-        f"Max combo: {max_combo}x — PERFECT {judgments['perfect']} / GOOD {judgments['good']} / MISS {judgments['miss']}\n"
-        f"{rank}",
-        title="results", border_style="green" if score > previous else "yellow",
-    ))
+    console.print(
+        Panel(
+            f"[bold]Score: {score}[/bold]  (best: {scores[title]})\nMax combo: {max_combo}x — PERFECT {judgments['perfect']} / GOOD {judgments['good']} / MISS {judgments['miss']}\n{rank}",
+            title="results",
+            border_style="green" if score > previous else "yellow",
+        )
+    )
     from irl.state import add_coins
+
     add_coins(score // 20, "Lofi Rhythm performance")
     try:
         from irl.achievements import check_auto
+
         check_auto(context={"game": "rhythm_score", "score": score})
     except Exception:
         pass

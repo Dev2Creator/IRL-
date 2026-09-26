@@ -14,9 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from irl.state import load_state, save_state
+
 from rich.prompt import IntPrompt, Prompt
-import sys
+
+from irl.state import load_state, save_state
 
 THEMES = {
     "default": {"name": "Corporate Drone", "price": 0, "desc": "Passive-aggressive wage slave."},
@@ -45,24 +46,26 @@ def _visible_themes(state):
     unlocked = set(state.get("unlocked_themes", []))
     return {k: v for k, v in THEMES.items() if not v.get("locked") or k in unlocked}
 
+
 def open_store():
     while True:
         state = load_state()
         coins = state.get("coins", 0)
-        
+
         from rich.console import Console
+
         c = Console()
-        
+
         c.print("\n[bold magenta]🏪 VAST SPARE PARTS & THEME MARKET[/bold magenta]")
         c.print(f"💰 [yellow]Your Balance: {coins} coins[/yellow]\n")
-        
+
         c.print("1. [bold cyan]Buy Full Themes[/bold cyan] (Overwrites Banner, Tone, and UI/Color)")
         c.print("2. [bold cyan]Buy Spare Parts[/bold cyan] (Mix and Match)")
         c.print("3. [bold cyan]Buy Games[/bold cyan] (Waste your time)")
         c.print("0. [bold white]Leave Market[/bold white]\n")
-        
+
         choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3"])
-        
+
         if choice == 0:
             break
         elif choice == 1:
@@ -72,17 +75,18 @@ def open_store():
         elif choice == 3:
             buy_games(state, c)
 
+
 def buy_full_theme(state, c):
     while True:
         coins = state.get("coins", 0)
         c.print("\n[bold cyan]--- FULL THEMES ---[/bold cyan]")
         options = []
         idx = 1
-        
+
         active_b = state.get("active_banner", "default")
         active_t = state.get("active_tone", "default")
         active_c = state.get("active_color", "default")
-        
+
         for key, details in _visible_themes(state).items():
             status = ""
             if key == active_b and key == active_t and key == active_c:
@@ -96,14 +100,14 @@ def buy_full_theme(state, c):
             options.append(key)
             idx += 1
 
-        c.print(f"  [bold white]0.[/bold white] Back\n")
+        c.print("  [bold white]0.[/bold white] Back\n")
         choice = IntPrompt.ask("Select a theme to buy/equip", choices=[str(i) for i in range(len(options) + 1)])
 
         if choice == 0:
             break
 
         selected_key = options[choice - 1]
-        price = THEMES[selected_key]['price']
+        price = THEMES[selected_key]["price"]
 
         owned_all = selected_key in state["purchased_banners"] and selected_key in state["purchased_tones"] and selected_key in state["purchased_colors"]
 
@@ -115,16 +119,20 @@ def buy_full_theme(state, c):
             c.print(f"\n[bold green]✅ Equipped FULL {THEMES[selected_key]['name']} Theme![/bold green]")
         else:
             from irl.ui import preview_theme
+
             preview_theme(selected_key, console=c)
             approved = Prompt.ask("Look good on you? [y/N]", default="no").strip().lower() in ("y", "yes")
             if not approved:
                 continue
             if coins >= price:
                 state["coins"] -= price
-                if selected_key not in state["purchased_banners"]: state["purchased_banners"].append(selected_key)
-                if selected_key not in state["purchased_tones"]: state["purchased_tones"].append(selected_key)
-                if selected_key not in state["purchased_colors"]: state["purchased_colors"].append(selected_key)
-                
+                if selected_key not in state["purchased_banners"]:
+                    state["purchased_banners"].append(selected_key)
+                if selected_key not in state["purchased_tones"]:
+                    state["purchased_tones"].append(selected_key)
+                if selected_key not in state["purchased_colors"]:
+                    state["purchased_colors"].append(selected_key)
+
                 state["active_banner"] = selected_key
                 state["active_tone"] = selected_key
                 state["active_color"] = selected_key
@@ -133,6 +141,7 @@ def buy_full_theme(state, c):
             else:
                 c.print(f"\n[bold red]❌ BROKE ALARM! You need {price - coins} more coins. Go touch grass, wage slave.[/bold red]")
 
+
 def buy_spare_parts(state, c):
     while True:
         c.print("\n[bold magenta]--- SPARE PARTS ---[/bold magenta]")
@@ -140,47 +149,45 @@ def buy_spare_parts(state, c):
         c.print("2. [cyan]Tones[/cyan] (The savage words used)")
         c.print("3. [cyan]Layouts & Colors[/cyan] (The visual structural renderer)")
         c.print("0. [white]Back[/white]\n")
-        
+
         choice = IntPrompt.ask("Select part type", choices=["0", "1", "2", "3"])
         if choice == 0:
             break
-            
-        part_type_map = {1: ("banner", "purchased_banners", "active_banner"), 
-                         2: ("tone", "purchased_tones", "active_tone"), 
-                         3: ("color", "purchased_colors", "active_color")}
-                         
+
+        part_type_map = {1: ("banner", "purchased_banners", "active_banner"), 2: ("tone", "purchased_tones", "active_tone"), 3: ("color", "purchased_colors", "active_color")}
+
         p_name, p_list_key, p_active_key = part_type_map[choice]
-        
+
         while True:
             coins = state.get("coins", 0)
             c.print(f"\n[bold cyan]--- {p_name.upper()} PARTS ---[/bold cyan]")
             options = []
             idx = 1
             active_val = state.get(p_active_key, "default")
-            
+
             for key, details in _visible_themes(state).items():
                 status = ""
-                part_price = details['price'] // 3
+                part_price = details["price"] // 3
                 if key == active_val:
                     status = "[bold green](Equipped)[/bold green]"
                 elif key in state.get(p_list_key, []):
                     status = "[bold blue](Owned)[/bold blue]"
                 else:
                     status = f"[yellow]({part_price} coins)[/yellow]"
-                    
+
                 c.print(f"  [bold cyan]{idx}.[/bold cyan] {details['name']} {status}")
                 options.append(key)
                 idx += 1
-                
-            c.print(f"  [bold white]0.[/bold white] Back\n")
+
+            c.print("  [bold white]0.[/bold white] Back\n")
             p_choice = IntPrompt.ask("Select to buy/equip", choices=[str(i) for i in range(len(options) + 1)])
             if p_choice == 0:
                 break
-                
+
             selected_key = options[p_choice - 1]
-            part_price = THEMES[selected_key]['price'] // 3
+            part_price = THEMES[selected_key]["price"] // 3
             owned = selected_key in state[p_list_key]
-            
+
             if owned:
                 state[p_active_key] = selected_key
                 save_state(state)
@@ -195,35 +202,37 @@ def buy_spare_parts(state, c):
                 else:
                     c.print(f"\n[bold red]❌ INSUFFICIENT FUNDS. You need {part_price - coins} more coins. Maybe write better code?[/bold red]")
 
+
 def buy_games(state, c):
     from irl.games import GAMES
+
     while True:
         coins = state.get("coins", 0)
         c.print("\n[bold cyan]--- GAME STORE ---[/bold cyan]")
         options = []
         idx = 1
-        
+
         purchased = state.get("purchased_games", [])
-        
+
         for key, details in GAMES.items():
             if key in purchased:
                 status = "[bold blue](Owned)[/bold blue]"
             else:
                 status = f"[yellow]({details['price']} coins)[/yellow]"
-                
+
             c.print(f"  [bold cyan]{idx}.[/bold cyan] {details['name']} {status} - [dim]{details['desc']}[/dim]")
             options.append(key)
             idx += 1
-            
-        c.print(f"  [bold white]0.[/bold white] Back\n")
+
+        c.print("  [bold white]0.[/bold white] Back\n")
         choice = IntPrompt.ask("Select a game to buy", choices=[str(i) for i in range(len(options) + 1)])
-        
+
         if choice == 0:
             break
-            
+
         selected_key = options[choice - 1]
-        price = GAMES[selected_key]['price']
-        
+        price = GAMES[selected_key]["price"]
+
         if selected_key in purchased:
             c.print(f"\n[bold green]✅ You already own {GAMES[selected_key]['name']}![/bold green]")
         else:

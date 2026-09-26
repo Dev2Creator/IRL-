@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 class BaseLayout:
     def __init__(self, console):
         self.console = console
@@ -32,7 +33,7 @@ class BaseLayout:
 
     def render_coin_gain(self, amount, msg):
         self.console.print(f"🪙 +{amount} coins: {msg}")
-        
+
     def render_generic(self, text):
         self.console.print(text)
 

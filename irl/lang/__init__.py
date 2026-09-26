@@ -19,8 +19,8 @@
 Exposed: lex, parse, evaluate, Interpreter, and the error types.
 """
 
-from .lexer import lex, IrlSyntaxError
+from .interpreter import Interpreter, IrlRuntimeError, evaluate
+from .lexer import IrlSyntaxError, lex
 from .parser import parse
-from .interpreter import evaluate, Interpreter, IrlRuntimeError
 
 __all__ = ["lex", "parse", "evaluate", "Interpreter", "IrlSyntaxError", "IrlRuntimeError"]

@@ -14,16 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import time
+import json
 import random
 import sys
-import json
+import time
+
+from rich import box
+from rich.align import Align
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
-from rich.align import Align
-from rich import box
 
 from irl.themes.base import BaseLayout
 
@@ -34,60 +35,62 @@ IRL_WISDOM_CREAM = "#D7C0AA"
 IRL_WISDOM_MUTED = "#614B39"
 IRL_WISDOM_BORDER = "#6B4E36"
 
+
 class DefaultLayout(BaseLayout):
     def render_banner(self):
         title = Text("IRL", style=f"bold {IRL_WISDOM_ORANGE}")
         body = Text("✦ Software for humans. Terminal rituals. Useful choices. ✦", style=IRL_WISDOM_CREAM)
         console.print(Panel(Group(title, body), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
-        
+
     def render_grass(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]🌿 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[{IRL_WISDOM_ORANGE}]💧 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text} ({glasses} glasses)[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_install(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]📦 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[{IRL_WISDOM_ORANGE}]◆ +{amount} coins[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{msg}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_generic(self, text):
         console.print(Panel(Text(str(text), style=IRL_WISDOM_CREAM), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
 
     def render_node_modules(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]◆ node_modules[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_run_start(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]▶ RUN[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_run_success(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]◆ DONE[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
+
 
 class HackerLayout(BaseLayout):
     def _hex_dump(self):
         return "".join(random.choices("0123456789ABCDEF", k=8))
-        
+
     def _print_hacker(self, text):
-        for line in text.split('\n'):
+        for line in text.split("\n"):
             console.print(f"[bold green]0x{self._hex_dump()}  {line}[/bold green]")
             time.sleep(0.05)
 
     def render_banner(self):
         self._print_hacker("INITIALIZING IRL™ OS...\nSYSTEM COMPROMISED. ENJOY.")
-        
+
     def render_grass(self, text):
         self._print_hacker(f"EXECUTE: touch_grass.sh -> {text}")
-        
+
     def render_hydrate(self, text, glasses):
         self._print_hacker(f"MEM_ALLOC: hydrate() -> {glasses} units -> {text}")
-        
+
     def render_install(self, text):
         self._print_hacker(f"APT-GET INSTALL: {text}")
-        
+
     def render_coin_gain(self, amount, msg):
         self._print_hacker(f"CRYPT_MINER: +{amount} BTC [msg: {msg}]")
-        
+
     def render_generic(self, text):
         self._print_hacker(f"SYS_MSG: {text}")
 
@@ -100,24 +103,25 @@ class HackerLayout(BaseLayout):
     def render_run_success(self, text):
         self._print_hacker(f"EXEC_SUCCESS: {text}")
 
+
 class CyberpunkLayout(BaseLayout):
     def render_banner(self):
         title = Text("IRL", style=f"bold {IRL_WISDOM_ORANGE}")
         subtitle = Text("✦ Any tool. Every useful thing. Zero terminal drama. ✦", style=IRL_WISDOM_CREAM)
         console.print(Panel(Group(title, subtitle), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
-        
+
     def render_grass(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]🌿 IRL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[{IRL_WISDOM_ORANGE}]💧 HYDRATE /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{glasses} glasses · {text}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_install(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]📦 INSTALL /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[{IRL_WISDOM_ORANGE}]◆ +{amount} coins[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{msg}[/{IRL_WISDOM_CREAM}]")
-        
+
     def render_generic(self, text):
         console.print(Panel(Text(str(text), style=IRL_WISDOM_CREAM), border_style=IRL_WISDOM_BORDER, box=box.SQUARE, padding=(1, 2)))
 
@@ -130,22 +134,23 @@ class CyberpunkLayout(BaseLayout):
     def render_run_success(self, text):
         console.print(f"[{IRL_WISDOM_ORANGE}]◆ DONE /[/{IRL_WISDOM_ORANGE}] [{IRL_WISDOM_CREAM}]{text}[/{IRL_WISDOM_CREAM}]")
 
+
 class DraculaLayout(BaseLayout):
     def render_banner(self):
         console.print(Panel("[bold red]Welcome to the Night, Child.[/bold red]", border_style="purple", box=box.DOUBLE))
-        
+
     def render_grass(self, text):
         console.print(f"[purple]The dead grass crunches...[/purple] [red]{text}[/red]")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[red]Drinking the crimson essence... ({glasses} goblets)[/red] [white]{text}[/white]")
-        
+
     def render_install(self, text):
         console.print(f"[purple]Summoning dark artifact...[/purple] [black on red]{text}[/black on red]")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[bold red]Blood tithe collected: +{amount}[/bold red] [purple]{msg}[/purple]")
-        
+
     def render_generic(self, text):
         console.print(f"[white on black]🦇 {text} 🦇[/white on black]")
 
@@ -158,22 +163,23 @@ class DraculaLayout(BaseLayout):
     def render_run_success(self, text):
         console.print(f"[bold red]The deed is done...[/bold red] [purple]{text}[/purple]")
 
+
 class AnimeLayout(BaseLayout):
     def render_banner(self):
         console.print(Panel("[bold pink1]✨ Welcome to IRL™, Senpai! ✨[/bold pink1]", border_style="hot_pink", box=box.ROUNDED))
-        
+
     def render_grass(self, text):
         console.print(f"[green]UwU *touches grass*[/green] [pink1]{text}[/pink1] (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[cyan]Oishii water! *glug glug* ({glasses})[/cyan] [pink1]{text}[/pink1] 💧( ˘▽˘)っ♨")
-        
+
     def render_install(self, text):
         console.print(f"[yellow]Sugoi! New module installing~[/yellow] [pink1]{text}[/pink1] ✨( ✯◡✯)")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[gold1]YATTA! +{amount} coins! ({msg})[/gold1] 💰(≧◡≦)")
-        
+
     def render_generic(self, text):
         console.print(f"[pink1]{text} ~nyan[/pink1] 🐾")
 
@@ -186,6 +192,7 @@ class AnimeLayout(BaseLayout):
     def render_run_success(self, text):
         console.print(f"[bold green]Sugoi! [/bold green][pink1]{text}[/pink1] (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧")
 
+
 class CryptoLayout(BaseLayout):
     def render_banner(self):
         table = Table(title="IRL™ MARKET STATUS", show_header=True, header_style="bold magenta")
@@ -193,19 +200,19 @@ class CryptoLayout(BaseLayout):
         table.add_column("Trend", justify="right", style="green")
         table.add_row("$IRL™", "🚀 MOONING")
         console.print(table)
-        
+
     def render_grass(self, text):
         console.print(f"[bold green]📈 GRASS/USD LONG POSITION OPENED: {text}[/bold green]")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[bold cyan]💧 LIQUIDITY POOL ADDED: {glasses} GLASSES. {text}[/bold cyan]")
-        
+
     def render_install(self, text):
         console.print(f"[bold yellow]⛓ SMART CONTRACT DEPLOYED: {text}[/bold yellow]")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[bold green]💎🙌 AIRDROP: +{amount} TOKENS ({msg})[/bold green]")
-        
+
     def render_generic(self, text):
         console.print(f"[white]BLOCKCHAIN EVENT: {text}[/white]")
 
@@ -218,22 +225,23 @@ class CryptoLayout(BaseLayout):
     def render_run_success(self, text):
         console.print(f"[bold green]✅ TX CONFIRMED: {text}[/bold green]")
 
+
 class PirateLayout(BaseLayout):
     def render_banner(self):
         console.print(Panel("[bold yellow]⚓ Yarr! Welcome aboard the good ship IRL™! ⚓[/bold yellow]", border_style="red", box=box.ASCII))
-        
+
     def render_grass(self, text):
         console.print(f"[green]🌿 Foot on dry land! {text}[/green]")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[cyan]🍺 Down the hatch! {glasses} tankards of fresh water. {text}[/cyan]")
-        
+
     def render_install(self, text):
         console.print(f"[yellow]📦 Hoisting new cargo: {text}[/yellow]")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[gold1]💰 Shiver me timbers! +{amount} doubloons! ({msg})[/gold1]")
-        
+
     def render_generic(self, text):
         console.print(f"[white]🦜 {text}[/white]")
 
@@ -245,6 +253,7 @@ class PirateLayout(BaseLayout):
 
     def render_run_success(self, text):
         console.print(f"[green]Direct hit! {text}[/green]")
+
 
 class EldritchLayout(BaseLayout):
     def _zalgo(self, text):
@@ -258,19 +267,19 @@ class EldritchLayout(BaseLayout):
 
     def render_banner(self):
         console.print(Panel(self._zalgo("THE OLD ONES AWAKEN"), border_style="red", style="bold red"))
-        
+
     def render_grass(self, text):
         console.print(f"[green]{self._zalgo('Tainted flora touched: ')}[/green][dark_green]{text}[/dark_green]")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[cyan]{self._zalgo('Drinking from the abyss (')} {glasses} {self._zalgo(')')}[/cyan] [blue]{text}[/blue]")
-        
+
     def render_install(self, text):
         console.print(f"[magenta]{self._zalgo('A new terror manifests: ')} {text}[/magenta]")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[red]{self._zalgo('Souls harvested: +')}{amount}[/red] [dark_red]({msg})[/dark_red]")
-        
+
     def render_generic(self, text):
         console.print(self._zalgo(text), style="dim white")
 
@@ -282,6 +291,7 @@ class EldritchLayout(BaseLayout):
 
     def render_run_success(self, text):
         console.print(f"[bold green]{self._zalgo('Ritual complete: ')}[/bold green][dark_green]{text}[/dark_green]")
+
 
 class BoomerLayout(BaseLayout):
     def _slow_print(self, text):
@@ -296,19 +306,19 @@ class BoomerLayout(BaseLayout):
 
     def render_banner(self):
         self._slow_print("--- BACK IN MY DAY WE DIDN'T HAVE THESE FANCY APPS ---")
-        
+
     def render_grass(self, text):
         self._slow_print(f"FINALLY WENT OUTSIDE. {text}. KIDS THESE DAYS JUST LOOK AT SCREENS.")
-        
+
     def render_hydrate(self, text, glasses):
         self._slow_print(f"DRANK WATER FROM THE HOSE. {glasses} GLASSES. {text}. BUILDS CHARACTER.")
-        
+
     def render_install(self, text):
         self._slow_print(f"HOW DO I INSTALL {text}? WHERE IS THE FLOPPY DISK?")
-        
+
     def render_coin_gain(self, amount, msg):
         self._slow_print(f"FOUND {amount} PENNIES ON THE STREET. {msg}. A PENNY SAVED IS A PENNY EARNED.")
-        
+
     def render_generic(self, text):
         self._slow_print(text)
 
@@ -321,22 +331,23 @@ class BoomerLayout(BaseLayout):
     def render_run_success(self, text):
         console.print(f"[bold green]FINALLY DONE. {text}[/bold green]")
 
+
 class ZenLayout(BaseLayout):
     def render_banner(self):
         console.print(Align.center("[dim white]Breathe in. Breathe out. Welcome to IRL™.[/dim white]"))
-        
+
     def render_grass(self, text):
         console.print(Align.center(f"[dim green]Nature connects us all. {text}[/dim green]"))
-        
+
     def render_hydrate(self, text, glasses):
         console.print(Align.center(f"[dim cyan]Be like water. ({glasses} glasses) {text}[/dim cyan]"))
-        
+
     def render_install(self, text):
         console.print(Align.center(f"[dim yellow]A new tool joins your practice: {text}[/dim yellow]"))
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(Align.center(f"[dim white]Abundance flows to you: +{amount}. {msg}[/dim white]"))
-        
+
     def render_generic(self, text):
         console.print(Align.center(f"[dim white]{text}[/dim white]"))
 
@@ -349,6 +360,7 @@ class ZenLayout(BaseLayout):
     def render_run_success(self, text):
         console.print(f"[dim white]Ended... {text}[/dim white]")
 
+
 class ToxicLayout(BaseLayout):
     def _rainbow_text(self, text):
         colors = ["red", "yellow", "green", "cyan", "blue", "magenta"]
@@ -359,19 +371,19 @@ class ToxicLayout(BaseLayout):
 
     def render_banner(self):
         console.print(Panel(self._rainbow_text("!!! GET REKT NOOB !!! WELCOME TO IRL™ !!!"), box=box.HEAVY))
-        
+
     def render_grass(self, text):
         console.print(self._rainbow_text(f"TOUCH GRASS YOU SWEAT! 🌿 💀 {text}"))
-        
+
     def render_hydrate(self, text, glasses):
         console.print(self._rainbow_text(f"STAY MAD, STAY HYDRATED! 💧 {glasses} GLASSES! {text}"))
-        
+
     def render_install(self, text):
         console.print(self._rainbow_text(f"INSTALLING VIRUS... JK LOL IT'S {text} 🤡"))
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(self._rainbow_text(f"EZ MONEY +{amount} 🤑 RATIO + L + {msg}"))
-        
+
     def render_generic(self, text):
         console.print(self._rainbow_text(f"🤡 {text} 🤡"))
 
@@ -384,42 +396,44 @@ class ToxicLayout(BaseLayout):
     def render_run_success(self, text):
         console.print(f"[bold green]Lucky guess: {text}[/bold green]")
 
+
 class AILayout(BaseLayout):
     def render_banner(self):
         data = {"event": "system_init", "status": "online", "model": "IRL™-1.0"}
         console.print(f"[bold blue]SystemPrompt:[/bold blue] [dim]{json.dumps(data, indent=2)}[/dim]")
-        
+
     def render_grass(self, text):
         console.print(f"[bold magenta]Action/Execute:[/bold magenta] tool_name=touch_grass, text={text}")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[bold magenta]Action/Execute:[/bold magenta] tool_name=hydrate, glasses={glasses}, text={text}")
-        
+
     def render_install(self, text):
         console.print(f"[bold magenta]Action/Execute:[/bold magenta] tool_name=install_module, name={text}")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[bold green]Observation/Reward:[/bold green] +{amount} (reasoning: {msg})")
-        
+
     def render_generic(self, text):
         console.print(f"[bold cyan]Response:[/bold cyan] {text}")
+
 
 class UiProLayout(BaseLayout):
     def render_banner(self):
         console.print(Panel("[bold #F29265]IRL™[/bold #F29265]\n[#D7C0AA]Ancient terminal. Modern tools. Better choices.[/#D7C0AA]", border_style="#6B4E36", box=box.SQUARE, padding=(1, 2)))
-        
+
     def render_grass(self, text):
         console.print(f"[bold #F29265]IRL /[/bold #F29265] [#D7C0AA]ENV_UPDATE: {text}[/#D7C0AA]")
-        
+
     def render_hydrate(self, text, glasses):
         console.print(f"[bold #F29265]IRL /[/bold #F29265] [#D7C0AA]FLUID_INTAKE: {glasses}u. {text}[/#D7C0AA]")
-        
+
     def render_install(self, text):
         console.print(f"[bold #F29265]IRL /[/bold #F29265] [#D7C0AA]PKG_INSTALL: {text}[/#D7C0AA]")
-        
+
     def render_coin_gain(self, amount, msg):
         console.print(f"[bold #F29265]◆ +{amount} coins[/bold #F29265] [#D7C0AA]({msg})[/#D7C0AA]")
-        
+
     def render_generic(self, text):
         console.print(f"[bold #F29265]>[/bold #F29265] [#D7C0AA]{text}[/#D7C0AA]")
 
@@ -438,16 +452,22 @@ class SynthwaveLayout(DefaultLayout):
     BORDER = "#01CDFE"
 
     def render_banner(self):
-        console.print(Panel(Text("IRL™ // SUNSET DRIVE", style=f"bold {self.ACCENT}"),
-                            border_style=self.BORDER, box=box.DOUBLE_EDGE, padding=(1, 2)))
+        console.print(Panel(Text("IRL™ // SUNSET DRIVE", style=f"bold {self.ACCENT}"), border_style=self.BORDER, box=box.DOUBLE_EDGE, padding=(1, 2)))
 
     def _line(self, glyph, text):
         console.print(f"[bold {self.ACCENT}]{glyph}[/bold {self.ACCENT}] [{self.BORDER}]{text}[/{self.BORDER}]")
 
-    def render_grass(self, text): self._line("🌆", text)
-    def render_install(self, text): self._line("📼", text)
-    def render_generic(self, text): self._line("▐▛", text)
-    def render_coin_gain(self, amount, msg): self._line(f"◆ +{amount} coins", msg)
+    def render_grass(self, text):
+        self._line("🌆", text)
+
+    def render_install(self, text):
+        self._line("📼", text)
+
+    def render_generic(self, text):
+        self._line("▐▛", text)
+
+    def render_coin_gain(self, amount, msg):
+        self._line(f"◆ +{amount} coins", msg)
 
 
 class MatrixLayout(DefaultLayout):
@@ -455,13 +475,19 @@ class MatrixLayout(DefaultLayout):
     BORDER = "green"
 
     def render_banner(self):
-        console.print(Panel(Text("1RL // F0LL0W TH3 WH1T R4BB1T", style="bold bright_green"),
-                            border_style="green", box=box.HEAVY, padding=(1, 2)))
+        console.print(Panel(Text("1RL // F0LL0W TH3 WH1T R4BB1T", style="bold bright_green"), border_style="green", box=box.HEAVY, padding=(1, 2)))
 
-    def render_grass(self, text): console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
-    def render_install(self, text): console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
-    def render_generic(self, text): console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
-    def render_coin_gain(self, amount, msg): console.print(f"[bright_green]+{amount} c01nz[/bright_green] [green]({msg})[/green]")
+    def render_grass(self, text):
+        console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
+
+    def render_install(self, text):
+        console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
+
+    def render_generic(self, text):
+        console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
+
+    def render_coin_gain(self, amount, msg):
+        console.print(f"[bright_green]+{amount} c01nz[/bright_green] [green]({msg})[/green]")
 
 
 class SakuraLayout(DefaultLayout):
@@ -469,16 +495,22 @@ class SakuraLayout(DefaultLayout):
     BORDER = "plum2"
 
     def render_banner(self):
-        console.print(Panel(Text("IRL™ 🌸 petal protocol", style=f"bold {self.ACCENT}"),
-                            border_style=self.BORDER, box=box.ROUNDED, padding=(1, 2)))
+        console.print(Panel(Text("IRL™ 🌸 petal protocol", style=f"bold {self.ACCENT}"), border_style=self.BORDER, box=box.ROUNDED, padding=(1, 2)))
 
     def _line(self, glyph, text):
         console.print(f"[bold {self.ACCENT}]{glyph}[/bold {self.ACCENT}] [plum2]{text}[/plum2]")
 
-    def render_grass(self, text): self._line("🌸", text)
-    def render_install(self, text): self._line("🍡", text)
-    def render_generic(self, text): self._line("🌸", text)
-    def render_coin_gain(self, amount, msg): self._line(f"🌸 +{amount} coins", msg)
+    def render_grass(self, text):
+        self._line("🌸", text)
+
+    def render_install(self, text):
+        self._line("🍡", text)
+
+    def render_generic(self, text):
+        self._line("🌸", text)
+
+    def render_coin_gain(self, amount, msg):
+        self._line(f"🌸 +{amount} coins", msg)
 
 
 class TerminalClassicLayout(DefaultLayout):
@@ -486,16 +518,22 @@ class TerminalClassicLayout(DefaultLayout):
     BORDER = "white"
 
     def render_banner(self):
-        console.print(Panel(Text("IRL(tm) v2.0  (C) 2026  [ amber-free edition ]", style="bold white"),
-                            border_style="white", box=box.ASCII_DOUBLE_HEAD, padding=(1, 2)))
+        console.print(Panel(Text("IRL(tm) v2.0  (C) 2026  [ amber-free edition ]", style="bold white"), border_style="white", box=box.ASCII_DOUBLE_HEAD, padding=(1, 2)))
 
     def _line(self, text):
         console.print(f"[bold white]IRL>[/bold white] [white]{text}[/white]")
 
-    def render_grass(self, text): self._line(text)
-    def render_install(self, text): self._line(text)
-    def render_generic(self, text): self._line(text)
-    def render_coin_gain(self, amount, msg): self._line(f"+{amount} coins ({msg})")
+    def render_grass(self, text):
+        self._line(text)
+
+    def render_install(self, text):
+        self._line(text)
+
+    def render_generic(self, text):
+        self._line(text)
+
+    def render_coin_gain(self, amount, msg):
+        self._line(f"+{amount} coins ({msg})")
 
 
 class HighContrastLayout(DefaultLayout):
@@ -503,16 +541,22 @@ class HighContrastLayout(DefaultLayout):
     BORDER = "bright_white"
 
     def render_banner(self):
-        console.print(Panel(Text("IRL™ — HIGH CONTRAST MODE", style="bold bright_yellow"),
-                            border_style="bright_white", box=box.SQUARE, padding=(1, 2)))
+        console.print(Panel(Text("IRL™ — HIGH CONTRAST MODE", style="bold bright_yellow"), border_style="bright_white", box=box.SQUARE, padding=(1, 2)))
 
     def _line(self, glyph, text):
         console.print(f"[bold bright_yellow]{glyph}[/bold bright_yellow] [bright_white]{text}[/bright_white]")
 
-    def render_grass(self, text): self._line("[GRASS]", text)
-    def render_install(self, text): self._line("[PKG]", text)
-    def render_generic(self, text): self._line("[INFO]", text)
-    def render_coin_gain(self, amount, msg): self._line(f"[+{amount} coins]", msg)
+    def render_grass(self, text):
+        self._line("[GRASS]", text)
+
+    def render_install(self, text):
+        self._line("[PKG]", text)
+
+    def render_generic(self, text):
+        self._line("[INFO]", text)
+
+    def render_coin_gain(self, amount, msg):
+        self._line(f"[+{amount} coins]", msg)
 
 
 DASHBOARD_SKINS = {
@@ -559,28 +603,29 @@ def render_dashboard_chrome(kind, theme_id, payload, meta=None, tick=0):
         return Panel(Group(payload, Text(str(meta), style="bold red")), title=f"[bold {skin['accent']}]DEPENDENCY SCAN[/bold {skin['accent']}]", border_style=skin["border"], box=skin["box"])
 
     if kind == "ticker":
-        title = meta if meta else f"[bold red]IRL SIGNAL FEED[/bold red]"
+        title = meta if meta else "[bold red]IRL SIGNAL FEED[/bold red]"
         return Panel(Text(str(payload), style=f"bold {skin['accent']}"), title=title, border_style=skin["border"], box=skin["box"])
 
     return Panel(str(payload), border_style=skin["border"], box=skin["box"])
 
+
 LAYOUTS = {
-    'default': DefaultLayout,
-    'hacker': HackerLayout,
-    'cyberpunk': CyberpunkLayout,
-    'dracula': DraculaLayout,
-    'anime': AnimeLayout,
-    'crypto': CryptoLayout,
-    'pirate': PirateLayout,
-    'eldritch': EldritchLayout,
-    'boomer': BoomerLayout,
-    'zen': ZenLayout,
-    'toxic': ToxicLayout,
-    'ai': AILayout,
-    'uipro': UiProLayout,
-    'synthwave': SynthwaveLayout,
-    'matrix': MatrixLayout,
-    'sakura': SakuraLayout,
-    'termclassic': TerminalClassicLayout,
-    'highcontrast': HighContrastLayout
+    "default": DefaultLayout,
+    "hacker": HackerLayout,
+    "cyberpunk": CyberpunkLayout,
+    "dracula": DraculaLayout,
+    "anime": AnimeLayout,
+    "crypto": CryptoLayout,
+    "pirate": PirateLayout,
+    "eldritch": EldritchLayout,
+    "boomer": BoomerLayout,
+    "zen": ZenLayout,
+    "toxic": ToxicLayout,
+    "ai": AILayout,
+    "uipro": UiProLayout,
+    "synthwave": SynthwaveLayout,
+    "matrix": MatrixLayout,
+    "sakura": SakuraLayout,
+    "termclassic": TerminalClassicLayout,
+    "highcontrast": HighContrastLayout,
 }

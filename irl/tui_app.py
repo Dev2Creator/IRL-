@@ -29,12 +29,12 @@ import sys
 from rich.panel import Panel
 
 from irl.console import console
-from irl.ui import IRL_ACCENT, IRL_CREAM, IRL_MUTED, IRL_BORDER
+from irl.ui import IRL_ACCENT, IRL_BORDER, IRL_MUTED
 
 try:
     from textual.app import App, ComposeResult
-    from textual.containers import Horizontal, Vertical
-    from textual.widgets import Button, Footer, Header, Input, ListItem, ListView, Static, TabbedContent, TabPane
+    from textual.containers import Horizontal
+    from textual.widgets import Footer, Header, Input, ListItem, ListView, Static, TabbedContent, TabPane
 
     HAS_TEXTUAL = True
 except ImportError:  # the [tui] extra is optional
@@ -54,7 +54,7 @@ _FALLBACK_PET = r"""
 
 def _read_json(path, default):
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return default
@@ -62,14 +62,16 @@ def _read_json(path, default):
 
 def run_tui():
     if not HAS_TEXTUAL:
-        console.print(Panel(
-            "[bold]The full-screen TUI needs the Textual engine.[/bold]\n\n"
-            "[#D7C0AA]Install it with one command:[/#D7C0AA]\n"
-            f"[bold {IRL_ACCENT}]    pip install 'irl-pkg[tui]'[/{IRL_ACCENT}]\n\n"
-            f"[dim]{IRL_MUTED}Until then, `irl dashboard` remains your trusty command board.[/dim]",
-            title="[bold #F29265]IRL TUI[/bold #F29265]",
-            border_style=IRL_BORDER,
-        ))
+        console.print(
+            Panel(
+                "[bold]The full-screen TUI needs the Textual engine.[/bold]\n\n"
+                "[#D7C0AA]Install it with one command:[/#D7C0AA]\n"
+                f"[bold {IRL_ACCENT}]    pip install 'irl-pkg[tui]'[/{IRL_ACCENT}]\n\n"
+                f"[dim]{IRL_MUTED}Until then, `irl dashboard` remains your trusty command board.[/dim]",
+                title="[bold #F29265]IRL TUI[/bold #F29265]",
+                border_style=IRL_BORDER,
+            )
+        )
         return
 
     IRLTui().run()
@@ -139,8 +141,9 @@ if HAS_TEXTUAL:
 
         def _games_panel(self) -> str:
             from irl.games import GAMES
+
             lines = ["Games run in their own full-screen mode:", ""]
-            for key, game in GAMES.items():
+            for _key, game in GAMES.items():
                 lines.append(f"  [bold #F29265]{game['name']}[/bold #F29265] — [dim]{game['desc']}[/dim]")
             lines += ["", "Press q and run `irl games` to play them properly."]
             return Panel("\n".join(lines), title="game shelf", border_style=IRL_BORDER)
@@ -148,6 +151,7 @@ if HAS_TEXTUAL:
         @staticmethod
         def _lofi_tracks():
             from irl.audio import list_lofi
+
             return list_lofi()
 
         # --- Installer ------------------------------------------------------
@@ -164,7 +168,9 @@ if HAS_TEXTUAL:
             try:
                 result = subprocess.run(
                     [sys.executable, "-m", "irl.main", "install", target],
-                    capture_output=True, text=True, timeout=300,
+                    capture_output=True,
+                    text=True,
+                    timeout=300,
                 )
                 text = (result.stdout or "") + (result.stderr or "")
             except Exception as exc:
@@ -176,7 +182,8 @@ if HAS_TEXTUAL:
             if node is None:
                 return
             track = str(node.renderable)
-            from irl.audio import play_track, list_lofi
+            from irl.audio import list_lofi, play_track
+
             for path in list_lofi():
                 if os.path.basename(path) == track:
                     play_track(path)

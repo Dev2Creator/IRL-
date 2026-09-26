@@ -15,20 +15,22 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
-import sys
-import os
 import json
+import os
 import random
 import shutil
+import sys
 import time
+
 from rich import box
-from rich.live import Live
 from rich.layout import Layout
+from rich.live import Live
 from rich.panel import Panel
 from rich.table import Table
-from irl.install import install_package
-from irl.glasses import inspect_package
+
 from irl.doctor import run_doctor
+from irl.glasses import inspect_package
+from irl.install import install_package
 from irl.rollback import rollback_irl
 
 IRL_ACCENT = "#F29265"
@@ -71,6 +73,7 @@ def _get_identity_line(state):
     try:
         import json
         from pathlib import Path
+
         profile_path = Path.home() / ".irl" / "profile.json"
         if profile_path.exists():
             profile = json.loads(profile_path.read_text(encoding="utf-8"))
@@ -89,10 +92,11 @@ def _get_identity_line(state):
 
 def _print_irl_wisdom_header(state=None):
     from datetime import datetime
+
+    from rich import box
     from rich.console import Console
     from rich.panel import Panel
     from rich.text import Text
-    from rich import box
 
     c = Console(highlight=False)
     state = state or {}
@@ -138,7 +142,6 @@ def _render_irl_custom_help(state=None):
     c.print(f"[{IRL_MUTED}](Use `irl <command> --help` for command-specific options.)[/{IRL_MUTED}]")
 
 
-
 def _run_shared_identity_first_run():
     try:
         from irl_identity.first_run import ensure_first_run_login
@@ -168,6 +171,7 @@ IRL_VERSION = "2.0.0"
 def unlock_matrix_theme():
     """Secret unlock: adds the Matrix theme to the state, free of charge."""
     from irl.state import load_state, save_state
+
     state = load_state()
     unlocked = state.setdefault("unlocked_themes", [])
     if "matrix" not in unlocked:
@@ -183,10 +187,12 @@ def unlock_matrix_theme():
 def _run_onboarding(state):
     """Animated first-run ritual: splash, name, theme, and a very short tour."""
     import time as _time
+
     from rich.console import Console
     from rich.live import Live
-    from rich.prompt import Prompt, IntPrompt
-    from irl.ui import wordmark, IRL_CREAM, IRL_MUTED
+    from rich.prompt import IntPrompt, Prompt
+
+    from irl.ui import IRL_CREAM, IRL_MUTED, wordmark
 
     c = Console(highlight=False)
     from irl.state import save_state
@@ -208,6 +214,7 @@ def _run_onboarding(state):
 
     # --- Theme picker (live previews of a few flavors) ---
     from irl.themes.layouts import DASHBOARD_SKINS
+
     choices = ["default", "hacker", "synthwave", "sakura", "termclassic", "highcontrast"]
     c.print(f"\n[{IRL_MUTED}]Pick a starting vibe. You can buy more in the store later:[/{IRL_MUTED}]\n")
     for idx, theme_id in enumerate(choices, start=1):
@@ -223,6 +230,7 @@ def _run_onboarding(state):
     save_state(state)
 
     from irl.ui import preview_theme
+
     preview_theme(picked_id, console=c)
     c.print(f"[{IRL_CREAM}]Welcome aboard, {state['name']}. The 30-second tour:[/{IRL_CREAM}]")
     tour = [
@@ -246,30 +254,33 @@ def cli():
         _cli_impl()
     except KeyboardInterrupt:
         console.print(f"\n[{IRL_MUTED}]Interrupted. The grass will wait.[/{IRL_MUTED}]")
-        raise SystemExit(130)
+        raise SystemExit(130) from None
     except EOFError:
         console.print(f"\n[{IRL_MUTED}]No input found. IRL runs on humans; connect one and retry.[/{IRL_MUTED}]")
-        raise SystemExit(1)
+        raise SystemExit(1) from None
     except Exception as exc:
         from irl.ui import styled_error
+
         if os.environ.get("IRL_DEBUG"):
             raise
         hint = "Run `irl doctor` to check your system."
         styled_error(exc, hint=hint)
-        raise SystemExit(1)
+        raise SystemExit(1) from None
 
 
 def _cli_impl():
     _run_shared_identity_first_run()
-    from irl.state import load_state, save_state
-    from irl.console import console
     from rich.prompt import Prompt
-    
+
+    from irl.console import console
+    from irl.state import load_state, save_state
+
     state = load_state()
     if _sync_shared_identity_name(state):
         save_state(state)
     if not state.get("name"):
         from irl.keys import is_interactive
+
         if is_interactive():
             console.print("\n[bold cyan]IRL™ OS Initialization...[/bold cyan]")
             user_name = Prompt.ask("What is your name, organic lifeform?")
@@ -279,6 +290,7 @@ def _cli_impl():
         save_state(state)
     if not state.get("onboarded_v2"):
         from irl.keys import is_interactive
+
         if is_interactive():
             _run_onboarding(state)
         else:
@@ -291,20 +303,25 @@ def _cli_impl():
         egg = sys.argv[1].lower()
         if egg == "42":
             from rich.console import Console
-            from irl.ui import panel, accent
+
+            from irl.ui import accent, panel
+
             unlocked = unlock_matrix_theme()
-            Console().print(panel(
-                "[bold]The Answer to the Great Question of Life, the Universe and Everything.[/bold]\n"
-                "[dim](It is also, coincidentally, the number of packages installed since you woke up.)[/dim]",
-                title=f"[bold {accent()}]irl 42[/bold {accent()}]",
-            ))
+            Console().print(
+                panel(
+                    "[bold]The Answer to the Great Question of Life, the Universe and Everything.[/bold]\n[dim](It is also, coincidentally, the number of packages installed since you woke up.)[/dim]",
+                    title=f"[bold {accent()}]irl 42[/bold {accent()}]",
+                )
+            )
             if unlocked:
                 Console().print("[bold bright_green]Wait. What is this? ...The green rain has unlocked something in the store.[/bold bright_green]")
             return
         if egg == "pizza":
-            from rich.console import Console
             from rich.align import Align
+            from rich.console import Console
+
             from irl.ui import accent
+
             pizza = r"""
         ___
        |~~~|      ~ pizza delivery for one terminal,
@@ -328,71 +345,69 @@ def _cli_impl():
         return
 
     from irl.themes import get_engine
+
     engine = get_engine()
     _print_irl_wisdom_header(state)
-    
+
     if os.path.isdir("node_modules"):
         engine.render_node_modules()
-    
-    parser = argparse.ArgumentParser(
-        prog="irl",
-        description="IRL™ (In Real Life™) - Software for Humans™."
-    )
-    
+
+    parser = argparse.ArgumentParser(prog="irl", description="IRL™ (In Real Life™) - Software for Humans™.")
+
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
-    
     install_parser = subparsers.add_parser("install", help="Get Started")
     install_parser.add_argument("package", help="Name of the package, GitHub repo, or direct URL")
-    
+
     glasses_parser = subparsers.add_parser("glasses", help="See Clearly")
     glasses_parser.add_argument("package", help="Name of the package to inspect")
-    
+
     doctor_parser = subparsers.add_parser("doctor", help="Stay Healthy")
     doctor_parser.add_argument("package", help="Name of the package to diagnose")
-    
-    grass_parser = subparsers.add_parser("grass", help="Go Outside")
-    posture_parser = subparsers.add_parser("posture", help="Fix your posture")
-    window_parser = subparsers.add_parser("window", help="Look outside")
-    mirror_parser = subparsers.add_parser("mirror", help="Get a compliment")
-    hydrate_parser = subparsers.add_parser("hydrate", help="Drink water")
-    chaos_parser = subparsers.add_parser("chaos", help="Take the chaos quiz")
-    store_parser = subparsers.add_parser("store", help="Open the IRL store")
-    games_parser = subparsers.add_parser("games", help="Play purchased IRL games")
-    city_parser = subparsers.add_parser("city", help="Enter the IRL City (Economy & Crime)")
-    dashboard_parser = subparsers.add_parser("dashboard", help="Enter Chaotic Dashboard Mode")
-    dash_parser = subparsers.add_parser("dash", help="Alias for Chaotic Dashboard Mode")
+
+    subparsers.add_parser("grass", help="Go Outside")
+    subparsers.add_parser("posture", help="Fix your posture")
+    subparsers.add_parser("window", help="Look outside")
+    subparsers.add_parser("mirror", help="Get a compliment")
+    subparsers.add_parser("hydrate", help="Drink water")
+    subparsers.add_parser("chaos", help="Take the chaos quiz")
+    subparsers.add_parser("store", help="Open the IRL store")
+    subparsers.add_parser("games", help="Play purchased IRL games")
+    subparsers.add_parser("city", help="Enter the IRL City (Economy & Crime)")
+    subparsers.add_parser("dashboard", help="Enter Chaotic Dashboard Mode")
+    subparsers.add_parser("dash", help="Alias for Chaotic Dashboard Mode")
     manga_parser = subparsers.add_parser("manga", help="Read or Download IRL Manga")
     manga_parser.add_argument("--download", action="store_true", help="Download manga for offline reading")
     manga_parser.add_argument("query", nargs="*", help="Optional manga title search query")
-    story_parser = subparsers.add_parser("story", help="Play the Themed Story Mode")
-    bones_parser = subparsers.add_parser("bones", help="Summon Professor Bones for Lofi")
-    joke_parser = subparsers.add_parser("joke", help="Tell a random developer joke via JokeAPI")
-    dog_parser = subparsers.add_parser("dog", help="Fetch an ASCII dog from Dog API")
+    subparsers.add_parser("story", help="Play the Themed Story Mode")
+    subparsers.add_parser("bones", help="Summon Professor Bones for Lofi")
+    subparsers.add_parser("joke", help="Tell a random developer joke via JokeAPI")
+    subparsers.add_parser("dog", help="Fetch an ASCII dog from Dog API")
     search_parser = subparsers.add_parser("search", help="AI powered package search")
     search_parser.add_argument("query", nargs="+", help="Natural language query to find a package")
-    upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
+    subparsers.add_parser("upgrade", help="Upgrade IRL OS to the latest version")
     rollback_parser = subparsers.add_parser("rollback", help="Roll back IRL OS to an older version")
     rollback_parser.add_argument("version", nargs="?", help="Version to install, e.g. 1.7.1")
     rollback_parser.add_argument("--yes", "-y", action="store_true", help="Rollback without confirmation")
     run_parser = subparsers.add_parser("run", help="Run a command wrapped in IRL OS (e.g. irl run dev)")
     run_parser.add_argument("cmd_args", nargs=argparse.REMAINDER, help="Command and arguments to run")
-    tui_parser = subparsers.add_parser("tui", help="Launch the full-screen IRL TUI (needs irl-pkg[tui])")
-    pet_parser = subparsers.add_parser("pet", help="Visit your terminal pet")
-    achievements_parser = subparsers.add_parser("achievements", help="View your achievements and level")
-    quests_parser = subparsers.add_parser("quests", help="See today's daily quests")
-    grassland_parser = subparsers.add_parser("grassland", help="Play Grassland Quest (free garden roguelike)")
-    rhythm_parser = subparsers.add_parser("rhythm", help="Play Lofi Rhythm (beat game with bundled lofi)")
+    subparsers.add_parser("tui", help="Launch the full-screen IRL TUI (needs irl-pkg[tui])")
+    subparsers.add_parser("pet", help="Visit your terminal pet")
+    subparsers.add_parser("achievements", help="View your achievements and level")
+    subparsers.add_parser("quests", help="See today's daily quests")
+    subparsers.add_parser("grassland", help="Play Grassland Quest (free garden roguelike)")
+    subparsers.add_parser("rhythm", help="Play Lofi Rhythm (beat game with bundled lofi)")
     lang_parser = subparsers.add_parser("lang", help="Run the .irl toy language")
     lang_parser.add_argument("action", nargs="?", choices=["run", "demo", "repl"], default="demo")
     lang_parser.add_argument("file", nargs="?", help=".irl file for `irl lang run <file>`")
 
     args = parser.parse_args()
-    
+
     from datetime import datetime
+
     current_hour = datetime.now().hour
     if 1 <= current_hour <= 4:
         engine.ui.render_generic("⚠️ It's late. The bugs will still be there tomorrow. Go to sleep.")
-    
+
     if args.command == "install":
         if not args.package:
             print("Error: Please provide a package name to install.")
@@ -410,91 +425,118 @@ def _cli_impl():
         run_doctor(args.package)
     elif args.command == "grass":
         from irl.grass import touch_grass
+
         touch_grass()
     elif args.command == "posture":
         from irl.creative import posture
+
         posture()
     elif args.command == "window":
         from irl.creative import window
+
         window()
     elif args.command == "mirror":
         from irl.creative import mirror
+
         mirror()
     elif args.command == "hydrate":
         from irl.creative import hydrate
+
         hydrate()
     elif args.command == "chaos":
         from irl.creative import chaos
+
         chaos()
     elif args.command == "store":
         from irl.store import open_store
+
         open_store()
     elif args.command == "games":
         from irl.games import play_game_menu
+
         play_game_menu()
     elif args.command == "city":
         from irl.city import enter_city
+
         enter_city()
     elif args.command == "search":
         from irl.search import search_and_install
+
         search_and_install(" ".join(args.query))
     elif args.command == "upgrade":
         from irl.install import upgrade_irl
+
         upgrade_irl()
     elif args.command == "rollback":
         rollback_irl(args.version, args.yes)
     elif args.command == "run":
         from irl.run import run_command
+
         if not args.cmd_args:
             print("Error: Please provide a command to run.")
             sys.exit(1)
         run_command(args.cmd_args)
     elif args.command == "manga":
         from irl.manga import read_manga
+
         query = " ".join(args.query) if args.query else None
         read_manga(download=args.download, initial_query=query)
     elif args.command == "story":
         from irl.story import play_story
+
         play_story()
     elif args.command == "bones":
         from irl.bones import summon_bones
+
         summon_bones()
     elif args.command == "joke":
         from irl.joke import tell_joke
+
         tell_joke()
     elif args.command == "dog":
         from irl.dog import render_dog
+
         render_dog()
     elif args.command in ("dashboard", "dash"):
         chaotic_dashboard_mode(loop=True)
     elif args.command == "tui":
         from irl.tui_app import run_tui
+
         run_tui()
     elif args.command == "pet":
         from irl.pet import pet_cli
+
         pet_cli()
     elif args.command == "achievements":
         from irl.achievements import show_achievements
+
         show_achievements()
     elif args.command == "quests":
         from irl.quests import show_quests
+
         show_quests()
     elif args.command == "grassland":
         from irl.grassland_quest import play_grassland_quest
+
         play_grassland_quest()
     elif args.command == "rhythm":
         from irl.rhythm import play_rhythm
+
         play_rhythm()
     elif args.command == "lang":
         from irl.lang_runner import run_lang
+
         run_lang(args.action, args.file)
     else:
         interactive_menu()
+
+
 def creative_menu():
-    from rich.prompt import IntPrompt
     from rich.console import Console
+    from rich.prompt import IntPrompt
+
     console = Console()
-    
+
     while True:
         console.print("\n[bold magenta]🎨 Creative Wellness Menu™[/bold magenta]")
         console.print("  [bold magenta]1.[/bold magenta] 🦐 Fix your posture™")
@@ -504,65 +546,77 @@ def creative_menu():
         console.print("  [bold yellow]5.[/bold yellow] 🌪️  Chaos Quiz™")
         console.print("  [bold green]6.[/bold green] 🎭 Chaos Counter™ (Daily Joke™)")
         console.print("  [bold white]0.[/bold white] Back to Main Menu™\n")
-        
+
         choice = IntPrompt.ask("Select an option", choices=["0", "1", "2", "3", "4", "5", "6"], console=console)
-        
+
         if choice == 0:
             break
         elif choice == 1:
             from irl.creative import posture
+
             posture()
         elif choice == 2:
             from irl.creative import hydrate
+
             hydrate()
         elif choice == 3:
             from irl.creative import window
+
             window()
         elif choice == 4:
             from irl.creative import mirror
+
             mirror()
         elif choice == 5:
             from irl.creative import chaos
+
             chaos()
         elif choice == 6:
             from irl.creative import chaos_counter
+
             chaos_counter()
 
+
 def view_profile():
-    from irl.state import load_state, get_global_rank
-    from irl.console import console
+    import json
+    import os
+
     from rich.panel import Panel
     from rich.table import Table
-    import os, json
+
+    from irl.console import console
+    from irl.state import get_global_rank, load_state
 
     state = load_state()
     user_name = state.get("name", "Unknown")
     rank = get_global_rank(state)
-    
+
     table = Table(show_header=False, box=None)
     table.add_column("Stat", style="bold cyan")
     table.add_column("Value", style="bold yellow")
-    
+
     table.add_row("Rank", rank)
     table.add_row("Total XP", str(state.get("total_xp", 0)))
     table.add_row("Coins", str(state.get("coins", 0)))
     table.add_row("Active Banner", state.get("active_banner", "default").title())
     table.add_row("Active Tone", state.get("active_tone", "default").title())
     table.add_row("Active Layout", state.get("active_color", "default").title())
-    
+
     # Try to get grass stats
     grass_file = os.path.expanduser("~/.irl_grass.json")
     if os.path.exists(grass_file):
         try:
-            with open(grass_file, 'r') as f:
+            with open(grass_file) as f:
                 g_state = json.load(f)
                 table.add_row("Grass Streak", str(g_state.get("streak", 0)))
-        except: pass
+        except Exception:
+            pass
 
     panel = Panel(table, title=f"[bold magenta]👤 {user_name}'s IRL™ Profile[/bold magenta]", border_style="cyan")
     console.print(panel)
-    
+
     from rich.prompt import Prompt
+
     Prompt.ask("\nPress Enter to return")
 
 
@@ -634,13 +688,15 @@ def _node_modules_report():
         "path": path,
         "size": f"{size_mb:,.1f} MB",
         "files": total_files,
-        "roast": random.choice([
-            "node_modules found. The landfill has become sentient.",
-            "Your dependency folder qualifies as a minor geological event.",
-            "That is not a folder. That is capitalism with subdirectories.",
-            "Disk usage report: emotionally expensive.",
-            "The package manager opened a buffet and charged your SSD.",
-        ]),
+        "roast": random.choice(
+            [
+                "node_modules found. The landfill has become sentient.",
+                "Your dependency folder qualifies as a minor geological event.",
+                "That is not a folder. That is capitalism with subdirectories.",
+                "Disk usage report: emotionally expensive.",
+                "The package manager opened a buffet and charged your SSD.",
+            ]
+        ),
     }
 
 
@@ -674,15 +730,17 @@ _stat_cache = {"ts": 0.0, "pip": "?", "npm": "?"}
 
 def _real_stats():
     """Real numbers: package counts and disk, cached for a minute."""
-    import subprocess
     import json as _json
+    import subprocess
 
     now = time.time()
     if now - _stat_cache["ts"] > 60 and _stat_cache["pip"] == "?":
         try:
             out = subprocess.run(
                 [sys.executable, "-m", "pip", "list", "--format", "json", "--disable-pip-version-check"],
-                capture_output=True, text=True, timeout=10,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             _stat_cache["pip"] = str(len(_json.loads(out.stdout or "[]")))
         except Exception:
@@ -695,7 +753,7 @@ def _real_stats():
 
     try:
         total, used, free = shutil.disk_usage(os.path.expanduser("~"))
-        disk = f"{free / (1024 ** 3):,.0f} GB free"
+        disk = f"{free / (1024**3):,.0f} GB free"
     except Exception:
         disk = "unknowable"
 
@@ -710,8 +768,9 @@ def _real_stats():
 
 def _grass_heatmap(state):
     """GitHub-style contribution grid of grass touches (last 12 weeks)."""
-    from rich.text import Text
     from datetime import datetime, timedelta
+
+    from rich.text import Text
 
     history = state.get("history", {})
     today = datetime.now().date()
@@ -739,7 +798,7 @@ def _grass_heatmap(state):
 
 def _build_dashboard(state, rank, user_name, tick, selected=0):
     from irl.themes import get_engine
-    from irl.themes.layouts import render_dashboard_chrome, DASHBOARD_SKINS
+    from irl.themes.layouts import DASHBOARD_SKINS, render_dashboard_chrome
 
     engine = get_engine()
     skin = DASHBOARD_SKINS.get(engine.color_id, DASHBOARD_SKINS["default"])
@@ -752,7 +811,7 @@ def _build_dashboard(state, rank, user_name, tick, selected=0):
     grass_state_path = os.path.expanduser("~/.irl_grass.json")
     grass_state = {}
     try:
-        with open(grass_state_path, "r") as f:
+        with open(grass_state_path) as f:
             grass_state = json.load(f)
     except Exception:
         grass_state = {"streak": 0, "history": {}}
@@ -772,7 +831,7 @@ def _build_dashboard(state, rank, user_name, tick, selected=0):
             style = f"bold {border}"
             cursor = " "
         menu.add_row(f"[{style}] {cursor} {idx:02}. {label}[/] [dim]{desc}[/dim]")
-        
+
     menu.add_row("")
     menu.add_row(f"[{accent}]CONTROLS: \\[W]/\\[S] or \\[UP]/\\[DOWN] to scroll • \\[ENTER] to select • \\[Q] to exit[/{accent}]")
 
@@ -811,7 +870,7 @@ def _build_dashboard(state, rank, user_name, tick, selected=0):
     layout["stats"].update(render_dashboard_chrome("stats", engine.color_id, stats_table, None, tick))
     layout["node"].update(render_dashboard_chrome("node", engine.color_id, node_table, node["roast"], tick))
     layout["heatmap"].update(_grass_heatmap(grass_state))
-    
+
     # Use theme colors for the ticker
     ticker_text = f"[bold {border}]IRL SIGNAL FEED[/bold {border}]"
     layout["ticker"].update(render_dashboard_chrome("ticker", engine.color_id, ticker, ticker_text, tick))
@@ -837,72 +896,98 @@ def _dispatch_dashboard_choice(choice):
             run_doctor(pkg)
     elif choice == 4:
         from irl.grass import touch_grass
+
         touch_grass()
     elif choice == 5:
         creative_menu()
     elif choice == 6:
         from irl.store import open_store
+
         open_store()
     elif choice == 7:
         view_profile()
     elif choice == 8:
         from irl.games import play_game_menu
+
         play_game_menu()
     elif choice == 9:
         query = Prompt.ask("What package are you looking for?")
         if query:
             from irl.search import search_and_install
+
             search_and_install(query)
     elif choice == 10:
         from irl.install import upgrade_irl
+
         upgrade_irl()
     elif choice == 11:
         from irl.city import enter_city
+
         enter_city()
     elif choice == 12:
         from irl.manga import read_manga
+
         read_manga()
     elif choice == 13:
         from irl.story import play_story
+
         play_story()
     elif choice == 14:
         from irl.bones import summon_bones
+
         summon_bones()
     elif choice == 15:
         from irl.joke import tell_joke
+
         tell_joke()
     elif choice == 16:
         from irl.dog import render_dog
+
         render_dog()
     elif choice == 17:
         from irl.pet import pet_cli
+
         pet_cli()
     elif choice == 18:
         from irl.quests import show_quests
+
         show_quests()
     elif choice == 19:
         from irl.achievements import show_achievements
+
         show_achievements()
     elif choice == 20:
         from irl.grassland_quest import play_grassland_quest
+
         play_grassland_quest()
     elif choice == 21:
         from irl.rhythm import play_rhythm
+
         play_rhythm()
     elif choice == 22:
         from irl.tui_app import run_tui
+
         run_tui()
     return True
 
 
 def chaotic_dashboard_mode(loop=False):
     from rich.prompt import Prompt
+
     from irl.console import console
-    from irl.state import load_state, get_global_rank
     from irl.keys import (
-        read_key, flush_keys, kbhit, is_interactive,
-        KEY_UP, KEY_DOWN, KEY_ENTER, KEY_ESC, KEY_SPACE, KEY_CTRL_C,
+        KEY_CTRL_C,
+        KEY_DOWN,
+        KEY_ENTER,
+        KEY_ESC,
+        KEY_SPACE,
+        KEY_UP,
+        flush_keys,
+        is_interactive,
+        kbhit,
+        read_key,
     )
+    from irl.state import get_global_rank, load_state
 
     if not is_interactive():
         # No terminal to draw on (piped/CI): offer the numbered menu instead.
@@ -954,7 +1039,7 @@ def chaotic_dashboard_mode(loop=False):
 
                 while True:
                     live.update(_build_dashboard(state, rank, user_name, tick, selected))
-                    time.sleep(0.1) # 10 FPS animation
+                    time.sleep(0.1)  # 10 FPS animation
                     tick += 1
 
                     while kbhit():
@@ -994,21 +1079,25 @@ def chaotic_dashboard_mode(loop=False):
         if chosen == 0:
             if konami:
                 unlock_matrix_theme()
-                console.print(Panel(
-                    "[bold bright_green]There is no spoon. There is no lock.[/bold bright_green]\n\n"
-                    "A new theme has appeared in your collection. You already know which one.\n"
-                    "[dim]Check the store, or just look at the rain. It is green now.[/dim]",
-                    border_style="green",
-                ))
+                console.print(
+                    Panel(
+                        "[bold bright_green]There is no spoon. There is no lock.[/bold bright_green]\n\n"
+                        "A new theme has appeared in your collection. You already know which one.\n"
+                        "[dim]Check the store, or just look at the rain. It is green now.[/dim]",
+                        border_style="green",
+                    )
+                )
             break
 
         keep_going = _dispatch_dashboard_choice(chosen)
         if not loop or not keep_going:
             break
 
+
 def interactive_menu():
     from rich.prompt import Prompt
     from rich.table import Table
+
     from irl.state import load_state
 
     state = load_state()
@@ -1034,6 +1123,7 @@ def interactive_menu():
         return
     if choice in ("install", "glasses", "doctor"):
         from rich.console import Console
+
         c = Console(highlight=False)
         prompt = {"install": "Package name, repo, or URL", "glasses": "Package to inspect", "doctor": "Package to diagnose"}[choice]
         target = Prompt.ask(f"[{IRL_CREAM}]{prompt}[/{IRL_CREAM}]")
@@ -1050,22 +1140,43 @@ def interactive_menu():
         query = Prompt.ask(f"[{IRL_CREAM}]What package are you looking for?[/{IRL_CREAM}]")
         if query:
             from irl.search import search_and_install
+
             search_and_install(query)
         return
-    mapping = {"dashboard": 0, "grass": 4, "store": 6, "games": 8, "upgrade": 10, "city": 11, "manga": 12, "story": 13, "bones": 14, "joke": 15, "dog": 16,
-               "pet": 17, "quests": 18, "achievements": 19, "grassland": 20, "rhythm": 21, "tui": 22}
+    mapping = {
+        "dashboard": 0,
+        "grass": 4,
+        "store": 6,
+        "games": 8,
+        "upgrade": 10,
+        "city": 11,
+        "manga": 12,
+        "story": 13,
+        "bones": 14,
+        "joke": 15,
+        "dog": 16,
+        "pet": 17,
+        "quests": 18,
+        "achievements": 19,
+        "grassland": 20,
+        "rhythm": 21,
+        "tui": 22,
+    }
     if choice == "rollback":
         rollback_irl()
     elif choice == "posture":
         from irl.creative import posture
+
         posture()
     elif choice == "hydrate":
         from irl.creative import hydrate
+
         hydrate()
     elif choice == "dashboard":
         chaotic_dashboard_mode(loop=True)
     elif choice in mapping:
         _dispatch_dashboard_choice(mapping[choice])
+
 
 if __name__ == "__main__":
     cli()

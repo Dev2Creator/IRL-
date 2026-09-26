@@ -39,40 +39,44 @@ IRL_BORDER = "#6B4E36"
 # --- Icons -----------------------------------------------------------------
 # (nerd_font_glyph, ascii_fallback) — ascii is always safe to render.
 ICONS = {
-    "grass":      ("\uf06c", "[~]"),
-    "water":      ("\uf773", "[W]"),
-    "sun":        ("\uf185", "[*]"),
-    "package":    ("\uf187", "[+]"),
-    "search":     ("\uf002", "[?]"),
-    "doctor":     ("\uf0f1", "[!]"),
-    "glasses":    ("\uf570", "[o]"),
-    "coin":       ("\uf3d1", "$"),
-    "star":       ("\uf005", "*"),
-    "heart":      ("\uf004", "<3"),
-    "bug":        ("\uf188", "x"),
-    "duck":       ("\ueb29", "<>"),
-    "cat":        ("\uf6be", "=^.^="),
-    "dog":        ("\uf6d3", "/\\_/\\"),
-    "plant":      ("\uf4d8", "\\|/"),
-    "game":       ("\uf11b", "[>]"),
-    "music":      ("\uf001", "o/"),
-    "trophy":     ("\uf091", "#1"),
-    "fire":       ("\uf06d", "^"),
-    "rocket":     ("\uf135", "/^\\"),
-    "warning":    ("\uf071", "/!\\"),
-    "check":      ("\uf00c", "OK"),
-    "cross":      ("\uf00d", "X"),
-    "arrow_right":("\uf061", "->"),
-    "sparkles":   ("\uf890", "*"),
-    "lock":       ("\uf023", "[L]"),
-    "ghost":      ("\uf6e2", "BOO"),
-    "skull":      ("\uf714", "X("),
+    "grass": ("\uf06c", "[~]"),
+    "water": ("\uf773", "[W]"),
+    "sun": ("\uf185", "[*]"),
+    "package": ("\uf187", "[+]"),
+    "search": ("\uf002", "[?]"),
+    "doctor": ("\uf0f1", "[!]"),
+    "glasses": ("\uf570", "[o]"),
+    "coin": ("\uf3d1", "$"),
+    "star": ("\uf005", "*"),
+    "heart": ("\uf004", "<3"),
+    "bug": ("\uf188", "x"),
+    "duck": ("\ueb29", "<>"),
+    "cat": ("\uf6be", "=^.^="),
+    "dog": ("\uf6d3", "/\\_/\\"),
+    "plant": ("\uf4d8", "\\|/"),
+    "game": ("\uf11b", "[>]"),
+    "music": ("\uf001", "o/"),
+    "trophy": ("\uf091", "#1"),
+    "fire": ("\uf06d", "^"),
+    "rocket": ("\uf135", "/^\\"),
+    "warning": ("\uf071", "/!\\"),
+    "check": ("\uf00c", "OK"),
+    "cross": ("\uf00d", "X"),
+    "arrow_right": ("\uf061", "->"),
+    "sparkles": ("\uf890", "*"),
+    "lock": ("\uf023", "[L]"),
+    "ghost": ("\uf6e2", "BOO"),
+    "skull": ("\uf714", "X("),
 }
 
 # Terminals that advertise Nerd Font-capable rendering.
 _NERD_HINT_ENV = (
-    "KITTY_WINDOW_ID", "WEZTERM_EXECUTABLE", "ITERM_PROFILE",
-    "WT_SESSION", "TERMINAL_EMULATOR", "ALACRITTY_LOG",
+    "KITTY_WINDOW_ID",
+    "WEZTERM_EXECUTABLE",
+    "ITERM_PROFILE",
+    "WT_SESSION",
+    "TERMINAL_EMULATOR",
+    "ALACRITTY_LOG",
 )
 
 
@@ -83,6 +87,7 @@ def icons_mode():
         return forced
     try:
         from irl.state import load_state
+
         mode = load_state().get("icons", "auto")
         return mode if mode in ("nerd", "ascii", "auto") else "auto"
     except Exception:
@@ -113,14 +118,17 @@ def icon(name):
 
 # --- Colors ----------------------------------------------------------------
 
+
 def skin():
     """The active dashboard skin dict (accent/border/box/title/art)."""
     try:
-        from irl.themes.layouts import DASHBOARD_SKINS
         from irl.themes import get_engine
+        from irl.themes.layouts import DASHBOARD_SKINS
+
         return DASHBOARD_SKINS.get(get_engine().color_id, DASHBOARD_SKINS["default"])
     except Exception:
         from irl.themes.layouts import DASHBOARD_SKINS
+
         return DASHBOARD_SKINS["default"]
 
 
@@ -146,10 +154,7 @@ _WORDMARK = [
 
 def wordmark(subtitle=None, no_color=False):
     """The gradient IRL™ wordmark. Returns a renderable Group."""
-    lines = Group(*[
-        Text(line, style="bold " + (color if not no_color else "default"))
-        for line, color in _WORDMARK
-    ])
+    lines = Group(*[Text(line, style="bold " + (color if not no_color else "default")) for line, color in _WORDMARK])
     tagline = subtitle or "Software for Humans. Useful tools. Less terminal drama."
     return Group(lines, Text(f"✦ {tagline} ✦", style=IRL_CREAM if not no_color else "default"))
 
@@ -157,11 +162,13 @@ def wordmark(subtitle=None, no_color=False):
 def banner(console=None):
     """Print the full gradient banner."""
     from rich.console import Console
+
     (console or Console()).print(wordmark())
     (console or Console()).print()
 
 
 # --- Panels / tables / spinners --------------------------------------------
+
 
 def panel(body, title=None, **kwargs):
     """A brand-styled Panel."""
@@ -190,14 +197,17 @@ def styled_table(title=None, **kwargs):
 def spinner(text):
     """console.status with brand flavor: `with ui.spinner("..."):`"""
     from irl.console import console
+
     return console._console.status(f"[{accent()}]{text}[/{accent()}]")
 
 
 # --- Errors ----------------------------------------------------------------
 
+
 def styled_error(message, hint=None, title="Well, this is awkward"):
     """Every failure becomes a styled panel with an actionable hint."""
     from irl.console import console
+
     lines = [Text(str(message), style="bold red")]
     if hint:
         lines.append(Text(""))
@@ -209,16 +219,19 @@ def styled_error(message, hint=None, title="Well, this is awkward"):
 
 def styled_success(message):
     from irl.console import console
+
     console.print(f"[bold {accent()}]{icon('check')} {message}[/{accent()}]")
 
 
 # --- Theme preview -----------------------------------------------------------
 
+
 def preview_theme(theme_id, console=None):
     """Render a live sample of a theme: banner line, panel, table row."""
     from rich.console import Console
+
     try:
-        from irl.themes.layouts import LAYOUTS, DASHBOARD_SKINS
+        from irl.themes.layouts import DASHBOARD_SKINS, LAYOUTS
     except Exception:
         return
     console = console or Console()
@@ -226,10 +239,13 @@ def preview_theme(theme_id, console=None):
     skin_data = DASHBOARD_SKINS.get(theme_id, DASHBOARD_SKINS["default"])
     a, b = skin_data["accent"], skin_data["border"]
 
-    console.print(Panel(
-        Text(f"PREVIEW — {skin_data['title']}", style=f"bold {a}"),
-        border_style=b, box=skin_data["box"],
-    ))
+    console.print(
+        Panel(
+            Text(f"PREVIEW — {skin_data['title']}", style=f"bold {a}"),
+            border_style=b,
+            box=skin_data["box"],
+        )
+    )
     if layout_cls is not None:
         try:
             layout_cls().render_banner()

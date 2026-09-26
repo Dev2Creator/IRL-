@@ -1,5 +1,5 @@
-import os
 import glob
+import os
 
 COPYRIGHT = """# IRL™ 🌱 - Software for Humans
 # Copyright (C) 2026 Anika Mukherjee
@@ -18,33 +18,37 @@ COPYRIGHT = """# IRL™ 🌱 - Software for Humans
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+
 def add_copyright():
-    py_files = glob.glob('irl/**/*.py', recursive=True) + ['generate_quiz.py']
+    py_files = glob.glob("irl/**/*.py", recursive=True) + ["generate_quiz.py"]
     for fpath in py_files:
-        if not os.path.exists(fpath): continue
-        with open(fpath, 'r', encoding='utf-8') as f:
+        if not os.path.exists(fpath):
+            continue
+        with open(fpath, encoding="utf-8") as f:
             content = f.read()
-        
+
         if "# IRL™ 🌱" not in content:
-            with open(fpath, 'w', encoding='utf-8') as f:
+            with open(fpath, "w", encoding="utf-8") as f:
                 f.write(COPYRIGHT + "\n" + content)
             print(f"Added copyright to {fpath}")
 
+
 def update_tones():
     tones_path = "irl/themes/tones.py"
-    with open(tones_path, 'r', encoding='utf-8') as f:
+    with open(tones_path, encoding="utf-8") as f:
         content = f.read()
-    
+
     # Simple replaces to make it personal
     content = content.replace("wage slave", "{name}")
     content = content.replace("human", "{name}")
     content = content.replace("Human", "{name}")
     content = content.replace("meatbag", "{name}")
     content = content.replace("snowflake", "{name}")
-    
-    with open(tones_path, 'w', encoding='utf-8') as f:
+
+    with open(tones_path, "w", encoding="utf-8") as f:
         f.write(content)
     print("Updated tones to use {name}")
+
 
 if __name__ == "__main__":
     add_copyright()
