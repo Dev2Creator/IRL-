@@ -126,5 +126,5 @@ def test_level_ladder():
 
 def test_achievement_catalog_complete():
     assert len(ACHIEVEMENTS) == 12
-    for ach_id, (title, desc, reward) in ACHIEVEMENTS.items():
+    for _ach_id, (title, desc, reward) in ACHIEVEMENTS.items():
         assert title and desc and reward > 0
