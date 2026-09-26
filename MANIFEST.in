@@ -1,1 +1,2 @@
-recursive-include irl/assets *
+recursive-include irl/assets/audio *.wav
+recursive-include irl *.irl

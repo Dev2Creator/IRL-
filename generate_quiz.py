@@ -585,7 +585,7 @@ def generate():
         final_quizzes.append(new_q)
 
     # Write the output file
-    output_path = r"C:\Users\aneek\OneDrive\Desktop\irl-py\irl\quiz_bank.py"
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "irl", "quiz_bank.py")
     
     # Make sure output directory exists (it does)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

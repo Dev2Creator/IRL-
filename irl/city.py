@@ -161,7 +161,7 @@ def enter_city():
                     row_str += TILE_RENDER.get(char, "  ")
             console.print(row_str)
             
-        console.print("\n[dim]Controls: W/A/S/D to move, G to launch Original GTA 1997, Q to quit.[/dim]")
+        console.print("\n[dim]Controls: W/A/S/D to move, G for a moment of silence, Q to quit.[/dim]")
         
         # --- Input ---
         move = getch()
@@ -172,31 +172,8 @@ def enter_city():
         elif move == 'd': new_x += 1
         elif move == 'q': break
         elif move == 'g':
-            zip_path = os.path.join(os.path.dirname(__file__), 'assets', 'gtaects.zip')
-            extract_dir = os.path.expanduser(r"~\.irl_pkg\gta_extracted")
-            bat_path = os.path.join(extract_dir, "GTAECTS", "GTA.BAT")
-            
-            if os.path.exists(zip_path):
-                if not os.path.exists(bat_path):
-                    clear_screen()
-                    console.print("[yellow]First time setup: Extracting Original GTA 1997...[/yellow]")
-                    import zipfile
-                    os.makedirs(extract_dir, exist_ok=True)
-                    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                        zip_ref.extractall(extract_dir)
-                
-                clear_screen()
-                console.print("\n[bold green]Launching Original GTA 1997 (DOS)...[/bold green]")
-                time.sleep(1)
-                
-                import subprocess
-                old_cwd = os.getcwd()
-                os.chdir(os.path.dirname(bat_path))
-                subprocess.Popen(["cmd.exe", "/c", "GTA.BAT"])
-                os.chdir(old_cwd)
-                break
-            else:
-                last_msg = "[red]Bundled GTA 1997 assets not found in package![/red]"
+            last_msg = ("[magenta]🏁 Original GTA 1997 has ridden into the sunset (retired in 2.0.0 for licensing karma). "
+                        "Go touch grass instead — it's like GTA, but the grass is real.[/magenta]")
         
         # --- Collision & Interaction ---
         if 0 <= new_x < WIDTH and 0 <= new_y < HEIGHT:
