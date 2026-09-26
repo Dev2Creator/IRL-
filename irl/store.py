@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from irl.state import load_state, save_state
-from rich.prompt import IntPrompt
+from rich.prompt import IntPrompt, Prompt
 import sys
 
 THEMES = {
@@ -30,8 +30,20 @@ THEMES = {
     "boomer": {"name": "Legacy Fortran Dev", "price": 10500, "desc": "Punch card superiority."},
     "zen": {"name": "Nihilist Minimalist", "price": 12000, "desc": "Depressing minimalist void."},
     "toxic": {"name": "Ranked Sweeper", "price": 15000, "desc": "Unfiltered gaming lobby toxicity."},
-    "ai": {"name": "AGI Arrival", "price": 20000, "desc": "Cold machine supremacy."}
+    "ai": {"name": "AGI Arrival", "price": 20000, "desc": "Cold machine supremacy."},
+    "uipro": {"name": "Warm Wisdom Panel", "price": 17500, "desc": "Amber monitor, human software."},
+    "synthwave": {"name": "Sunset Dreamdriver", "price": 16500, "desc": "Neon grid, 110 BPM, endless drive."},
+    "sakura": {"name": "Petal Garden Dev", "price": 13500, "desc": "Bloom kindly. Ship gently."},
+    "termclassic": {"name": "MS-DOS Historian", "price": 900, "desc": "80x24 forever. ANSI or death."},
+    "highcontrast": {"name": "Legibility Champion", "price": 100, "desc": "Accessibility is a love language."},
+    "matrix": {"name": "??? ", "price": 0, "desc": "Follow the white rabbit.", "locked": True},
 }
+
+
+def _visible_themes(state):
+    """THEMES minus the still-secret ones. Secrets stay secrets."""
+    unlocked = set(state.get("unlocked_themes", []))
+    return {k: v for k, v in THEMES.items() if not v.get("locked") or k in unlocked}
 
 def open_store():
     while True:
@@ -71,7 +83,7 @@ def buy_full_theme(state, c):
         active_t = state.get("active_tone", "default")
         active_c = state.get("active_color", "default")
         
-        for key, details in THEMES.items():
+        for key, details in _visible_themes(state).items():
             status = ""
             if key == active_b and key == active_t and key == active_c:
                 status = "[bold green](Equipped)[/bold green]"
@@ -79,22 +91,22 @@ def buy_full_theme(state, c):
                 status = "[bold blue](Owned)[/bold blue]"
             else:
                 status = f"[yellow]({details['price']} coins)[/yellow]"
-                
+
             c.print(f"  [bold cyan]{idx}.[/bold cyan] {details['name']} {status} - [dim]{details['desc']}[/dim]")
             options.append(key)
             idx += 1
-            
+
         c.print(f"  [bold white]0.[/bold white] Back\n")
         choice = IntPrompt.ask("Select a theme to buy/equip", choices=[str(i) for i in range(len(options) + 1)])
-        
+
         if choice == 0:
             break
-            
+
         selected_key = options[choice - 1]
         price = THEMES[selected_key]['price']
-        
+
         owned_all = selected_key in state["purchased_banners"] and selected_key in state["purchased_tones"] and selected_key in state["purchased_colors"]
-        
+
         if owned_all:
             state["active_banner"] = selected_key
             state["active_tone"] = selected_key
@@ -102,6 +114,11 @@ def buy_full_theme(state, c):
             save_state(state)
             c.print(f"\n[bold green]✅ Equipped FULL {THEMES[selected_key]['name']} Theme![/bold green]")
         else:
+            from irl.ui import preview_theme
+            preview_theme(selected_key, console=c)
+            approved = Prompt.ask("Look good on you? [y/N]", default="no").strip().lower() in ("y", "yes")
+            if not approved:
+                continue
             if coins >= price:
                 state["coins"] -= price
                 if selected_key not in state["purchased_banners"]: state["purchased_banners"].append(selected_key)
@@ -141,7 +158,7 @@ def buy_spare_parts(state, c):
             idx = 1
             active_val = state.get(p_active_key, "default")
             
-            for key, details in THEMES.items():
+            for key, details in _visible_themes(state).items():
                 status = ""
                 part_price = details['price'] // 3
                 if key == active_val:

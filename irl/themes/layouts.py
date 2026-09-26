@@ -433,6 +433,88 @@ class UiProLayout(BaseLayout):
         console.print(f"[bold #F29265]◆ DONE[/bold #F29265] [#D7C0AA]{text}[/#D7C0AA]")
 
 
+class SynthwaveLayout(DefaultLayout):
+    ACCENT = "#FF71CE"
+    BORDER = "#01CDFE"
+
+    def render_banner(self):
+        console.print(Panel(Text("IRL™ // SUNSET DRIVE", style=f"bold {self.ACCENT}"),
+                            border_style=self.BORDER, box=box.DOUBLE_EDGE, padding=(1, 2)))
+
+    def _line(self, glyph, text):
+        console.print(f"[bold {self.ACCENT}]{glyph}[/bold {self.ACCENT}] [{self.BORDER}]{text}[/{self.BORDER}]")
+
+    def render_grass(self, text): self._line("🌆", text)
+    def render_install(self, text): self._line("📼", text)
+    def render_generic(self, text): self._line("▐▛", text)
+    def render_coin_gain(self, amount, msg): self._line(f"◆ +{amount} coins", msg)
+
+
+class MatrixLayout(DefaultLayout):
+    ACCENT = "bright_green"
+    BORDER = "green"
+
+    def render_banner(self):
+        console.print(Panel(Text("1RL // F0LL0W TH3 WH1T R4BB1T", style="bold bright_green"),
+                            border_style="green", box=box.HEAVY, padding=(1, 2)))
+
+    def render_grass(self, text): console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
+    def render_install(self, text): console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
+    def render_generic(self, text): console.print(f"[bright_green]>_[/bright_green] [green]{text}[/green]")
+    def render_coin_gain(self, amount, msg): console.print(f"[bright_green]+{amount} c01nz[/bright_green] [green]({msg})[/green]")
+
+
+class SakuraLayout(DefaultLayout):
+    ACCENT = "pink1"
+    BORDER = "plum2"
+
+    def render_banner(self):
+        console.print(Panel(Text("IRL™ 🌸 petal protocol", style=f"bold {self.ACCENT}"),
+                            border_style=self.BORDER, box=box.ROUNDED, padding=(1, 2)))
+
+    def _line(self, glyph, text):
+        console.print(f"[bold {self.ACCENT}]{glyph}[/bold {self.ACCENT}] [plum2]{text}[/plum2]")
+
+    def render_grass(self, text): self._line("🌸", text)
+    def render_install(self, text): self._line("🍡", text)
+    def render_generic(self, text): self._line("🌸", text)
+    def render_coin_gain(self, amount, msg): self._line(f"🌸 +{amount} coins", msg)
+
+
+class TerminalClassicLayout(DefaultLayout):
+    ACCENT = "bright_white"
+    BORDER = "white"
+
+    def render_banner(self):
+        console.print(Panel(Text("IRL(tm) v2.0  (C) 2026  [ amber-free edition ]", style="bold white"),
+                            border_style="white", box=box.ASCII_DOUBLE_HEAD, padding=(1, 2)))
+
+    def _line(self, text):
+        console.print(f"[bold white]IRL>[/bold white] [white]{text}[/white]")
+
+    def render_grass(self, text): self._line(text)
+    def render_install(self, text): self._line(text)
+    def render_generic(self, text): self._line(text)
+    def render_coin_gain(self, amount, msg): self._line(f"+{amount} coins ({msg})")
+
+
+class HighContrastLayout(DefaultLayout):
+    ACCENT = "bright_yellow"
+    BORDER = "bright_white"
+
+    def render_banner(self):
+        console.print(Panel(Text("IRL™ — HIGH CONTRAST MODE", style="bold bright_yellow"),
+                            border_style="bright_white", box=box.SQUARE, padding=(1, 2)))
+
+    def _line(self, glyph, text):
+        console.print(f"[bold bright_yellow]{glyph}[/bold bright_yellow] [bright_white]{text}[/bright_white]")
+
+    def render_grass(self, text): self._line("[GRASS]", text)
+    def render_install(self, text): self._line("[PKG]", text)
+    def render_generic(self, text): self._line("[INFO]", text)
+    def render_coin_gain(self, amount, msg): self._line(f"[+{amount} coins]", msg)
+
+
 DASHBOARD_SKINS = {
     "default": {"title": "IRL™ COMMAND STONE", "border": "#6B4E36", "accent": "#F29265", "box": box.SQUARE, "art": "Ancient terminal. Modern tools. Better choices."},
     "hacker": {"title": "ROOT@BASEMENT:~# IRL_OVERRIDE", "border": "green", "accent": "bright_green", "box": box.HEAVY, "art": "01001001 01010010 01001100"},
@@ -447,6 +529,11 @@ DASHBOARD_SKINS = {
     "toxic": {"title": "RANKED TERMINAL LOBBY", "border": "bright_red", "accent": "bright_magenta", "box": box.HEAVY, "art": "RATIO + L + UNHANDLED EXCEPTION"},
     "ai": {"title": "MODEL_CONTEXT_PROTOCOL: DESPAIR", "border": "bright_blue", "accent": "bright_cyan", "box": box.SQUARE, "art": '{"status":"online","ethics":"pending","vibes":"compiled"}'},
     "uipro": {"title": "IRL™ WISDOM PANEL", "border": "#6B4E36", "accent": "#F29265", "box": box.SQUARE, "art": "Warm amber monitor // human-focused software"},
+    "synthwave": {"title": "IRL™ SUNSET DRIVE", "border": "#01CDFE", "accent": "#FF71CE", "box": box.DOUBLE_EDGE, "art": "OUTRUN.EXE — 110 BPM, 0 bugs, 1 neon skyline"},
+    "matrix": {"title": "Z3R0-D4Y D4SHB04RD", "border": "green", "accent": "bright_green", "box": box.HEAVY, "art": "wake up... the build has you..."},
+    "sakura": {"title": "IRL™ PETAL GARDEN", "border": "plum2", "accent": "pink1", "box": box.ROUNDED, "art": "bloom kindly. ship gently."},
+    "termclassic": {"title": "IRL (TM) CLASSIC TERMINAL", "border": "white", "accent": "bright_white", "box": box.ASCII_DOUBLE_HEAD, "art": "80x24 forever. ANSI or death."},
+    "highcontrast": {"title": "IRL™ HIGH CONTRAST", "border": "bright_white", "accent": "bright_yellow", "box": box.SQUARE, "art": "Readability is a feature. Eyes are users too."},
 }
 
 
@@ -490,5 +577,10 @@ LAYOUTS = {
     'zen': ZenLayout,
     'toxic': ToxicLayout,
     'ai': AILayout,
-    'uipro': UiProLayout
+    'uipro': UiProLayout,
+    'synthwave': SynthwaveLayout,
+    'matrix': MatrixLayout,
+    'sakura': SakuraLayout,
+    'termclassic': TerminalClassicLayout,
+    'highcontrast': HighContrastLayout
 }

@@ -79,6 +79,7 @@ def touch_grass():
 
     state["xp"] += 1
     state["last_touched"] = today_str
+    state.setdefault("history", {})[today_str] = 1
     save_state(state)
     
     engine.render_grass()

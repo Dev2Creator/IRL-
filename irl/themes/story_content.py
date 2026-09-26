@@ -190,5 +190,90 @@ STORY_NODES = {
             "text": "You tweet the screenshot. It gets 10k retweets. The CEO sees it. You are sued for NDA violation, but you gained 5,000 followers. A pyrrhic victory. END.",
             "choices": []
         }
+    },
+    "synthwave": {
+        "start": {
+            "text": "It's 3 AM. You're driving a convertible down a neon grid highway, and your passenger is a bug report from 2019 that refuses to die. The radio says: 'Fix it before sunrise.'",
+            "choices": [
+                ("Floor it into the sunset with the bug still in the trunk", "sunset"),
+                ("Pull over at the chrome diner and debug properly", "diner")
+            ]
+        },
+        "sunset": {
+            "text": "You drive straight into the sun, which is legal in this dimension. The bug stops reporting errors because it is now a memento. You ship on vibes alone. END.",
+            "choices": []
+        },
+        "diner": {
+            "text": "In the diner, a waiter made of pure CSS pours you coffee. You trace the bug to one missing semicolon, crying beautifully in pink and blue. The sun rises. The build is green. END.",
+            "choices": []
+        }
+    },
+    "matrix": {
+        "start": {
+            "text": "A terminal blinks: 'irl is watching you.' A message scrolls by: the production system has been down for exactly your career length. Two pills sit on your keyboard.",
+            "choices": [
+                ("Take the red pill (rm -rf node_modules)", "red_pill"),
+                ("Take the blue pill (npm ci and pretend)", "blue_pill")
+            ]
+        },
+        "red_pill": {
+            "text": "You wake up in a world where lock files do not exist. Packages resolve on honor alone. It is terrifying. It is clean. You never look back. END.",
+            "choices": []
+        },
+        "blue_pill": {
+            "text": "The install completes in 8 seconds. Everything works. You suspect nothing. Somewhere, an agent wearing a dependency tree smiles. END.",
+            "choices": []
+        }
+    },
+    "sakura": {
+        "start": {
+            "text": "Your CI pipeline is a garden, and a petal lands on the failing test. The elder gardener says: 'A broken test is a seed that has not found its soil yet.'",
+            "choices": [
+                ("Kneel and refactor with patience", "refactor"),
+                ("Spray-paint the test green and walk away", "spray")
+            ]
+        },
+        "refactor": {
+            "text": "You refactor petal by petal. The mock unlocks, the assertion forgives you, and somewhere a duck gets bread. The pipeline blooms green for the first time in a season. END.",
+            "choices": []
+        },
+        "spray": {
+            "text": "The test is green now. It is the green of a lie. The garden accepts your payment and waits, because gardens always wait. END.",
+            "choices": []
+        }
+    },
+    "termclassic": {
+        "start": {
+            "text": "C:\\IRL> A batch file on your desk promises to fix the printer. MS-DOS may be gone, but the printer still fears it. You have one 1.44 MB floppy and one shot.",
+            "choices": [
+                ("Insert the floppy and reboot the ancient way", "floppy"),
+                ("Print the fix instructions on paper instead", "paper")
+            ]
+        },
+        "floppy": {
+            "text": "AUTOEXEC.BAT runs. The printer shudders back to life, whispering 'ERROR 00: NONE FOUND'. You have appeased the elder hardware. It prints your boarding pass to anywhere. END.",
+            "choices": []
+        },
+        "paper": {
+            "text": "The printer chews your instructions and prints 'OUT OF MEMORY' in triplicate. Some machines cannot be reasoned with. You frame the page as modern art. END.",
+            "choices": []
+        }
+    },
+    "highcontrast": {
+        "start": {
+            "text": "Your screen glare is legally classified as a star. The accessibility audit says: 'Your app fails every contrast check, and so will you, in the eyes of your users.'",
+            "choices": [
+                ("Fix the contrast ratios for everyone", "fix"),
+                ("Argue that dark mode counts as accessibility", "argue")
+            ]
+        },
+        "fix": {
+            "text": "You raise every ratio to 4.5:1. Users write thank-you emails. Your future self, aging gracefully, can still read your own logs. True wealth. END.",
+            "choices": []
+        },
+        "argue": {
+            "text": "You say 'dark mode is basically accessibility'. The auditor's monospace stare pierces your soul at 21:1 contrast. You fix it anyway. Growth. END.",
+            "choices": []
+        }
     }
 }
