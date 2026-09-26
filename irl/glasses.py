@@ -122,3 +122,9 @@ def inspect_package(package):
     else:
         console.print(f"[red]❌ Error:[/red] Package '{package}' not found on NPM, PyPI, or GitHub.")
         console.print("[yellow]Vision impaired.[/yellow]\n")
+
+    try:
+        from irl.quests import report as _rq
+        _rq("glasses")
+    except Exception:
+        pass

@@ -1044,6 +1044,9 @@ def chaotic_dashboard_mode(loop=False):
             ) as live:
                 tick = 0
                 chosen = None
+                konami = False
+                recent = []
+                KONAMI = ["UP", "UP", "DOWN", "DOWN", "LEFT", "RIGHT", "LEFT", "RIGHT", "b", "a"]
 
                 while True:
                     live.update(_build_dashboard(state, rank, user_name, tick, selected))
@@ -1054,6 +1057,13 @@ def chaotic_dashboard_mode(loop=False):
                         try:
                             key = read_key()
                         except EOFError:
+                            chosen = 0
+                            break
+                        # --- konami watch (some locks open from the inside) ---
+                        recent.append(key.char.lower() if key.is_char() and key.char else key.name)
+                        recent[:] = recent[-10:]
+                        if recent == KONAMI:
+                            konami = True
                             chosen = 0
                             break
                         if key in (KEY_UP,):
@@ -1078,6 +1088,14 @@ def chaotic_dashboard_mode(loop=False):
                         break
 
         if chosen == 0:
+            if konami:
+                unlock_matrix_theme()
+                console.print(Panel(
+                    "[bold bright_green]There is no spoon. There is no lock.[/bold bright_green]\n\n"
+                    "A new theme has appeared in your collection. You already know which one.\n"
+                    "[dim]Check the store, or just look at the rain. It is green now.[/dim]",
+                    border_style="green",
+                ))
             break
 
         keep_going = _dispatch_dashboard_choice(chosen)

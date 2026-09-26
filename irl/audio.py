@@ -111,6 +111,31 @@ def play_mp3(path, wait=False):
     return False
 
 
+def play_wav_loop(path):
+    """Loop a (short) WAV in a background thread until stop_audio().
+
+    The bundled lofi files are 1-2s loops, so the rhythm game keeps them
+    spinning for the length of a chart.
+    """
+    import threading
+    global _stopped
+
+    def _loop():
+        while not _stopped:
+            if not play_wav(path, wait=True):
+                return
+
+    _stopped = False
+    thread = threading.Thread(target=_loop, daemon=True)
+    _threads.append(thread)
+    thread.start()
+    return True
+
+
+_threads = []
+_stopped = False
+
+
 def play_track(path, wait=False):
     """Play any supported audio file by extension."""
     ext = os.path.splitext(path)[1].lower()
@@ -135,6 +160,14 @@ def play_random_lofi():
 
 def stop_audio():
     """Best-effort stop of everything we started."""
+    global _stopped
+    _stopped = True
+    for thread in _threads:
+        try:
+            thread.join(timeout=1.5)
+        except Exception:
+            pass
+    _threads.clear()
     for process in _spawned:
         try:
             process.terminate()

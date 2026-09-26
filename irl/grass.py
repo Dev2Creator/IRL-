@@ -88,3 +88,14 @@ def touch_grass():
     rank = get_rank(state["streak"])
     days_text = "day" if state["streak"] == 1 else "days"
     engine.ui.render_generic(f"Current Streak: {state['streak']} {days_text}\nRank: {rank}\n")
+
+    try:
+        from irl.quests import report as report_quest
+        report_quest("grass")
+    except Exception:
+        pass
+    try:
+        from irl.achievements import check_auto
+        check_auto()
+    except Exception:
+        pass

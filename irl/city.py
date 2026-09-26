@@ -84,6 +84,11 @@ def enter_city():
     police_units = []
     
     last_msg = "Welcome to IRL™ City (GTA 1997 ASCII Edition). Use W,A,S,D to move. Walk into buildings to interact."
+    try:
+        from irl.quests import report as _rq
+        _rq("city")
+    except Exception:
+        pass
     
     while True:
         state = load_state()

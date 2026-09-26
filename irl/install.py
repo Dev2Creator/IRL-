@@ -27,6 +27,21 @@ def check_registry(url):
     except Exception:
         return False
 
+def _celebrate_install():
+    """Coins + quests + achievements for every successful install path."""
+    add_coins(10, "Installed a package")
+    try:
+        from irl.quests import report as report_quest
+        report_quest("install")
+    except Exception:
+        pass
+    try:
+        from irl.achievements import check_auto
+        check_auto(context={"installed": True})
+    except Exception:
+        pass
+
+
 def install_package(target):
     from irl.themes import get_engine
     engine = get_engine()
@@ -36,7 +51,7 @@ def install_package(target):
     # Direct URL
     if target.startswith("http://") or target.startswith("https://"):
         download_and_extract(target)
-        add_coins(10, "Installed a package")
+        _celebrate_install()
         engine.render_install_success(target)
         return
 
@@ -44,7 +59,7 @@ def install_package(target):
     if "/" in target and not target.startswith("@"):
         url = f"https://github.com/{target}/archive/refs/heads/main.zip"
         download_and_extract(url)
-        add_coins(10, "Installed a package")
+        _celebrate_install()
         engine.render_install_success(target)
         return
 
@@ -52,7 +67,7 @@ def install_package(target):
     if check_registry(f"https://pypi.org/pypi/{target}/json"):
         success = install_pip(target)
         if success:
-            add_coins(10, "Installed a package")
+            _celebrate_install()
             engine.render_install_success(target)
         else:
             engine.ui.render_generic(f"[bold red]✖ IRL™ Error:[/bold red] Failed to install '{target}' via pip. See logs above.")
@@ -62,7 +77,7 @@ def install_package(target):
     if check_registry(f"https://registry.npmjs.org/{target}"):
         success = install_npm(target)
         if success:
-            add_coins(10, "Installed a package")
+            _celebrate_install()
             engine.render_install_success(target)
         else:
             engine.ui.render_generic(f"[bold red]✖ IRL™ Error:[/bold red] Failed to install '{target}' via npm. Check permissions (e.g., EPERM) or try a different directory.")
@@ -83,7 +98,7 @@ def install_package(target):
                 
                 zip_url = f"https://github.com/{repo_full_name}/archive/refs/heads/{default_branch}.zip"
                 download_and_extract(zip_url)
-                add_coins(10, "Installed a package")
+                _celebrate_install()
                 engine.render_install_success(target)
                 return
         elif response.status_code in [403, 429]:

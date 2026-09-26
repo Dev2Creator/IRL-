@@ -28,6 +28,11 @@ def posture():
     engine = get_engine()
     engine.render_posture()
     add_coins(5, "Fixed posture")
+    try:
+        from irl.quests import report as _rq
+        _rq("posture")
+    except Exception:
+        pass
 
 def window():
     from irl.themes import get_engine
@@ -75,6 +80,11 @@ def hydrate():
         
     engine.render_hydrate(state["glasses"])
     add_coins(5, "Hydrated")
+    try:
+        from irl.quests import report as _rq
+        _rq("hydrate")
+    except Exception:
+        pass
 
 def chaos():
     from irl.themes import get_engine

@@ -49,12 +49,24 @@ def play_game_menu():
         for i, game_id in enumerate(owned_games, 1):
             name = GAMES.get(game_id, {}).get("name", "Unknown Game")
             console.print(f"  [bold cyan]{i}.[/bold cyan] {name}")
+        console.print("  [bold green]G.[/bold green] Grassland Quest (free, always installed)")
+        console.print("  [bold green]R.[/bold green] Lofi Rhythm (free, bundled lofi)")
         console.print(f"  [bold white]0.[/bold white] Back\n")
-        
-        choice = IntPrompt.ask("Select a game to play", choices=[str(i) for i in range(len(owned_games) + 1)])
+
+        choice = IntPrompt.ask("Select a game to play", choices=[str(i) for i in range(len(owned_games) + 1)] + ["g", "G", "r", "R"]).strip().lower()
         if choice == 0:
             break
-            
+        if choice == "g":
+            from irl.grassland_quest import play_grassland_quest
+            play_grassland_quest()
+            _note_played()
+            continue
+        if choice == "r":
+            from irl.rhythm import play_rhythm
+            play_rhythm()
+            _note_played()
+            continue
+
         selected = owned_games[choice - 1]
         if selected == "tictactoe":
             play_tictactoe()
@@ -64,6 +76,16 @@ def play_game_menu():
             play_chess_sim()
         elif selected == "ludo":
             play_ludo_sim()
+        _note_played()
+
+
+def _note_played():
+    """Any game session counts for the daily 'games' quest."""
+    try:
+        from irl.quests import report as report_quest
+        report_quest("games")
+    except Exception:
+        pass
 
 def play_tictactoe():
     humor = get_theme_humor()

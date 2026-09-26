@@ -104,3 +104,9 @@ def run_doctor(package):
         console.print("[red]Package not found on NPM, PyPI, or GitHub.[/red]\n")
     else:
         console.print("[yellow]System not ready for installation. Fix the issues above.[/yellow]\n")
+
+    try:
+        from irl.quests import report as report_quest
+        report_quest("doctor")
+    except Exception:
+        pass
