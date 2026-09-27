@@ -1,31 +1,31 @@
-# SPEC-irl_pulse — Web micro-framework for .irl 🌐
+# SPEC-irl_yap — Web micro-framework for .irl 🌐
 
 **Status:** Specification v1.0 (implementation target: ecosystem phase 1)
 **Frozen-language contract:** builds ONLY on IRL 2.1 semantics (LANG.md).
 
 ## 1. Identity & design law
 
-- Package: `irl_pulse` · Flask-*like*, but designed for what .irl 2.1 can
+- Package: `irl_yap` · Flask-*like*, but designed for what .irl 2.1 can
   actually express.
 - **No decorators** (not in frozen 2.1 — never invent `@route`).
 - **No classes, no closures** (not in frozen 2.1) → there is no `App()`
   object. The framework is a **module with module-level registration**:
 
 ```js
-import irl_pulse
+import irl_yap
 
 function home() {
     return "Hello from IRL"
 }
 
 function user(name) {
-    return irl_pulse.json_response({"name": name})
+    return irl_yap.json_response({"name": name})
 }
 
-irl_pulse.route("/", home)
-irl_pulse.route("/api/user/<name>", user, methods=["GET", "POST"])
+irl_yap.route("/", home)
+irl_yap.route("/api/user/<name>", user, methods=["GET", "POST"])
 
-irl_pulse.run(host="127.0.0.1", port=8000)
+irl_yap.run(host="127.0.0.1", port=8000)
 ```
 
 - **One app per program** (module state is global — documented limitation,
@@ -89,14 +89,14 @@ touching the public API (this is the native-backend seam).
 
 - Handler raises → bridge returns `500` with structured body
   `{"error": "...", "status": 500}` (no tracebacks to clients)
-- `route()` on a taken path → `[irl_pulse] route already registered: GET /`
+- `route()` on a taken path → `[irl_yap] route already registered: GET /`
 - Unknown path → registered default (404 JSON by default)
 - Bad path param conversion → 400
 
 ## 5. Package layout
 
 ```
-irl_pulse/
+irl_yap/
 ├── lib/
 │   ├── __init__.irl
 │   ├── router.irl          # table, matching, path params
