@@ -14,22 +14,37 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Setuptools shim: builds the native accelerator when a C compiler exists.
+"""Setuptools shim: builds the native accelerator for native wheels.
 
-The extension is optional — if compilation fails (no compiler, odd
-platform), the wheel installs anyway and the pure-Python lexer runs.
-CI (cibuildwheel) produces the prebuilt platform wheels.
+The C core is compiled ONLY for the prebuilt platform wheels
+(cibuildwheel sets CIBUILDWHEEL=1) or on explicit request
+(IRL_BUILD_NATIVE=1 — local dev). Everything else — pip install from
+sdist, the PyPI release build — ships pure Python with the fallback
+lexer, so the release wheel stays universal and PyPI never sees a bare
+linux_x86_64 platform tag. If compilation fails, the build continues
+pure (the extension is optional).
 """
+
+import os
+import sys
 
 from setuptools import Extension, setup
 
-setup(
-    ext_modules=[
+NATIVE_REQUESTED = (
+    os.environ.get("CIBUILDWHEEL") == "1" or os.environ.get("IRL_BUILD_NATIVE") == "1"
+)
+
+if NATIVE_REQUESTED:
+    flags = ["/O2"] if sys.platform == "win32" else ["-O2"]
+    ext_modules = [
         Extension(
             "irl._irl_native",
             sources=["native/_irl_native.c"],
-            extra_compile_args=["-O2"],
+            extra_compile_args=flags,
             optional=True,
         )
     ]
-)
+else:
+    ext_modules = []
+
+setup(ext_modules=ext_modules)
