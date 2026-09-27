@@ -28,7 +28,11 @@ def test_char_keys_case_preserved():
 
 
 def test_arrow_escape_parsing(monkeypatch):
-    monkeypatch.setattr(K, "_select_byte", lambda timeout: "[", )
+    monkeypatch.setattr(
+        K,
+        "_select_byte",
+        lambda timeout: "[",
+    )
     monkeypatch.setattr(K, "_select_byte", lambda timeout: "[")  # first peek
     # Simulate: ESC then [ then A
     seq = iter(["[", "A"])

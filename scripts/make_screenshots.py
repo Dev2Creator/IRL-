@@ -68,9 +68,7 @@ def shot_grassland():
     game = Game(seed=7)
     c.print()
     c.print("[bold green] G R A S S L A N D   Q U E S T [/bold green]")
-    c.print(
-        f" HP: [red]♥♥[/red]  water [cyan]2/{WATER_NEEDED}[/cyan]  sun [yellow]1/{SUN_NEEDED}[/yellow]"
-    )
+    c.print(f" HP: [red]♥♥[/red]  water [cyan]2/{WATER_NEEDED}[/cyan]  sun [yellow]1/{SUN_NEEDED}[/yellow]")
     # deterministic hand-picked frame: draw the real maze, dress a few tiles
     for y in range(len(game.grid)):
         row = ""

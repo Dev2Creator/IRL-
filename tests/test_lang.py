@@ -24,48 +24,26 @@ def test_basics_arithmetic(capsys):
 
 
 def test_task_and_brb(capsys):
-    code = (
-        "task greet(name) {\n"
-        "    brb \"hello \" + name;\n"
-        "}\n"
-        "spill(greet(\"world\"));"
-    )
+    code = 'task greet(name) {\n    brb "hello " + name;\n}\nspill(greet("world"));'
     run(code)
     assert "hello world" in capsys.readouterr().out
 
 
 def test_bet_cap(capsys):
-    code = (
-        "snag n = 10;\n"
-        "bet (n > 5) {\n"
-        "    spill(\"big\");\n"
-        "} cap {\n"
-        "    spill(\"small\");\n"
-        "}"
-    )
+    code = 'snag n = 10;\nbet (n > 5) {\n    spill("big");\n} cap {\n    spill("small");\n}'
     run(code)
     assert "big" in capsys.readouterr().out
 
 
 def test_grind_loop(capsys):
-    code = (
-        "snag i = 0;\n"
-        "grind (i < 3) {\n"
-        "    spill(i);\n"
-        "    i = i + 1;\n"
-        "}"
-    )
+    code = "snag i = 0;\ngrind (i < 3) {\n    spill(i);\n    i = i + 1;\n}"
     run(code)
     out = capsys.readouterr().out
     assert out.count("0") >= 1 and "3" not in out
 
 
 def test_arrays_and_builtins(capsys):
-    code = (
-        "snag arr = [\"a\", \"b\"];\n"
-        "push(arr, \"c\");\n"
-        "spill(len(arr));"
-    )
+    code = 'snag arr = ["a", "b"];\npush(arr, "c");\nspill(len(arr));'
     run(code)
     assert "3" in capsys.readouterr().out
 
