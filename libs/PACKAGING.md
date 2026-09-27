@@ -8,12 +8,12 @@ these libraries are the ecosystem built on top of it.
 
 | Kind | Naming | Import |
 |---|---|---|
-| First-party ecosystem lib | `irl_moai`, `irl_yap`, `irl_rizz` | `import irl_moai` |
+| First-party ecosystem lib | `irl_iron`, `irl_wire`, `irl_forge` | `import irl_iron` |
 | Community package | `irl_<name>` (reserved prefix, registry-validated) | `import irl_<name>` |
 | Bridge modules (private) | `_bridge/*.py` | never imported from .irl directly |
 
 - Package directories expose `.irl` entry via `lib/__init__.irl`
-- Distribution: **pip wheels/sdists on PyPI** (`pip install irl_moai`) —
+- Distribution: **pip wheels/sdists on PyPI** (`pip install irl_iron`) —
   IRL is a good citizen of the Python ecosystem by design (DESIGN.md §11);
   `irl pkg` is a friendly front-end, not a parallel universe
 - `pkg.json` metadata (see §4) lives inside every package
@@ -21,9 +21,9 @@ these libraries are the ecosystem built on top of it.
 ## 2. `irl pkg` CLI (ships with irl-pkg 2.2)
 
 ```zsh
-irl pkg install irl_moai          # latest, from PyPI
-irl pkg install irl_moai==1.0.0   # pinned
-irl pkg remove irl_moai
+irl pkg install irl_iron          # latest, from PyPI
+irl pkg install irl_iron==1.0.0   # pinned
+irl pkg remove irl_iron
 irl pkg list                       # installed + versions
 irl pkg search numeric             # PyPI search filtered to irl-* packages
 irl pkg lock                       # write irl.lock (exact pins, hashes)
@@ -52,7 +52,7 @@ irl pkg install --locked           # CI: reproducible from irl.lock
 6. **Package metadata** — `pkg.json`:
    ```json
    {
-     "name": "irl_moai",
+     "name": "irl_iron",
      "version": "1.0.0",
      "irl": ">=2.1,<2.2",
      "description": "Numerical computing for .irl",
@@ -109,11 +109,11 @@ by conformance fixtures so the native replacement is drop-in.
 
 | Phase | Contents | Gate |
 |---|---|---|
-| E1 | `irl_moai` full spec → implementation | parity + bench tables published |
-| E2 | `irl_yap` core (routes/responses/middleware/static + bridge) | conformance fixtures green |
+| E1 | `irl_iron` full spec → implementation | parity + bench tables published |
+| E2 | `irl_wire` core (routes/responses/middleware/static + bridge) | conformance fixtures green |
 | E3 | `irl pkg` CLI + lockfile + PyPI publishing of E1/E2 | reproducible install in CI |
-| E4 | `irl_rizz` phase 1 (scaffold, views, irltmpl, models, migrations) | example blog passes `irl web test` |
-| E5 | `irl_rizz` batteries (forms/sessions/auth/admin) + `irl web test` runner | docs + api.json complete |
+| E4 | `irl_forge` phase 1 (scaffold, views, irltmpl, models, migrations) | example blog passes `irl web test` |
+| E5 | `irl_forge` batteries (forms/sessions/auth/admin) + `irl web test` runner | docs + api.json complete |
 
 **Standing rule for every phase:** the frozen IRL 2.1 specification
 (LANG.md) is not modified, weakened, or reinterpreted. Missing
