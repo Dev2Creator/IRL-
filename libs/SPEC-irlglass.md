@@ -1,4 +1,4 @@
-# SPEC-irlglass — Numerical computing for .irl 📐
+# SPEC-irlglass — Numerical computing for .irl 🔍
 
 **Status:** Specification v1.0 (implementation target: ecosystem phase 1)
 **Frozen-language contract:** builds ONLY on IRL 2.1 semantics (LANG.md).

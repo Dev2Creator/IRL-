@@ -1,141 +1,107 @@
-# SPEC-irlcu — Web micro-framework for .irl 🌐
+# SPEC-irlcu — Parallel & GPU computing for .irl 🎮
 
-**Status:** Specification v1.0 (implementation target: ecosystem phase 1)
-**Frozen-language contract:** builds ONLY on IRL 2.1 semantics (LANG.md).
+**Status:** Specification v0.9 (design now; GPU targets gated on the native
+runtime — CPU-parallelism ships first)
+**Frozen-language contract:** IRL 2.1 semantics only. No new syntax.
+**Named after CUDA** — .irl's device/parallel-computing layer.
 
-## 1. Identity & design law
+## 1. Identity & the honest roadmap
 
-- Package: `irlcu` · Flask-*like*, but designed for what .irl 2.1 can
-  actually express.
-- **No decorators** (not in frozen 2.1 — never invent `@route`).
-- **No classes, no closures** (not in frozen 2.1) → there is no `App()`
-  object. The framework is a **module with module-level registration**:
+`irlcu` = .irl's parallel-computing layer: CUDA's mental model (kernels,
+device data) with .irl approachability. The name is the ambition; the
+phases are the honesty:
 
-```js
-import irlcu
+| Phase | Backend | What actually runs |
+|---|---|---|
+| cu-1 (bootstrap) | CPU bridge | threads/processes pool in `_bridge`; GIL-honest: parallel I/O + process-based CPU work benefit today |
+| cu-2 (2.3 native runtime) | CPU native | M:N green threads over all cores — real parallelism, identical API |
+| cu-3 (2.4+) | GPU | Zig/CUDA/Vulkan kernels for numeric work; `irlglass` arrays become device-resident |
 
-function home() {
-    return "Hello from IRL"
-}
+## 2. Public API (module functions, explicit args — 2.1-expressible)
 
-function user(name) {
-    return irlcu.json_response({"name": name})
-}
+### Device model
+No `device` object exists in 2.1 — the "device" is module state:
 
-irlcu.route("/", home)
-irlcu.route("/api/user/<name>", user, methods=["GET", "POST"])
-
-irlcu.run(host="127.0.0.1", port=8000)
-```
-
-- **One app per program** (module state is global — documented limitation,
-  revisit if 2.2 adds modules-as-objects).
-
-## 2. Public API
-
-### Routing
 | Function | Signature | Notes |
 |---|---|---|
-| `route(path, handler, methods=["GET"])` | register; path params as `<name>` | duplicate path+method = error |
-| `path_params()` | dict of current request's path params | inside handler |
-| `default(handler)` | 404 handler override | |
+| `workers(n)` | set pool size | default: core count via bridge |
+| `mode(m)` | `"threads"` or `"processes"` (bootstrap) | native runtime ignores; always M:N |
+| `stats()` | dict | workers, mode, tasks run, failures |
 
-### Request (explicit, no magic injection)
-`request_method()` → str · `request_path()` → str ·
-`request_query()` → dict (parsed `?a=1&b=2`) · `request_headers()` → dict ·
-`request_body()` → str · `request_form()` → dict (urlencoded body) ·
-`request_json()` → parsed dict (error if body isn't JSON)
+### Parallel map / filter / reduce
+| Function | Signature | Notes |
+|---|---|---|
+| `pmap(fn, items)` | list → list, parallel | order-preserving, deterministic |
+| `pfilter(fn, items)` | parallel filter | order-preserving |
+| `preduce(fn, items, initial)` | parallel fold | correctness always; speedups need an associative fn |
+| `pchunks(fn, items, n)` | chunked map | fewer bridge crossings for big jobs |
 
-### Responses
-Handler return value rules (predictable, ordered):
-1. **str** → `200`, body = str, `Content-Type: text/plain; charset=utf-8`
-2. **dict/list** → `200` JSON-encoded, `application/json`
-3. **`response(body, status=200, headers={})`** → full control
-4. **`json_response(data, status=200)`** → explicit JSON
-5. **`redirect(location, status=302)`** → redirect
-6. **`error(status, message)`** → structured error page
+### Kernels (surface designed now; real GPU in cu-3)
+| Function | Notes |
+|---|---|
+| `kernel(fn)` | declare a **pure** function as a kernel — checked: no imports, no I/O inside |
+| `launch(k, grid, args)` | run kernel over grid; bootstrap = loop, native = GPU |
+| `device_array(shape, fill)` | `irlglass`-compatible array marked device-resident |
+| `to_host(arr)` / `to_device(arr)` | explicit transfers — never implicit (AI-friendly) |
+| `synchronize()` | barrier; bootstrap is synchronous anyway |
 
-### Middleware
-`before_request(fn)` / `after_request(fn)` — module-level registration,
-executed in registration order. `before` may return a response (short-
-circuit); `after` receives the response text + status and may modify.
-(Real hooks — implemented as plain .irl function lists in module state.)
+**Kernel purity rules (enforced by `kernel()`):** pure .irl functions
+only — no `import`, no `print`/`input`, no I/O; args in, return out.
+This is what makes real GPU compilation (cu-3) possible without breaking
+anyone's code.
 
-### Static files
-`static_dir(path="static", url_prefix="/static")` — serves files under
-the directory; path traversal is rejected (the bridge resolves and
-validates every path against the declared root).
+### Determinism
+Same inputs + same worker count ⇒ same result, always. `pmap`/`pfilter`
+preserve order; `preduce` combines chunks in order.
 
-### Server
-`run(host="127.0.0.1", port=8000)` — blocking development server.
-`config(key, value)` / `config_get(key)` — app settings dict.
+## 3. Errors (all prefixed `[irlcu]`)
 
-## 3. Layer split (native-backend seams)
+- `[irlcu] kernel 'k' is not pure: contains print`
+- `[irlcu] grid must be positive, got 0`
+- `[irlcu] worker pool exhausted — task raised in all workers`
+Task failures surface with the original .irl error text plus the failing
+item index.
 
-| Concern | Lives in | Bootstrap impl | Native future |
-|---|---|---|---|
-| Routing table + match | **.irl** (this package) | dict + match fn | same .irl |
-| Middleware chain | **.irl** | list walk | same .irl |
-| Response building | **.irl** | string/json building | same .irl |
-| Socket I/O + HTTP parsing | **bridge** | `_bridge/http_bridge.py` (stdlib http.server) | Zig runtime (2.3) |
-| Static file IO | **bridge** | os.path + validation | Zig runtime |
-
-**Bridge contract:** `serve(config, handler)` — the bridge receives a
-config dict and ONE .irl callback `handle(request_dict) → response_dict`;
-all framework logic stays in .irl. The bridge is replaceable without
-touching the public API (this is the native-backend seam).
-
-## 4. Errors
-
-- Handler raises → bridge returns `500` with structured body
-  `{"error": "...", "status": 500}` (no tracebacks to clients)
-- `route()` on a taken path → `[irlcu] route already registered: GET /`
-- Unknown path → registered default (404 JSON by default)
-- Bad path param conversion → 400
-
-## 5. Package layout
+## 4. Package layout
 
 ```
 irlcu/
 ├── lib/
 │   ├── __init__.irl
-│   ├── router.irl          # table, matching, path params
-│   ├── request.irl         # request_* accessors
-│   ├── response.irl        # response builders + middleware
-│   └── app.irl             # run/config glue
+│   ├── pool.irl          # workers/mode/stats, scheduling
+│   ├── parallel.irl      # pmap/pfilter/preduce/pchunks
+│   └── kernel.irl        # purity checking, launch, transfers
 ├── _bridge/
-│   └── http_bridge.py      # stdlib-only dev server (the only .py)
+│   └── pool_bridge.py    # threads/processes pool; GPU in cu-3
 ├── tests/
-├── examples/               # hello.irl, api.irl, forms.irl, static.irl
+├── examples/             # pmap log-cleaning, preduce wordcount, kernel demo
 ├── api.json
 └── pkg.json
 ```
 
-## 6. AI-friendliness
+## 5. Layer split (native seams)
 
-- Return-value rules are a total function of the handler's return (no
-  implicit contexts, no thread-locals, no globals the AI can't see —
-  request accessors read the CURRENT request, set by the runner before
-  each dispatch; single-threaded dev server in v1, documented)
-- `api.json` signature table; every example passes `irl lang check`
-- Deterministic routing: first registered match wins; ties are errors
+| Concern | Layer | Native future |
+|---|---|---|
+| Purity checks, scheduling policy, ordering | **.irl** | permanent .irl |
+| Pool/worker execution | **bridge** | threads → Zig M:N green threads (cu-2) |
+| Kernel compilation | **bridge stub** | Zig → GPU kernels (cu-3) |
+| Device memory | **bridge** | runtime-managed (cu-3) |
 
-## 7. Test plan
+## 6. Test plan
 
-1. Route registration + duplicate rejection
-2. Path params (`<name>`, `<int:id>`)
-3. All six response forms
-4. before/after middleware order + short-circuit
-5. Query/form/JSON body parsing (hand-built requests)
-6. 404 default + custom default
-7. Static serving + traversal rejection (`../`)
-8. Bridge-vs-spec conformance: request dict → response dict fixtures
+1. `pmap` order preservation (threads and processes modes)
+2. `preduce` correct with associative AND non-associative fns
+   (non-associative = sequential fallback — slower, never wrong)
+3. Worker crash propagation + pool recovery
+4. `kernel()` purity rejection matrix (import/print/input/IO)
+5. Determinism: same inputs/workers ⇒ byte-identical output
+6. Bridge parity: threads == processes == sequential results
 
-## 8. Compatibility & roadmap
+## 7. Compatibility
 
-- Bootstrap: stdlib http.server bridge (dev-grade; document loudly —
-  not for production)
-- 2.3 native: bridge replaced by the Zig runtime's HTTP layer; .irl API
-  unchanged
-- Production path (2.4+): compile the app with `irl lang build`, run
-  behind a real reverse proxy; WSGI-style production bridge as an option
+- IRL 2.1 bootstrap: cu-1 (CPU-parallel, GIL-honest docs)
+- Native runtime (2.3): cu-2 — same API, real parallelism
+- GPU (2.4+): cu-3 — kernels compile to device code; the API is frozen
+  now so nothing breaks later
+- Interops with `irlglass` arrays for device transfers

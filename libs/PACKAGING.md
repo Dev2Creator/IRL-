@@ -109,6 +109,7 @@ by conformance fixtures so the native replacement is drop-in.
 
 | Phase | Contents | Gate |
 |---|---|---|
+| E0 | `irl_lib` — the standard toolbox | examples run clean, sandbox tests green |
 | E1 | `irlglass` full spec → implementation | parity + bench tables published |
 | E2 | `irlcu` core (routes/responses/middleware/static + bridge) | conformance fixtures green |
 | E3 | `irl pkg` CLI + lockfile + PyPI publishing of E1/E2 | reproducible install in CI |
