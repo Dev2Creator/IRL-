@@ -1,31 +1,31 @@
-# SPEC-irlcu — Web micro-framework for .irl 🌐
+# SPEC-irlforge — Web frameworks for .irl ⚒️ — Web micro-framework for .irl 🌐
 
 **Status:** Specification v1.0 (implementation target: ecosystem phase 1)
 **Frozen-language contract:** builds ONLY on IRL 2.1 semantics (LANG.md).
 
 ## 1. Identity & design law
 
-- Package: `irlcu` · Flask-*like*, but designed for what .irl 2.1 can
+- Package: `irlforge` · Flask-*like*, but designed for what .irl 2.1 can
   actually express.
 - **No decorators** (not in frozen 2.1 — never invent `@route`).
 - **No classes, no closures** (not in frozen 2.1) → there is no `App()`
   object. The framework is a **module with module-level registration**:
 
 ```js
-import irlcu
+import irlforge
 
 function home() {
     return "Hello from IRL"
 }
 
 function user(name) {
-    return irlcu.json_response({"name": name})
+    return irlforge.json_response({"name": name})
 }
 
-irlcu.route("/", home)
-irlcu.route("/api/user/<name>", user, methods=["GET", "POST"])
+irlforge.route("/", home)
+irlforge.route("/api/user/<name>", user, methods=["GET", "POST"])
 
-irlcu.run(host="127.0.0.1", port=8000)
+irlforge.run(host="127.0.0.1", port=8000)
 ```
 
 - **One app per program** (module state is global — documented limitation,
@@ -89,14 +89,14 @@ touching the public API (this is the native-backend seam).
 
 - Handler raises → bridge returns `500` with structured body
   `{"error": "...", "status": 500}` (no tracebacks to clients)
-- `route()` on a taken path → `[irlcu] route already registered: GET /`
+- `route()` on a taken path → `[irlforge] route already registered: GET /`
 - Unknown path → registered default (404 JSON by default)
 - Bad path param conversion → 400
 
 ## 5. Package layout
 
 ```
-irlcu/
+irlforge/
 ├── lib/
 │   ├── __init__.irl
 │   ├── router.irl          # table, matching, path params
