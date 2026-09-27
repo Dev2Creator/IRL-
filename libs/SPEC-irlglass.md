@@ -1,4 +1,4 @@
-# SPEC-irl_iron — Numerical computing for .irl 📐
+# SPEC-irlglass — Numerical computing for .irl 📐
 
 **Status:** Specification v1.0 (implementation target: ecosystem phase 1)
 **Frozen-language contract:** builds ONLY on IRL 2.1 semantics (LANG.md).
@@ -6,7 +6,7 @@ No new syntax, no operators, no language changes — ever.
 
 ## 1. Identity & scope
 
-- Package name: `irl_iron` · import: `import irl_iron` (optionally `import irl_iron as np` **if** aliasing ships in a future language release — 2.1 has no `import as`, so docs use the full name)
+- Package name: `irlglass` · import: `import irlglass` (optionally `import irlglass as np` **if** aliasing ships in a future language release — 2.1 has no `import as`, so docs use the full name)
 - Goal: NumPy-*like* numerical computing with an **IRL-facing API**. The
   public programming model is plain .irl lists plus metadata — Python
   numpy objects are NEVER exposed to user code.
@@ -68,16 +68,16 @@ documented way; helpers: `row(a, i)` · `col(a, j)` · `get(a, i, j)` ·
 
 ## 4. Errors (structured, AI-friendly)
 
-All errors are `IRL_RUNTIME_ERROR` with the prefix `[irl_iron]`:
-- `[irl_iron] shape mismatch: (2, 3) vs (3, 2) — use reshape or transpose`
-- `[irl_iron] ragged array: row 1 has 3 columns, row 0 has 2`
-- `[irl_iron] index 5 out of bounds for axis 0 (size 2)`
+All errors are `IRL_RUNTIME_ERROR` with the prefix `[irlglass]`:
+- `[irlglass] shape mismatch: (2, 3) vs (3, 2) — use reshape or transpose`
+- `[irlglass] ragged array: row 1 has 3 columns, row 0 has 2`
+- `[irlglass] index 5 out of bounds for axis 0 (size 2)`
 Machine-readable table ships in `api.json` (§7).
 
 ## 5. Package layout
 
 ```
-irl_iron/
+irlglass/
 ├── lib/
 │   ├── __init__.irl        # re-exports the public API
 │   ├── core.irl            # array/shape/constructors

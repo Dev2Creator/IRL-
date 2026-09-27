@@ -1,14 +1,14 @@
-# SPEC-irl_forge — Batteries-included web framework for .irl 🏗️
+# SPEC-irlforge — Batteries-included web framework for .irl 🏗️
 
 **Status:** Specification v0.9 (progressive: core in phase 1, batteries in
 phases 2–3). **Frozen-language contract:** IRL 2.1 semantics only — no
 decorators, no classes, no closures; scaffolding is TOOLING (`irl web …`),
-not language syntax. Built ON TOP of `irl_wire`'s bridge pattern, not on
+not language syntax. Built ON TOP of `irlcu`'s bridge pattern, not on
 Django internals.
 
 ## 1. Identity
 
-- Package: `irl_forge` — batteries-included web framework, .irl-native.
+- Package: `irlforge` — batteries-included web framework, .irl-native.
 - Philosophy: **project structure is files, configuration is .irl data,
   views are functions, models are schema dicts.** Nothing requires
   language features 2.1 lacks; phases upgrade as the language does.
@@ -30,7 +30,7 @@ Generated project layout:
 mysite/
 ├── main.irl            # imports apps, registers routes, calls run
 ├── settings.irl        # dict: DEBUG, SECRET, APPS, DATABASE, STATIC
-├── urls.irl            # top-level route table (registered via irl_wire.route)
+├── urls.irl            # top-level route table (registered via irlcu.route)
 ├── users/
 │   ├── routes.irl      # url → view wiring for this app
 │   ├── views.irl       # view functions
@@ -44,8 +44,8 @@ mysite/
 
 ### Views & routing
 Plain functions receiving an explicit `request` dict; return the same
-six response forms as irl_wire (§ shared response contract — one
-implementation, `irl_forge.views` re-exports it).
+six response forms as irlcu (§ shared response contract — one
+implementation, `irlforge.views` re-exports it).
 
 ```js
 // users/views.irl
@@ -113,8 +113,8 @@ replayable JSON — deterministic and CI-friendly.
 | Sessions | 2 | signed cookie (HMAC via the bridge) + `sessions_get/set` API |
 | Auth | 2 | `auth_register/login/logout/current` over users model + salted hash via bridge |
 | Admin-style inspector | 2 | `irl web admin` — local, read-only table browser generated from schemas |
-| Middleware | 1 | irl_wire before/after hooks at project level |
-| Static assets | 1 | irl_wire static_dir per app + project |
+| Middleware | 1 | irlcu before/after hooks at project level |
+| Static assets | 1 | irlcu static_dir per app + project |
 | Testing | 2 | `irl web test` — in-process request/response fixtures against views |
 | Native store | 3 | storage bridge → Zig runtime table store |
 | Production deploy | 3 | `irl web serve --production` (native HTTP) + compiled app via `irl lang build` |
@@ -122,11 +122,11 @@ replayable JSON — deterministic and CI-friendly.
 ## 5. Package layout
 
 ```
-irl_forge/
+irlforge/
 ├── lib/                    # .irl framework code (router, views, templates,
 │   │                       #  models, forms, sessions, auth)
 ├── _bridge/
-│   ├── http_bridge.py      # shared pattern with irl_wire
+│   ├── http_bridge.py      # shared pattern with irlcu
 │   └── storage_bridge.py   # JSON store, later sqlite/native
 ├── scaffolds/              # templates for `irl web create`
 ├── tests/
