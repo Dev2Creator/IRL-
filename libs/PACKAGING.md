@@ -111,10 +111,11 @@ by conformance fixtures so the native replacement is drop-in.
 |---|---|---|
 | E0 | `irl_lib` — the standard toolbox | examples run clean, sandbox tests green |
 | E1 | `irlglass` full spec → implementation | parity + bench tables published |
-| E2 | `irlcu` core (routes/responses/middleware/static + bridge) | conformance fixtures green |
-| E3 | `irl pkg` CLI + lockfile + PyPI publishing of E1/E2 | reproducible install in CI |
-| E4 | `irlforge` phase 1 (scaffold, views, irltmpl, models, migrations) | example blog passes `irl web test` |
-| E5 | `irlforge` batteries (forms/sessions/auth/admin) + `irl web test` runner | docs + api.json complete |
+| E2 | `irlforge` core (routes/responses/middleware/static + bridge) | conformance fixtures green |
+| E3 | `irl pkg` CLI + lockfile + PyPI publishing of E0–E2 | reproducible install in CI |
+| E4 | `irlcu` cu-1 (CPU-parallel pmap/pfilter/preduce + kernel purity) | determinism + parity tests green |
+
+| E6 | `irlcu` cu-2 (native runtime parallelism, 2.3) | same API, real parallelism benchmarks |
 
 **Standing rule for every phase:** the frozen IRL 2.1 specification
 (LANG.md) is not modified, weakened, or reinterpreted. Missing
