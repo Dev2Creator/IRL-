@@ -1,11 +1,12 @@
-# SPEC-irlforge — Web frameworks for .irl ⚒️ — Web micro-framework for .irl 🌐
+# SPEC-irlforge — Web frameworks for .irl ⚒️
 
 **Status:** Specification v1.0 (implementation target: ecosystem phase 1)
 **Frozen-language contract:** builds ONLY on IRL 2.1 semantics (LANG.md).
 
 ## 1. Identity & design law
 
-- Package: `irlforge` · Flask-*like*, but designed for what .irl 2.1 can
+- Package: `irlforge` · the web framework family — from a ten-line micro app (the
+  lightweight surface) to the batteries-included framework — designed for what .irl 2.1 can
   actually express.
 - **No decorators** (not in frozen 2.1 — never invent `@route`).
 - **No classes, no closures** (not in frozen 2.1) → there is no `App()`
