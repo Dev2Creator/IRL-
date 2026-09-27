@@ -200,7 +200,7 @@ def test_unknown_module_rejected():
 
 
 def test_local_module_import(tmp_path):
-    (tmp_path / "utils.irl").write_text("var magic = 42\nfunction double(x) { return x * 2 }\n")
+    (tmp_path / "utils.irl").write_text("var magic = 42\nfunction double(x) { return x * 2 }\n", encoding="utf-8")
     code = 'import "utils.irl"\nprint(magic, double(21))'
     assert "42 42" in run_out(code, source_dir=str(tmp_path))
 
@@ -320,7 +320,7 @@ def test_compiled_parity_with_interpreter(tmp_path):
 
         py_source, _ = compile_source(src, level=2)
         py_file = tmp_path / f"prog{i}.py"
-        py_file.write_text(py_source)
+        py_file.write_text(py_source, encoding="utf-8")
         compiled_out = subprocess.run(
             [sys.executable, str(py_file)],
             capture_output=True,
