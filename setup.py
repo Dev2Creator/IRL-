@@ -31,7 +31,8 @@ import sys
 from setuptools import Extension, setup
 
 NATIVE_REQUESTED = (
-    os.environ.get("CIBUILDWHEEL") == "1" or os.environ.get("IRL_BUILD_NATIVE") == "1"
+    os.environ.get("CIBUILDWHEEL") == "1"
+    or os.environ.get("IRL_BUILD_NATIVE") == "1"
 )
 
 if NATIVE_REQUESTED:
