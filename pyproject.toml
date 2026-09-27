@@ -47,7 +47,7 @@ Changelog = "https://github.com/Dev2Creator/IRL-/blob/main/CHANGELOG.md"
 irl = "irl.main:cli"
 
 [project.optional-dependencies]
-tui = ["textual>=0.40.0"]
+tui = ["textual>=8.2.8"]
 dev = [
     "pytest",
     "pytest-cov",
