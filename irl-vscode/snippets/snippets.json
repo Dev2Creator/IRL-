@@ -1,14 +1,128 @@
 {
-    "Bet (If Statement)": {
-        "prefix": "bet",
+    "Variable": {
+        "prefix": "var",
         "body": [
-            "bet (${1:condition}) {",
+            "var ${1:name} = ${2:value}"
+        ],
+        "description": "Declare a variable"
+    },
+    "Function": {
+        "prefix": "function",
+        "body": [
+            "function ${1:name}(${2:params}) {",
+            "\t$3",
+            "}"
+        ],
+        "description": "Create a function"
+    },
+    "If / Else": {
+        "prefix": "ifelse",
+        "body": [
+            "if (${1:condition}) {",
+            "\t$2",
+            "} else {",
+            "\t$3",
+            "}"
+        ],
+        "description": "If / else block"
+    },
+    "If / Elif / Else": {
+        "prefix": "ifelif",
+        "body": [
+            "if (${1:condition}) {",
+            "\t$2",
+            "} elif (${3:condition}) {",
+            "\t$4",
+            "} else {",
+            "\t$5",
+            "}"
+        ],
+        "description": "If / elif / else chain"
+    },
+    "While Loop": {
+        "prefix": "while",
+        "body": [
+            "while (${1:condition}) {",
             "\t$2",
             "}"
         ],
-        "description": "Create a conditional bet (if) block"
+        "description": "While loop"
     },
-    "Bet / Cap (If / Else Statement)": {
+    "For-In Loop": {
+        "prefix": "for",
+        "body": [
+            "for (${1:x} in ${2:iterable}) {",
+            "\t$3",
+            "}"
+        ],
+        "description": "For-in loop"
+    },
+    "Print": {
+        "prefix": "print",
+        "body": [
+            "print(${1:\"text\"})"
+        ],
+        "description": "Print to the console"
+    },
+    "Input with conversion": {
+        "prefix": "input",
+        "body": [
+            "var ${1:name} = int(input(\"${2:prompt: \"))"
+        ],
+        "description": "Read and convert input (classic flow)"
+    },
+    "F-String Print": {
+        "prefix": "fprint",
+        "body": [
+            "print(f\"${1:text} {${2:expr}}\")"
+        ],
+        "description": "Print with an interpolated f-string"
+    },
+    "Dict": {
+        "prefix": "dict",
+        "body": [
+            "var ${1:d} = {\"${2:key}\": ${3:value}}"
+        ],
+        "description": "Create a dict"
+    },
+    "Memo Function": {
+        "prefix": "memo",
+        "body": [
+            "memo function ${1:name}(${2:params}) {",
+            "\t$3",
+            "}"
+        ],
+        "description": "Auto-cached (memoized) function"
+    },
+    "Import stdlib": {
+        "prefix": "import",
+        "body": [
+            "import ${1:math}"
+        ],
+        "description": "Import a stdlib module (math, random, time, json, ...)"
+    },
+    "Local Import": {
+        "prefix": "limport",
+        "body": [
+            "import \"${1:utils.irl}\""
+        ],
+        "description": "Import a local .irl module"
+    },
+    "Legacy: Snag (Variable)": {
+        "prefix": "snag",
+        "body": [
+            "snag ${1:name} = ${2:value};"
+        ],
+        "description": "Declare a variable (legacy slang — prefer var)"
+    },
+    "Legacy: Spill (Print)": {
+        "prefix": "spill",
+        "body": [
+            "spill(${1:\"text\"});"
+        ],
+        "description": "Print (legacy slang — prefer print)"
+    },
+    "Legacy: Bet / Cap (If / Else)": {
         "prefix": "betcap",
         "body": [
             "bet (${1:condition}) {",
@@ -17,38 +131,24 @@
             "\t$3",
             "}"
         ],
-        "description": "Create a conditional bet/cap (if/else) block"
+        "description": "If / else (legacy slang — prefer if/else)"
     },
-    "Grind (While Loop)": {
-        "prefix": "grind",
-        "body": [
-            "grind (${1:condition}) {",
-            "\t$2",
-            "}"
-        ],
-        "description": "Create a grind (while) loop"
-    },
-    "Task (Function)": {
+    "Legacy: Task (Function)": {
         "prefix": "task",
         "body": [
             "task ${1:name}(${2:params}) {",
             "\t$3",
             "}"
         ],
-        "description": "Create a new task (function)"
+        "description": "Function (legacy slang — prefer function)"
     },
-    "Spill (Print)": {
-        "prefix": "spill",
+    "Legacy: Grind (While)": {
+        "prefix": "grind",
         "body": [
-            "spill(${1:\"text\"});"
+            "grind (${1:condition}) {",
+            "\t$2",
+            "}"
         ],
-        "description": "Print to the console"
-    },
-    "Snag (Variable)": {
-        "prefix": "snag",
-        "body": [
-            "snag ${1:name} = ${2:value};"
-        ],
-        "description": "Declare a variable"
+        "description": "While loop (legacy slang — prefer while)"
     }
 }

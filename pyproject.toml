@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "irl-pkg"
-version = "2.0.0"
+version = "2.1.0"
 description = "A gamified terminal command center: universal installer, games, lofi, and a pet. Software for Humans."
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
@@ -99,8 +99,8 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101", "S105", "S106"]
-"irl/lang/*" = ["E741"]  # lexer/parser single-letter tokens are fine
+"tests/*" = ["S101", "S105", "S106", "S310", "B017"]
+"irl/lang/*" = ["E741", "B904", "S102"]  # single-letter tokens; deliberate raise-from; exec runs compiled output
 "irl/themes/story_content.py" = ["E501"]  # prose: story text shouldn't wrap
 "irl/search.py" = ["S310"]  # dynamic AI endpoints; scheme comes from a fixed list
 "irl/manga*.py" = ["S310"]

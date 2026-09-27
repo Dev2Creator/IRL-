@@ -1,39 +1,41 @@
-// This is a full demonstration of the .irl language!
+// IRL™ 2.1 — the .irl language, professional edition.
+// A complete little program: roster + stats + memoized fib.
 
-task greet(name) {
-    spill("Welcome to the matrix, " + name + "!");
+import math
+
+function shout(word) {
+    return word.upper()
 }
 
-task get_status(braincells) {
-    bet (braincells > 5 fr braincells <= 10) {
-        brb "Healthy!";
-    } cap {
-        bet (braincells > 10) {
-            brb "Overclocked!";
-        } cap {
-            brb "Fried.";
-        }
+var people = ["anika", "sam", "kim"]
+var ages = {"anika": 24, "sam": 19, "kim": 15}
+
+for (name in people) {
+    var age = ages[name]
+    var tag = "minor"
+    if (age >= 18) {
+        tag = "adult"
+    } elif (age >= 13) {
+        tag = "teen"
     }
+    print(f"{shout(name)}: {age} ({tag})")
 }
 
-// 1. Arrays and built-in functions
-snag my_array = ["apple", "banana"];
-push(my_array, "cherry");
-spill("Array length is:");
-spill(len(my_array));
+var scores = [91, 77, 85, 100]
+print("stats:", sum(scores), max(scores), round(sum(scores) / len(scores), 1))
+print("sqrt(144) =", math.sqrt(144))
+print("sliced:", scores[1:3], "100 in scores:", 100 in scores)
 
-// 2. Logic Operators and string concat
-snag is_tired = fax;
-snag is_caffeinated = fake;
-
-bet (is_tired fr nah is_caffeinated) {
-    spill("Need coffee " + "ASAP");
+memo function fib(n) {
+    if (n < 2) {
+        return n
+    }
+    return fib(n - 1) + fib(n - 2)
 }
+print("fib(30) =", fib(30))
 
-// 3. Functions & Input
-snag user_name = ask("What is your username? ");
-greet(user_name);
-
-snag my_braincells = 7;
-snag status = get_status(my_braincells);
-spill("Status: " + status);
+// legacy slang still runs on 2.1 (aliases of the standard keywords):
+task old_school(word) {
+    spill(word)
+}
+old_school("(legacy syntax runs fine)")

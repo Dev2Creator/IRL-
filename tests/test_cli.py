@@ -96,7 +96,7 @@ def test_lang_demo(capsys, monkeypatch):
 
     monkeypatch.setattr("sys.stdin", io.StringIO("Anika\n"))
     run_cli(["lang", "demo"], monkeypatch)
-    assert "Array length" in capsys.readouterr().out
+    assert "fib(30)" in capsys.readouterr().out
 
 
 def test_quests_board_renders(capsys, monkeypatch, seed_state):

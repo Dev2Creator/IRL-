@@ -1,11 +1,12 @@
 {
     "name": "irl-lang",
     "displayName": "IRL Language Support",
-    "description": "Syntax highlighting and snippets for the highly chaotic .irl programming language.",
-    "version": "1.1.0",
+    "description": "The .irl language — professional edition: highlighting, snippets, one-key run, and click-to-jump errors.",
+    "version": "1.2.0",
     "publisher": "Dev2Creator",
     "license": "AGPL-3.0-or-later",
     "icon": "icon.png",
+    "main": "./extension.js",
     "engines": {
         "vscode": "^1.60.0"
     },
@@ -15,10 +16,10 @@
     ],
     "keywords": [
         "irl",
-        "toy language",
-        "snag",
-        "spill",
-        "esoteric"
+        "language",
+        "terminal",
+        "notebook",
+        "compiler"
     ],
     "repository": {
         "type": "git",
@@ -28,6 +29,9 @@
         "url": "https://github.com/Dev2Creator/IRL-/issues"
     },
     "homepage": "https://github.com/Dev2Creator/IRL-/tree/main/irl-vscode",
+    "activationEvents": [
+        "onLanguage:irl"
+    ],
     "contributes": {
         "languages": [
             {
@@ -48,6 +52,56 @@
             {
                 "language": "irl",
                 "path": "./snippets/snippets.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "irl-lang.runFile",
+                "title": "IRL: Run current .irl file",
+                "category": "IRL"
+            },
+            {
+                "command": "irl-lang.buildFile",
+                "title": "IRL: Build current .irl file (compile)",
+                "category": "IRL"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "irl-lang.runFile",
+                "key": "ctrl+f5",
+                "when": "resourceExtname == .irl"
+            },
+            {
+                "command": "irl-lang.buildFile",
+                "key": "ctrl+shift+f5",
+                "when": "resourceExtname == .irl"
+            }
+        ],
+        "problemMatchers": [
+            {
+                "name": "irl-error",
+                "owner": "irl",
+                "fileLocation": ["relative", "${workspaceFolder}"],
+                "pattern": {
+                    "regexp": "^\\[IRL_ERROR\\] line (\\d+), col (\\d+): (.*)$",
+                    "line": 1,
+                    "column": 2,
+                    "message": 3
+                }
+            }
+        ],
+        "taskDefinitions": [
+            {
+                "type": "irl",
+                "required": ["task"],
+                "properties": {
+                    "task": {
+                        "type": "string",
+                        "enum": ["run", "build", "check"],
+                        "description": "The irl lang action to run"
+                    }
+                }
             }
         ]
     }

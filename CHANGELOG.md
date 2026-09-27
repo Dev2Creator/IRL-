@@ -4,6 +4,59 @@ All notable changes to irl-pkg are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions
 follow [SemVer](https://semver.org/), mostly.
 
+## [2.1.0] — The .irl Language: Full Platform
+
+### Added — the language itself
+- **The .irl language 2.1, professional edition** — Python's words with
+  C's braces: `var`/`let`, `function`/`def`/`fn`, `if`/`elif`/`else`,
+  `while`, `for (x in iterable)`, `break`/`continue`, `return`,
+  `true`/`false`/`none`. Every legacy slang keyword still runs as an
+  alias (zero breakage); the 2.0 `💦` print prefix is retired.
+- **Optional semicolons** — newline ends a statement; `;` still legal.
+- **Floats, string escapes, f-strings** (`f"hi {name + 1}"`), **dicts**
+  (`keys()`/`values()`), list **slicing** and negative indexing.
+- **Full builtin set** — `print` (multi-arg, `sep=`/`end=`), `input`,
+  `int`, `float`, `str`, `len`, `range`, `sum`, `min`, `max`, `abs`,
+  `round`, `sorted`, `type` (prints Python-exact `<class 'int'>`),
+  `isinstance`, `append`.
+- **Methods on values** — `s.upper()`, `s.split(",")`, `n.append(x)`,
+  `d.keys()` and friends.
+- **`memo function`** — automatic memoization, interpreter and compiler.
+- **Imports** — stdlib capability allowlist (`math`, `random`, `time`,
+  `datetime`, `json`, `string`, `statistics`) plus local modules:
+  `import "utils.irl"`.
+- **Professional errors** — line + column with caret rendering.
+
+### Added — compiler & native core
+- **`irl lang build`** — a real multi-pass compiler: constant folding,
+  dead-code elimination, memo lowering, builtin caching at `-O2`;
+  `-O0/-O1/-O2` levels, `--emit-py`/`--emit-ir` inspection, `-v` report,
+  incremental `.irl_cache/`. Output: readable `.py` + executable `.pyc`.
+  Benchmarks: **70–225× faster than interpreted, at CPython parity**.
+- **`irl lang check --json`** and **`irl lang spec --json`** — CI/CD- and
+  AI-friendly machine-readable validation and grammar.
+- **`irl lang bench`** — honest published numbers, three engines.
+- **Native accelerator core** (`native/_irl_native.c`) — the first
+  non-.py engine component: the lexer as compiled machine code
+  (clang/gcc → `_irl_native`), parity-proven token-for-token against the
+  reference lexer, pure-Python fallback when absent. Platform wheels via
+  the new cibuildwheel workflow.
+- **Direct script running** — `irl myprogram.irl` works like
+  `python file.py`; `#!/usr/bin/env irl` shebangs supported.
+
+### Added — notebook & ecosystem
+- **`irl notebook`** — Jupyter-style cell notebook for .irl: code +
+  markdown cells, Shift+Enter execution, one persistent kernel, save/
+  load `.irlnb`, export to `.irl`. Zero dependencies, localhost-only.
+- **VS Code extension 1.2** — new logo icon, Run/Build commands with
+  keybindings, error problem-matcher, 19 snippets covering the 2.1
+  surface, f-string-aware grammar.
+- **Brand** — original SVG logo (terminal `{ 🌱 }`), dark/light/mono
+  variants.
+- **Docs** — LANG.md (frozen spec), DESIGN.md (architecture law: Python
+  is the bootstrap, SEESEMBLY IR contract, Zig native path, 2030
+  roadmap), COMPILER.md, NOTEBOOK.md, AI_GUIDE.md.
+
 ## [2.0.0] — The Glow-Up Update
 
 ### Added

@@ -6,10 +6,16 @@
             "include": "#comments"
         },
         {
-            "include": "#keywords"
+            "include": "#fstrings"
         },
         {
             "include": "#strings"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#literals"
         },
         {
             "include": "#numbers"
@@ -24,20 +30,45 @@
                 {
                     "match": "//.*",
                     "name": "comment.line.double-slash.irl"
+                },
+                {
+                    "match": "#.*",
+                    "name": "comment.line.hash.irl"
                 }
             ]
         },
         "keywords": {
             "patterns": [
                 {
-                    "match": "\\b(snag|spill|bet|cap|grind|brb|task)\\b",
+                    "match": "\\b(var|let|function|def|fn|if|elif|else|while|for|in|break|continue|return|memo|import)\\b",
                     "name": "keyword.control.irl"
                 },
                 {
-                    "match": "\\b(fax|fake|fr|or|nah)\\b",
+                    "match": "\\b(true|false|none)\\b",
                     "name": "constant.language.irl"
+                },
+                {
+                    "match": "\\b(and|or|not)\\b",
+                    "name": "keyword.operator.word.irl"
+                },
+                {
+                    "match": "\\b(snag|spill|bet|cap|grind|brb|task|fax|fake|fr|nah)\\b",
+                    "name": "keyword.other.legacy.irl"
+                },
+                {
+                    "match": "\\b(print|input|int|float|str|len|range|sum|min|max|abs|round|sorted|type|isinstance|append)\\b",
+                    "name": "support.function.builtin.irl"
+                },
+                {
+                    "match": "\\b(math|random|time|datetime|json|string|statistics)\\b",
+                    "name": "support.module.irl"
                 }
             ]
+        },
+        "literals": {
+            "comment": "f-string prefix",
+            "match": "f(?=\")",
+            "name": "string.interpolated.irl"
         },
         "strings": {
             "name": "string.quoted.double.irl",
@@ -47,11 +78,56 @@
                 {
                     "name": "constant.character.escape.irl",
                     "match": "\\\\."
+                },
+                {
+                    "name": "meta.interpolation.irl",
+                    "begin": "\\{",
+                    "end": "\\}",
+                    "patterns": [
+                        {
+                            "include": "#keywords"
+                        },
+                        {
+                            "include": "#numbers"
+                        },
+                        {
+                            "name": "constant.character.escape.irl",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+        "fstrings": {
+            "name": "string.interpolated.irl",
+            "begin": "f\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape.irl",
+                    "match": "\\\\."
+                },
+                {
+                    "name": "meta.interpolation.irl",
+                    "begin": "\\{",
+                    "end": "\\}",
+                    "patterns": [
+                        {
+                            "include": "#keywords"
+                        },
+                        {
+                            "include": "#numbers"
+                        },
+                        {
+                            "name": "constant.character.escape.irl",
+                            "match": "\\\\."
+                        }
+                    ]
                 }
             ]
         },
         "numbers": {
-            "match": "\\b\\d+\\b",
+            "match": "\\b\\d+(\\.\\d+)?\\b",
             "name": "constant.numeric.irl"
         },
         "functions": {

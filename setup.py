@@ -14,17 +14,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The .irl language — 2.1 "Full Language Edition".
+"""Setuptools shim: builds the native accelerator when a C compiler exists.
 
-Python's words with C's braces: var/function/if/elif/while/for, floats,
-f-strings, dicts, memo functions, stdlib imports. Legacy slang aliases
-(snag/spill/bet/cap/grind/brb/task) still run.
-
-Exposed: lex, parse, evaluate, Interpreter, and the error types.
+The extension is optional — if compilation fails (no compiler, odd
+platform), the wheel installs anyway and the pure-Python lexer runs.
+CI (cibuildwheel) produces the prebuilt platform wheels.
 """
 
-from .interpreter import Interpreter, IrlRuntimeError, evaluate
-from .lexer import IrlSyntaxError, lex
-from .parser import parse
+from setuptools import Extension, setup
 
-__all__ = ["lex", "parse", "evaluate", "Interpreter", "IrlSyntaxError", "IrlRuntimeError"]
+setup(
+    ext_modules=[
+        Extension(
+            "irl._irl_native",
+            sources=["native/_irl_native.c"],
+            extra_compile_args=["-O2"],
+            optional=True,
+        )
+    ]
+)

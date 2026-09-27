@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="IRL language logo">
+  <!-- IRL™ .irl language mark: a terminal window with { sprout } -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6f8fa"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#2ea043"/>
+      <stop offset="1" stop-color="#3fb950"/>
+    </linearGradient>
+  </defs>
+
+  <!-- terminal window -->
+  <rect x="32" y="32" width="448" height="448" rx="64" fill="url(#bg)" stroke="#d0d7de" stroke-width="8"/>
+  <!-- window chrome -->
+  <circle cx="88" cy="88" r="14" fill="#f85149"/>
+  <circle cx="128" cy="88" r="14" fill="#d29922"/>
+  <circle cx="168" cy="88" r="14" fill="#3fb950"/>
+  <line x1="56" y1="120" x2="456" y2="120" stroke="#d0d7de" stroke-width="4"/>
+
+  <!-- prompt chevron -->
+  <path d="M72 200 L116 236 L72 272" fill="none" stroke="#57606a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- left brace -->
+  <text x="150" y="345" font-family="ui-monospace,Consolas,monospace" font-size="190" font-weight="bold" fill="#3fb950">{</text>
+  <!-- right brace -->
+  <text x="290" y="345" font-family="ui-monospace,Consolas,monospace" font-size="190" font-weight="bold" fill="#3fb950">}</text>
+
+  <!-- sprout: stem + two leaves, centered between the braces -->
+  <path d="M256 340 C 256 300 256 280 256 252" fill="none" stroke="url(#leaf)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M256 300 C 230 296 212 278 210 250 C 240 252 256 270 256 300 Z" fill="url(#leaf)"/>
+  <path d="M256 280 C 282 276 300 258 302 230 C 272 232 256 250 256 280 Z" fill="url(#leaf)"/>
+
+  <!-- wordmark -->
+  <text x="256" y="436" text-anchor="middle" font-family="ui-monospace,Consolas,monospace" font-size="56" font-weight="bold" fill="#24292f">.irl</text>
+</svg>

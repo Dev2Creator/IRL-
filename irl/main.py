@@ -63,7 +63,8 @@ IRL_COMMANDS = [
     ("achievements", "View trophies and your dev level", "achievements"),
     ("grassland", "Play Grassland Quest (free roguelike)", "grassland"),
     ("rhythm", "Play Lofi Rhythm (beat game)", "rhythm"),
-    ("lang", "Run the .irl toy language", "lang"),
+    ("lang", "Write and run the .irl language", "lang"),
+    ("notebook", "Open the Jupyter-style .irl notebook", "notebook"),
     ("tui", "Launch the full-screen TUI (needs irl-pkg[tui])", "tui"),
     ("exit", "Leave IRL", "exit"),
 ]
@@ -269,6 +270,11 @@ def cli():
 
 
 def _cli_impl():
+    argv = sys.argv[1:]
+    if argv and argv[0].endswith(".irl") and os.path.exists(argv[0]):
+        from irl.lang_runner import run_file
+
+        raise SystemExit(run_file(argv[0]))
     _run_shared_identity_first_run()
     from rich.prompt import Prompt
 
@@ -396,9 +402,21 @@ def _cli_impl():
     subparsers.add_parser("quests", help="See today's daily quests")
     subparsers.add_parser("grassland", help="Play Grassland Quest (free garden roguelike)")
     subparsers.add_parser("rhythm", help="Play Lofi Rhythm (beat game with bundled lofi)")
-    lang_parser = subparsers.add_parser("lang", help="Run the .irl toy language")
-    lang_parser.add_argument("action", nargs="?", choices=["run", "demo", "repl"], default="demo")
-    lang_parser.add_argument("file", nargs="?", help=".irl file for `irl lang run <file>`")
+    lang_parser = subparsers.add_parser("lang", help="The .irl language — run, build, check, spec, bench")
+    lang_parser.add_argument(
+        "action",
+        nargs="?",
+        choices=["run", "build", "check", "spec", "bench", "demo", "repl"],
+        default="demo",
+    )
+    lang_parser.add_argument("file", nargs="?", help=".irl file for run/build/check")
+    lang_parser.add_argument(
+        "build_args",
+        nargs="*",
+        help="build flags: [-o out] [--run] [-O0|-O1|-O2] [--emit-ir] [--emit-py] [-v] [--json]",
+    )
+    notebook_parser = subparsers.add_parser("notebook", help="Open the IRL Notebook (Jupyter-style cells, zero deps)")
+    notebook_parser.add_argument("file", nargs="?", help=".irlnb notebook to open")
 
     args = parser.parse_args()
 
@@ -526,7 +544,11 @@ def _cli_impl():
     elif args.command == "lang":
         from irl.lang_runner import run_lang
 
-        run_lang(args.action, args.file)
+        run_lang(args.action, args.file, getattr(args, "build_args", None))
+    elif args.command == "notebook":
+        from irl.notebook import serve
+
+        serve(getattr(args, "file", None))
     else:
         interactive_menu()
 

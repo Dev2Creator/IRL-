@@ -174,6 +174,47 @@ One of the store's eighteen themes cannot be bought. It has to find you.
 
 ---
 
+## 🌱 The .irl Language 2.1
+
+IRL ships its own language — **Python's words with C's braces**:
+
+```js
+// hello.irl
+var age = int(input("Your age: "))
+
+if (age > 18) {
+    print(f"adult — {age * 2} in dog years")
+} elif (age > 12) {
+    print("teen")
+} else {
+    print("kid")
+}
+
+for (i in range(3)) {
+    print(i)
+}
+
+memo function fib(n) {
+    if (n < 2) { return n }
+    return fib(n - 1) + fib(n - 2)
+}
+print(fib(90))   // instant — memoized
+```
+
+**Run it, compile it, notebook it:**
+
+| Command | What it does |
+|---|---|
+| `irl hello.irl` | run directly (like `python file.py`) |
+| `irl lang build hello.irl -O2 -v` | compile to bytecode — 70–225× faster than interpreted, at CPython parity |
+| `irl lang check hello.irl --json` | validate for CI/AI pipelines |
+| `irl notebook` | Jupyter-style cells with a persistent kernel — zero dependencies |
+| `irl lang spec` | the full frozen grammar |
+
+Full spec: [LANG.md](LANG.md) · Compiler internals: [COMPILER.md](COMPILER.md) · Architecture: [DESIGN.md](DESIGN.md) · For AI assistants: [AI_GUIDE.md](AI_GUIDE.md) · Legacy slang (snag/spill/bet/cap/grind/brb/task) still runs.
+
+---
+
 ## ⚙️ How It Works
 
 ### Install routing
